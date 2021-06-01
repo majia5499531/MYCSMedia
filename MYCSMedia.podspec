@@ -20,7 +20,7 @@ TODO: Add long description of the pod here.
   # s.screenshots     = 'www.example.com/screenshots_1', 'www.example.com/screenshots_2'
   s.license          = { :type => 'MIT', :file => 'LICENSE' }
   s.author           = { 'majia5499531@163.com' => '5307460+azbura@user.noreply.gitee.com' }
-  s.source           = { :git => 'https://github.com/majia5499531@163.com/MYCSMedia.git', :tag => s.version.to_s }
+  s.source           = { :git => 'https://github.com/majia5499531/MYCSMedia.git', :tag => s.version.to_s }
   # s.social_media_url = 'https://twitter.com/<TWITTER_USERNAME>'
 
   s.ios.deployment_target = '9.0'

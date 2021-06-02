@@ -10,8 +10,15 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface SZVideoCell : UICollectionViewCell
+@protocol VideoCellDelegate <NSObject>
 
+-(void)didSelectCell:(id)data;
+
+@end
+
+
+@interface SZVideoCell : UICollectionViewCell
+@property(weak,nonatomic)id<VideoCellDelegate>delegate;
 -(void)setCellData:(NSObject*)news;
 
 -(void)playingVideo;

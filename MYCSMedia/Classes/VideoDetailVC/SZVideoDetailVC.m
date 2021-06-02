@@ -19,8 +19,9 @@
 #import "UIView+MJCategory.h"
 #import "SZInputView.h"
 #import "SZCommentBar.h"
+#import "MJHUD.h"
 
-@interface SZVideoDetailVC ()<UICollectionViewDelegate, UICollectionViewDataSource>
+@interface SZVideoDetailVC ()<UICollectionViewDelegate, UICollectionViewDataSource,VideoCellDelegate>
 
 @end
 
@@ -118,6 +119,14 @@
 }
 
 
+#pragma mark - CellDelegate
+-(void)didSelectCell:(id)data
+{
+    [MJHUD_Selection showEpisodeSelectionView:self.view episode:45 clickAction:^(id objc) {
+        NSLog(@"%@",objc);
+    }];
+}
+
 
 #pragma mark - 下拉/上拉
 -(void)pulldownRefreshAction:(MJRefreshHeader*)refreshHeader
@@ -149,11 +158,14 @@
 }
 
 
+
+
 #pragma mark - CollectionView Datasource & Delegate
 -(UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
     SZVideoCell * cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"shortSZVideoCell" forIndexPath:indexPath];
     [cell setCellData:dataArr[indexPath.row]];
+    cell.delegate=self;
     return  cell;
 }
 - (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath

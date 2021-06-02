@@ -15,4 +15,12 @@
     return img;
 }
 
++(NSURL *)getBundleImageURL:(NSString *)filename
+{
+    NSString * bundelpath = [[NSBundle mainBundle]pathForResource:@"CSAssets.bundle/images" ofType:nil];
+    NSString * filepath = [bundelpath stringByAppendingPathComponent:filename];
+    NSURL * url = [NSURL fileURLWithPath:filepath];
+    return url;
+}
+
 @end

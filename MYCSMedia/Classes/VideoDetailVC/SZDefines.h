@@ -222,7 +222,7 @@
 #define HW_GRAY_BG_1                [UIColor colorWithHexString:@"111111"]
 #define HW_GRAY_BG_2                [UIColor colorWithHexString:@"222222"]
 #define HW_GRAY_BG_3                [UIColor colorWithHexString:@"333333"]
-
+#define HW_GRAY_BG_4                [UIColor colorWithHexString:@"444444"]
 
 #define HW_GRAY_BG_5                [UIColor colorWithHexString:@"F3F4F5"]
 #define HW_GRAY_BORDER              [UIColor colorWithHexString:@"E8E8E8"]

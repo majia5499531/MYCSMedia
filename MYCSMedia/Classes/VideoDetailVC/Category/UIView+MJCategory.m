@@ -228,6 +228,35 @@
     return bottomY;
 }
 
+-(CGFloat)getRightX
+{
+    CGFloat right = 0;
+    for (UIView * subview in self.subviews)
+    {
+        if (subview.hidden)
+        {
+            continue;
+        }
+        
+        if ([self isKindOfClass:[UIScrollView class]])
+        {
+            Class scrollviewIndicatorClass = NSClassFromString(@"_UIScrollViewScrollIndicator");
+            if ([subview isKindOfClass:scrollviewIndicatorClass])
+            {
+                continue;
+            }
+        }
+        
+        if (subview.right>right)
+        {
+            right=subview.right;
+        }
+    }
+    
+    return right;
+}
+
+
 -(void)MJSetIndividualAlpha:(CGFloat)value
 {
     self.backgroundColor = [UIColor colorWithWhite:0.f alpha:value];

@@ -32,5 +32,6 @@
 -(void)MJSetPartRadius:(CGFloat)radius RoundingCorners:(UIRectCorner)corners;
 
 -(CGFloat)getBottomY;
+-(CGFloat)getRightX;
 
 @end

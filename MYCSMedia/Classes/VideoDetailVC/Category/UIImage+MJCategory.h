@@ -12,7 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface UIImage (MJCategory)
 
 +(UIImage*)getBundleImage:(NSString*)img;
-
++(NSURL *)getBundleImageURL:(NSString *)filename;
 @end
 
 NS_ASSUME_NONNULL_END

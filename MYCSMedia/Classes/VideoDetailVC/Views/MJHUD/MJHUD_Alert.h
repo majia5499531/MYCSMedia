@@ -6,11 +6,11 @@
 //  Copyright © 2019 ChangShaBroadcastGroup. All rights reserved.
 //
 
-#import "MJHUD_BASE.h"
+#import "MJHUD_Base.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface MJHUD_Alert : MJHUD_BASE
+@interface MJHUD_Alert : MJHUD_Base
 
 //Alert
 +(void)showAlertViewWithTitle:(NSString *)title text:(NSString *)text sure:(HUD_BLOCK)block;

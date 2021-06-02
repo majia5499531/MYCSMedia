@@ -1,5 +1,5 @@
 //
-//  SZManger.h
+//  SZManager.h
 //  CSVideoDemo
 //
 //  Created by 马佳 on 2021/5/28.
@@ -22,11 +22,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 
 
-@interface SZManger : NSObject
+@interface SZManager : NSObject
 
 @property(weak,nonatomic) id <SZDelegate> delegate;
 
-+ (SZManger *)sharedManager;
++ (SZManager *)sharedManager;
+
+-(NSString *)getToken;
 
 
 @end

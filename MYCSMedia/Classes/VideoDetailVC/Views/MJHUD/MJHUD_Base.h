@@ -11,7 +11,7 @@
 
 typedef void(^HUD_BLOCK)(id objc);
 
-@interface MJHUD_BASE : UIView
+@interface MJHUD_Base : UIView
 
 @property(strong,nonatomic)UIView * maskView;
 @property(strong,nonatomic)UIView * contentView;

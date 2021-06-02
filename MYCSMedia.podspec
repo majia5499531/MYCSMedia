@@ -33,12 +33,12 @@ TODO: Add long description of the pod here.
 
   # s.public_header_files = 'Pod/Classes/**/*.h'
   # s.frameworks = 'UIKit', 'MapKit'
-  s.dependency 'AFNetworking'
+  s.dependency 'AFNetworking', '>= 4.0'
   s.dependency 'TXLiteAVSDK_Player', '~> 7.1.8775'
-  s.dependency 'MMLayout'
-  s.dependency 'Masonry'
-  s.dependency 'SDWebImage'
-  s.dependency 'FSTextView'
-  s.dependency 'MJRefresh'
+  s.dependency 'MMLayout', '>= 0.3.0'
+  s.dependency 'Masonry', '>= 1.1.0'
+  s.dependency 'SDWebImage', '>= 5.0'
+  s.dependency 'FSTextView', '>= 1.8'
+  s.dependency 'MJRefresh', '>= 3.6.1'
   s.static_framework = true
 end

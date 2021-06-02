@@ -12,7 +12,7 @@
 #import <Masonry/Masonry.h>
 #import "MJButton.h"
 #import "UIImage+MJCategory.h"
-#import "SZManger.h"
+#import "SZManager.h"
 #import "SZInputView.h"
 #import "SZCommentList.h"
 
@@ -211,8 +211,8 @@
 {
     zanBtn.MJSelectState = !zanBtn.MJSelectState;
     
-    if ([SZManger sharedManager].delegate) {
-        NSLog(@"query token:%@",[[SZManger sharedManager].delegate getAccessToken]);
+    if ([SZManager sharedManager].delegate) {
+        NSLog(@"query token:%@",[[SZManager sharedManager].delegate getAccessToken]);
     }
     
 }
@@ -222,8 +222,8 @@
     collectBtn.MJSelectState = !collectBtn.MJSelectState;
     
     
-    if ([SZManger sharedManager].delegate) {
-        [[SZManger sharedManager].delegate gotoLoginPage];
+    if ([SZManager sharedManager].delegate) {
+        [[SZManager sharedManager].delegate gotoLoginPage];
     }
 }
 

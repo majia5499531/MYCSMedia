@@ -5,11 +5,11 @@
 //  Created by 马佳 on 2021/6/2.
 //
 
-#import "MJHUD_BASE.h"
+#import "MJHUD_Base.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface MJHUD_Selection : MJHUD_BASE
+@interface MJHUD_Selection : MJHUD_Base
 
 +(void)showEpisodeSelectionView:(UIView*)view episode:(NSInteger)count clickAction:(HUD_BLOCK)block;
 

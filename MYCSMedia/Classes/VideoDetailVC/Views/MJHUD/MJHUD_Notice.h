@@ -5,11 +5,11 @@
 //  Created by 马佳 on 2021/6/2.
 //
 
-#import "MJHUD_BASE.h"
+#import "MJHUD_Base.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface MJHUD_Notice : MJHUD_BASE
+@interface MJHUD_Notice : MJHUD_Base
 //成功
 +(void)showSuccessView:(NSString*)words inView:(UIView*)view hideAfterDelay:(NSTimeInterval)time;
 

@@ -13,7 +13,7 @@
 #import "MJButton.h"
 #import "UIImage+MJCategory.h"
 #import <SDWebImage/SDWebImage.h>
-#import "SZManger.h"
+#import "SZManager.h"
 
 @implementation SZCommentCell
 {

@@ -15,7 +15,7 @@
 #import "MJButton.h"
 #import "MJVideoManager.h"
 #import <Masonry/Masonry.h>
-#import "SZManger.h"
+#import "SZManager.h"
 #import "UIView+MJCategory.h"
 #import "SZInputView.h"
 #import "SZCommentBar.h"
@@ -63,6 +63,7 @@
     
     [[UIApplication sharedApplication]setStatusBarStyle:originStatusStyle];
 }
+
 -(void)viewDidDisappear:(BOOL)animated
 {
     [super viewDidDisappear:animated];
@@ -122,9 +123,11 @@
 #pragma mark - CellDelegate
 -(void)didSelectCell:(id)data
 {
-    [MJHUD_Selection showEpisodeSelectionView:self.view episode:45 clickAction:^(id objc) {
-        NSLog(@"%@",objc);
-    }];
+//    [MJHUD_Selection showEpisodeSelectionView:self.view episode:45 clickAction:^(id objc) {
+//        NSLog(@"%@",objc);
+//    }];
+    
+    [MJHUD_Loading showMiniLoadingView:self.view hideAfterDelay:3];
 }
 
 

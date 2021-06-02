@@ -6,14 +6,14 @@
 //  Copyright © 2017年 HW_Tech. All rights reserved.
 //
 
-#import "MJHUD_BASE.h"
+#import "MJHUD_Base.h"
 
 
-@interface MJHUD_BASE ()
+@interface MJHUD_Base ()
 
 @end
 
-@implementation MJHUD_BASE
+@implementation MJHUD_Base
 
 -(instancetype)initWithFrame:(CGRect)frame
 {

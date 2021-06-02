@@ -9,6 +9,9 @@
 #import <SDWebImage/SDWebImage.h>
 #import <UIView+MJCategory.h>
 #import "UIImage+MJCategory.h"
+#import "SZDefines.h"
+#import "UIColor+MJCategory.h"
+
 #define kDISPATCH_MAIN_THREAD(mainQueueBlock)       dispatch_async(dispatch_get_main_queue(),mainQueueBlock);
 
 @implementation MJHUD_Loading
@@ -43,13 +46,15 @@
         //BG
         hud.contentView.backgroundColor=[UIColor clearColor];
         hud.contentView.layer.cornerRadius=7;
-        [hud.contentView setFrame:CGRectMake(hud.contentView.frame.origin.x, hud.contentView.frame.origin.y, imageSize.width, imageSize.height)];
-        [hud.contentView setCenter:CGPointMake(hud.width/2, hud.height/2)];
+        hud.contentView.backgroundColor=HW_GRAY_BG_3;
+        [hud.contentView setSize:CGSizeMake(imageSize.width*1.7, imageSize.height*1.7)];
+        [hud.contentView setCenter:hud.center];
         
         //Icon
-        [hud.iconView setFrame:hud.contentView.bounds];
+        [hud.iconView setFrame:CGRectMake(0, 0, imageSize.width, imageSize.height)];
+        [hud.iconView setCenterX:hud.contentView.width/2];
+        [hud.iconView setCenterY:hud.contentView.height/2];
         hud.iconView.contentMode=UIViewContentModeScaleAspectFit;
-        hud.iconView.layer.cornerRadius=10;
         NSURL * imgURL = [UIImage getBundleImageURL:gifName];
         [hud.iconView sd_setImageWithURL:imgURL];
         hud.iconView.layer.masksToBounds=YES;

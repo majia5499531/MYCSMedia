@@ -15,13 +15,14 @@
 #import "UIImage+MJCategory.h"
 #import "NSString+MJCategory.h"
 #import <SDWebImage/SDWebImage.h>
-#import "SZManger.h"
+#import "SZManager.h"
 #import "UIView+MJCategory.h"
 
 @implementation SZVideoCell
 {
     //data
-    NSString * url;
+    NSString * videoUrl;
+    NSString * imageUrl;
     NSString * descStr;
     
     NSMutableArray * videoBtns;
@@ -234,9 +235,12 @@
 
 -(void)setCellData:(NSObject*)news
 {
+    
+    videoUrl = news;
+    
     //video
-    url = @"https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fimg.mp.sohu.com%2Fupload%2F20170718%2F917887432c1b4f96a40e0ab28fdbe1e3_th.png&refer=http%3A%2F%2Fimg.mp.sohu.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1625057654&t=9e3d1dda25d561813098c329a8f9ec5e";
-    [videoBtn sd_setImageWithURL:[NSURL URLWithString:url] forState:UIControlStateNormal];
+    imageUrl = @"https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fimg.mp.sohu.com%2Fupload%2F20170718%2F917887432c1b4f96a40e0ab28fdbe1e3_th.png&refer=http%3A%2F%2Fimg.mp.sohu.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1625057654&t=9e3d1dda25d561813098c329a8f9ec5e";
+    [videoBtn sd_setImageWithURL:[NSURL URLWithString:imageUrl] forState:UIControlStateNormal];
     
     
     //author
@@ -259,9 +263,9 @@
 
 -(void)playingVideo
 {
-    NSLog(@"playingVideo %@",url);
+    NSLog(@"playingVideo %@",imageUrl);
     
-    [MJVideoManager playWindowVideoAtView:videoBtn url:url coverImage:nil silent:NO repeat:NO controlStyle:0];
+    [MJVideoManager playWindowVideoAtView:videoBtn url:videoUrl coverImage:nil silent:NO repeat:NO controlStyle:0];
     
 }
 
@@ -275,15 +279,15 @@
 }
 -(void)wechatBtnAction
 {
-    [[SZManger sharedManager].delegate onShareAction:@"" image:@"" desc:@"" URL:@""];
+    [[SZManager sharedManager].delegate onShareAction:@"" image:@"" desc:@"" URL:@""];
 }
 -(void)timelineBtnAction
 {
-    [[SZManger sharedManager].delegate onShareAction:@"" image:@"" desc:@"" URL:@""];
+    [[SZManager sharedManager].delegate onShareAction:@"" image:@"" desc:@"" URL:@""];
 }
 -(void)qqBtnAction
 {
-    [[SZManger sharedManager].delegate onShareAction:@"" image:@"" desc:@"" URL:@""];
+    [[SZManager sharedManager].delegate onShareAction:@"" image:@"" desc:@"" URL:@""];
 }
 -(void)selectBtnAction
 {

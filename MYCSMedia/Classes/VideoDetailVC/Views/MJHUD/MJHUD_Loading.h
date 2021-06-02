@@ -5,11 +5,11 @@
 //  Created by 马佳 on 2021/6/2.
 //
 
-#import "MJHUD_BASE.h"
+#import "MJHUD_Base.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface MJHUD_Loading : MJHUD_BASE
+@interface MJHUD_Loading : MJHUD_Base
 
 +(void)showMiniLoading:(UIView*)view;
 +(void)showLoadingView:(UIView*)view;

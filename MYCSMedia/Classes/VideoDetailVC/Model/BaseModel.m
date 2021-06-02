@@ -1,0 +1,262 @@
+//
+//  BaseModel.m
+//  喜鹊红包
+//
+//  Created by 马佳 on 2018/5/15.
+//  Copyright © 2018年 HW_Tech. All rights reserved.
+//
+
+#import "BaseModel.h"
+#import "MJHUD.h"
+#import "NSObject+MJCategory.h"
+#import "SZManager.h"
+
+@implementation BaseModel
+
+//GET
+-(void)GETRequestInView:(UIView*)view WithUrl:(NSString *)url Params:(NSDictionary *)params Success:(SuccessBlock)successblock Error:(ErrorBlock)errorblock Fail:(FailBlock)failblock
+{
+    [self request:@"GET" view:view WithUrl:url Params:params Success:successblock Error:errorblock Fail:failblock];
+}
+
+//POST
+-(void)PostRequestInView:(UIView*)view WithUrl:(NSString *)url Params:(NSDictionary *)params Success:(SuccessBlock)successblock Error:(ErrorBlock)errorblock Fail:(FailBlock)failblock
+{
+    [self request:@"POST" view:view WithUrl:url Params:params Success:successblock Error:errorblock Fail:failblock];
+    
+}
+
+//DELETE
+-(void)DeleteRequestInView:(UIView*)view WithUrl:(NSString *)url Params:(NSDictionary *)params Success:(SuccessBlock)successblock Error:(ErrorBlock)errorblock Fail:(FailBlock)failblock
+{
+    [self request:@"DELETE" view:view WithUrl:url Params:params Success:successblock Error:errorblock Fail:failblock];
+}
+
+//PUT
+-(void)PutRequestInView:(UIView*)view WithUrl:(NSString *)url Params:(NSDictionary *)params Success:(SuccessBlock)successblock Error:(ErrorBlock)errorblock Fail:(FailBlock)failblock
+{
+    [self request:@"PUT" view:view WithUrl:url Params:params Success:successblock Error:errorblock Fail:failblock];
+}
+
+#pragma mark - 普通请求
+-(void)request:(NSString*)method view:(UIView*)view WithUrl:(NSString *)url Params:(NSDictionary *)params Success:(SuccessBlock)successblock Error:(ErrorBlock)errorblock Fail:(FailBlock)failblock
+{
+    if (!self.customLoading || !view)
+    {
+        [MJHUD_Loading showMiniLoading:view];
+    }
+    
+    [self RequestWithUrl:url method:method isJSON:self.isJSON params:params success:^(id responseObject , NSURLSessionDataTask * task) {
+    
+            if (!self.customLoading)
+            {
+                [MJHUD_Loading hideLoadingView:view];
+            }
+    
+            NSLog(@"\n【HTTP响应】 \n URL = %@ \n respObjc = \n %@",task.currentRequest.URL.absoluteString,responseObject);
+    
+            //读取公共字段
+            self.resultcode = [responseObject mj_valueForKey:@"code"];
+            self.message = [responseObject mj_valueForKey:@"resultMessage"];
+    
+    
+            //业务成功
+            if (self.resultcode.integerValue==0)
+            {
+                [self parseData:[responseObject mj_valueForKey:@"data"]];
+                successblock(responseObject);
+            }
+        
+            //未登录
+            else if (self.resultcode.integerValue==401)
+            {
+                [[SZManager sharedManager].delegate gotoLoginPage];
+            }
+        
+            //未实人认证
+            else if (self.resultcode.integerValue==402)
+            {
+                [MJHUD_Notice showNoticeView:self.message inView:view hideAfterDelay:1.6];
+            }
+    
+            //业务错误
+            else
+            {
+                if (!self.hideErrorMsg)
+                {
+                    [MJHUD_Notice showNoticeView:self.message inView:view hideAfterDelay:1.6];
+                }
+                errorblock(responseObject);
+            }
+        
+    } fail:^(NSError *error,NSURLSessionDataTask * task)
+    {
+        
+        NSLog(@"\n【HTTP响应错误】 \n URL = %@ \n error = \n %@",task.currentRequest.URL.absoluteString,error);
+        
+        if (!self.customLoading)
+        {
+            [MJHUD_Loading hideLoadingView:view];
+        }
+        
+
+        //token失效
+        if (!self.hideErrorMsg)
+        {
+            if(DEBUG)
+            {
+                [MJHUD_Notice showNoticeView:[NSString stringWithFormat:@"网络开小差了\n%@",[error.userInfo valueForKey:@"NSLocalizedDescription"]] inView:view hideAfterDelay:2];
+            }
+            else
+            {
+                [MJHUD_Notice showNoticeView:@"网络开小差了" inView:view hideAfterDelay:2];
+            }
+        }
+        
+        
+        failblock(error);
+    }];
+}
+
+
+#pragma mark - 文件上传
+-(void)requestMultipartFileUpload:(NSString *)url model:(NSDictionary *)model fileDataArray:(NSArray*)array fileNameArray:(NSArray*)names success:(SuccessBlock)successblock error:(ErrorBlock)errorBLock fail:(FailBlock)failblock
+{
+    AFHTTPSessionManager * httpManager = [AFHTTPSessionManager manager];
+    
+    //设置请求头
+    if ([[SZManager sharedManager] getToken].length)
+    {
+        //超时
+        [httpManager.requestSerializer willChangeValueForKey:@"timeoutInterval"];
+        httpManager.requestSerializer.timeoutInterval = 30.f;
+        [httpManager.requestSerializer didChangeValueForKey:@"timeoutInterval"];
+        
+        //token
+        NSString * token = [NSString stringWithFormat:@"Bearer %@",[[SZManager sharedManager]getToken]];
+        if ([[SZManager sharedManager] getToken].length)
+        {
+            [httpManager.requestSerializer setValue:token forHTTPHeaderField:@"authorization"];
+        }
+        
+        //ContentType
+        [httpManager.requestSerializer setValue:@"multipart/form-data; boundary=BOUNDARY" forHTTPHeaderField:@"Content-Type"];
+    }
+    
+    NSLog(@"【HTTP上传】\nURL = %@\nParam = %@",url,model);
+    
+    
+    
+    //使用multipart方式上传
+    [httpManager POST:url parameters:nil headers:nil constructingBodyWithBlock:^(id<AFMultipartFormData>  _Nonnull formData)
+    {
+        //文件数据
+        for (int i = 0; i<array.count; i++)
+        {
+            NSData * imageData = array[i];
+            
+            //文件名
+            NSString * fileName = @"iOSName";
+            if (names.count)
+            {
+                fileName = names[i];
+            }
+            
+            //拼数据
+            if (array.count>1)
+            {
+                [formData appendPartWithFileData:imageData name:@"files" fileName:fileName mimeType:@"multipart/form-data"];
+            }
+            else
+            {
+                [formData appendPartWithFileData:imageData name:@"file" fileName:fileName mimeType:@"multipart/form-data"];
+            }
+        }
+        
+        //模型数据
+        NSArray * keys = [model allKeys];
+        for (int i = 0; i<keys.count; i++)
+        {
+            NSString * key = keys[i];
+            id item = [model valueForKey:key];
+            
+            //字符串则UTF8编码
+            if ([item isKindOfClass:[NSString class]])
+            {
+                NSData * itemData =[item dataUsingEncoding:NSUTF8StringEncoding];
+                [formData appendPartWithFormData:itemData name:key];
+            }
+            
+            //字典则转JSON
+            else if ([item isKindOfClass:[NSDictionary class]])
+            {
+                NSData *jsonData = [NSJSONSerialization dataWithJSONObject:item options:NSJSONWritingPrettyPrinted error:nil];
+                [formData appendPartWithFormData:jsonData name:key];
+
+            }
+        }
+        
+    } progress:^(NSProgress * _Nonnull uploadProgress) {
+        
+            NSLog(@"正在上传--------%@",uploadProgress);
+        
+    } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        
+        //读取公共字段
+        self.resultcode = [responseObject mj_valueForKey:@"code"];
+        self.message = [responseObject mj_valueForKey:@"resultMessage"];
+        
+        NSLog(@"【上传】\nResp = %@",responseObject);
+
+        //业务成功
+        if (self.resultcode.integerValue==0)
+        {
+            successblock(responseObject);
+        }
+    
+        //token失效
+        else if (self.resultcode.integerValue==401)
+        {
+            errorBLock(responseObject);
+            
+        }
+
+        //业务错误
+        else
+        {
+            errorBLock(responseObject);
+        }
+        
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        
+        NSLog(@"上传接口错误%@",error);
+        failblock(error);
+
+    }];
+    
+}
+
+
+
+#pragma mark - LazyLoad
+-(NSMutableArray *)dataArr
+{
+    if (!_dataArr)
+    {
+        _dataArr=[NSMutableArray array];
+    }
+    return _dataArr;
+}
+
+
+#pragma mark - 解析数据
+-(void)parseData:(id)data
+{
+    
+}
+-(void)parseDataFromDic:(NSDictionary *)dic
+{
+    
+}
+
+@end

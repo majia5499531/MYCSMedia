@@ -1,6 +1,5 @@
 #import "SuperPlayerModel.h"
 #import "SuperPlayer.h"
-#import "AFNetworking/AFNetworking.h"
 #import "J2Obj.h"
 #import <Security/Security.h>
 #import "SuperEncrypt.h"

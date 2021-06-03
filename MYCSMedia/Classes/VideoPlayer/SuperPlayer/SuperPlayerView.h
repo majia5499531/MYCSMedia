@@ -79,6 +79,7 @@ typedef NS_ENUM(NSInteger, SuperPlayerLayoutStyle) {
 @property (nonatomic) BOOL loop;
 
 
+
 /**
  * 视频雪碧图
  */

@@ -416,7 +416,7 @@
 -(void)MJNetStatusBtnAction
 {
     self.MJNetStatusView.hidden=YES;
-    
+    self.ignoreWWAN=YES;
     [self.delegate MJRealoadPlaying];
 }
 

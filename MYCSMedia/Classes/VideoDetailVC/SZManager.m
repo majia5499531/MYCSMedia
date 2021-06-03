@@ -6,6 +6,7 @@
 //
 
 #import "SZManager.h"
+#import <AFNetworking/AFNetworking.h>
 
 @implementation SZManager
 
@@ -18,7 +19,7 @@
         {
             manager = [[SZManager alloc]init];
 
-            
+            [[AFNetworkReachabilityManager sharedManager]startMonitoring];
         }
         });
     return manager;

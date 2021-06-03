@@ -73,6 +73,7 @@ static UISlider * _volumeSlider;
     
     [self reportPlay];
     [self.netWatcher stopWatch];
+    [[AFNetworkReachabilityManager sharedManager]stopMonitoring];
     [self.volumeView removeFromSuperview];
 }
 
@@ -112,6 +113,9 @@ static UISlider * _volumeSlider;
     
     //网络监控
     self.netWatcher = [[NetWatcher alloc] init];
+    
+    //网络监控
+    [[AFNetworkReachabilityManager sharedManager]startMonitoring];
     
     //添加监听
     [self addNotifications];
@@ -920,7 +924,7 @@ static UISlider * _volumeSlider;
     
     //判读网络状态
     AFNetworkReachabilityStatus st = [AFNetworkReachabilityManager sharedManager].networkReachabilityStatus;
-    if (st == AFNetworkReachabilityStatusReachableViaWWAN)
+    if (st == AFNetworkReachabilityStatusReachableViaWWAN && !self.controlView.ignoreWWAN)
     {
         //移动网络状态则弹窗
         SPDefaultControlView * controlV = (SPDefaultControlView*)self.controlView;

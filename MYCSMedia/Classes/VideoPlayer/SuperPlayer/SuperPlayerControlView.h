@@ -29,7 +29,7 @@
 @property (nonatomic, assign,getter=isLockScreen)BOOL isLockScreen;
 @property (assign,nonatomic)BOOL onlyFullscreenMode;
 @property (assign, nonatomic) BOOL compact;
-
+@property(assign,nonatomic)BOOL ignoreWWAN;
 /**
  * 播放进度
  * @param currentTime 当前播放时长

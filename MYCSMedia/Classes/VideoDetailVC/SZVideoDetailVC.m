@@ -30,7 +30,7 @@
     UICollectionView * collectionView;
     NSInteger currentRow;
     
-    NSArray * dataArr ;
+    NSMutableArray * dataArr ;
     
     
     UIStatusBarStyle originStatusStyle;
@@ -41,6 +41,32 @@
     [super viewDidLoad];
     
     [self MJInitSubviews];
+    
+    [self performSelector:@selector(upvideotest) withObject:nil afterDelay:1];
+}
+
+-(void)upvideotest
+{
+    
+    NSArray * arr = @[
+     @"https://oss.changsha.cn/2021/20210531/V1648164809JiaoBiaoPianHuaPianWei_CD_1080.mp4",
+     @"https://oss.changsha.cn/2021/20210531/V2005JianZou2005241080JiaoBiaoPianHuaPianWei_1080.mp4",
+     @"https://oss.changsha.cn/2021/20210601/V1808JinXiaLiWei180859_CD_1080.mp4",
+     @"https://oss.changsha.cn/2021/20210602/V152262LingDongShuGuang798152241JiaoBiaoPianWei_CD_1080.mp4"
+                     ];
+
+    NSMutableArray * newArr = [NSMutableArray arrayWithArray:arr];
+    [newArr addObjectsFromArray:dataArr];
+    dataArr = newArr;
+
+    [collectionView reloadData];
+    
+    
+    NSIndexPath * indexpath =  [[collectionView indexPathsForVisibleItems] firstObject];
+    NSInteger kk = indexpath.row;
+    NSLog(@"mj_%d",kk);
+    
+    [collectionView scrollToItemAtIndexPath:[NSIndexPath indexPathForRow:kk+ arr.count inSection:0] atScrollPosition:UICollectionViewScrollPositionTop animated:NO];
 }
 
 
@@ -78,11 +104,12 @@
 {
     self.view.backgroundColor=[UIColor whiteColor];
     
-    dataArr = @[
+    dataArr = [NSMutableArray array];
+    [dataArr addObjectsFromArray: @[
                 @"https://oss.changsha.cn/2021/20210520/V1116WangLiJun1116491080_1080.mp4",
                 @"https://oss.changsha.cn/2020/20200730/V115620200730softRYShuPing115654.mp4",
                 @"https://oss.changsha.cn/2021/20210428/V0915ShiPinXiaZai091510.mp4"
-                ];
+                ]];
     
     
     //collectionview
@@ -123,11 +150,9 @@
 #pragma mark - CellDelegate
 -(void)didSelectCell:(id)data
 {
-//    [MJHUD_Selection showEpisodeSelectionView:self.view episode:45 clickAction:^(id objc) {
-//        NSLog(@"%@",objc);
-//    }];
-    
-    [MJHUD_Loading showMiniLoadingView:self.view hideAfterDelay:3];
+    [MJHUD_Selection showEpisodeSelectionView:self.view episode:22 clickAction:^(id objc) {
+        NSLog(@"%@",objc);
+    }];
 }
 
 
@@ -140,6 +165,17 @@
 
 -(void)pullupLoadAction:(MJRefreshAutoFooter*)footer
 {
+    
+    NSArray * arr = @[
+     @"https://oss.changsha.cn/2021/20210531/V1648164809JiaoBiaoPianHuaPianWei_CD_1080.mp4",
+     @"https://oss.changsha.cn/2021/20210531/V2005JianZou2005241080JiaoBiaoPianHuaPianWei_1080.mp4",
+     @"https://oss.changsha.cn/2021/20210601/V1808JinXiaLiWei180859_CD_1080.mp4",
+     @"https://oss.changsha.cn/2021/20210602/V152262LingDongShuGuang798152241JiaoBiaoPianWei_CD_1080.mp4"
+                     ];
+    [dataArr addObjectsFromArray:arr];
+    
+    [collectionView reloadData];
+    
     [collectionView.mj_footer endRefreshing];
 }
 

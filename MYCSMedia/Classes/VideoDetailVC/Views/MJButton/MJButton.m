@@ -241,6 +241,8 @@
 #pragma mark - 标记
 -(void)setBadgeNum:(NSString*)badge style:(NSInteger)style
 {
+    _badgeCount = badge.integerValue;
+    
     if (badge.intValue==0)
     {
         badgeLabel.hidden=YES;
@@ -285,8 +287,16 @@
         CGSize sz = [badgeLabel sizeThatFits:badgeLabel.frame.size];
         [badgeLabel setFrame:CGRectMake(0, 0, sz.width, 14)];
         badgeLabel.textAlignment=NSTextAlignmentLeft;
-        badgeLabel.textColor=HW_RED_WORD_1;
-        [badgeLabel setOrigin:CGPointMake(28, 5)];
+        [badgeLabel setOrigin:CGPointMake(30, 5)];
+        
+        if (self.MJSelectState)
+        {
+            badgeLabel.textColor=HW_RED_WORD_1;
+        }
+        else
+        {
+            badgeLabel.textColor=HW_GRAY_WORD_1;
+        }
     }
 }
 

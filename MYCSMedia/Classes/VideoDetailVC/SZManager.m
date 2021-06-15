@@ -28,11 +28,40 @@
 
 
 
--(NSString *)getToken
-{
-    return [self.delegate getAccessToken];
-}
 
+
++(BOOL)mjgetLoginStatus
+{
+    return [SZManager sharedManager].SZRMToken.length;
+}
++(NSString*)mjgetBaseSysURL
+{
+    SZManager * instance = [SZManager sharedManager];
+    if (instance.enviroment==UAT_ENVIROMENT)
+    {
+        return @"https://uat-fuse-system.zhcs.csbtv.com";
+    }
+    else
+    {
+        return @"https://fuse-system.zhcs.csbtv.com";
+    }
+}
++(NSString *)mjgetBaseURL
+{
+    SZManager * instance = [SZManager sharedManager];
+    if (instance.enviroment==UAT_ENVIROMENT)
+    {
+        return @"https://uat-fuse-cms.zhcs.csbtv.com";
+    }
+    else
+    {
+        return @"https://fuse-cms.zhcs.csbtv.com";
+    }
+}
++(void)mjgoToLoginPage
+{
+    [[SZManager sharedManager].delegate onLoginAction];
+}
 
 
 @end

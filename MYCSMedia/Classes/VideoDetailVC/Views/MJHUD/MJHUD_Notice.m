@@ -22,7 +22,7 @@
     hud.maskView.alpha=0;
     
     //BG
-    hud.contentView.backgroundColor=[UIColor grayColor];
+    hud.contentView.backgroundColor=[UIColor blackColor];
     [hud.contentView MJSetIndividualAlpha:0.5];
     hud.contentView.layer.cornerRadius=7;
     [hud.contentView setSize:CGSizeMake(140, 140)];

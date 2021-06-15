@@ -31,5 +31,7 @@ Pod::Spec.new do |s|
   s.dependency 'SDWebImage', '>= 5.0'
   s.dependency 'FSTextView', '>= 1.8'
   s.dependency 'MJRefresh', '>= 3.6.1'
+  s.dependency 'YYModel'
+  s.dependency 'IQDataBinding'
   s.static_framework = true
 end

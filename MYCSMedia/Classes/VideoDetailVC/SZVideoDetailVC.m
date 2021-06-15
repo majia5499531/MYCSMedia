@@ -20,6 +20,10 @@
 #import "SZInputView.h"
 #import "SZCommentBar.h"
 #import "MJHUD.h"
+#import "BaseModel.h"
+#import "VideoListModel.h"
+#import "VideoModel.h"
+#import "TokenExchangeModel.h"
 
 @interface SZVideoDetailVC ()<UICollectionViewDelegate, UICollectionViewDataSource,VideoCellDelegate>
 
@@ -27,48 +31,40 @@
 
 @implementation SZVideoDetailVC
 {
-    UICollectionView * collectionView;
-    NSInteger currentRow;
-    
-    NSMutableArray * dataArr ;
-    
-    
+    //data
+    NSMutableArray * dataArr;
     UIStatusBarStyle originStatusStyle;
+    BOOL randomMode;
+    
+    //UI
+    UICollectionView * collectionView;
+    SZCommentBar * commentBar;
 }
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
     
+    [self MJInitData];
+    
     [self MJInitSubviews];
     
-    [self performSelector:@selector(upvideotest) withObject:nil afterDelay:1];
+    if (self.pannelId.length)
+    {
+        [self requestVideosInPannel];
+    }
+    else if(self.contentId.length)
+    {
+        [self requestSingleVideo];
+    }
+    else
+    {
+        [MJHUD_Alert showAlertViewWithTitle:@"Error" text:@"No contentId or panelId" sure:^(id objc) {
+            [MJHUD_Alert hideAlertView];
+            [self.navigationController popViewControllerAnimated:YES];
+        }];
+    }
 }
-
--(void)upvideotest
-{
-    
-    NSArray * arr = @[
-     @"https://oss.changsha.cn/2021/20210531/V1648164809JiaoBiaoPianHuaPianWei_CD_1080.mp4",
-     @"https://oss.changsha.cn/2021/20210531/V2005JianZou2005241080JiaoBiaoPianHuaPianWei_1080.mp4",
-     @"https://oss.changsha.cn/2021/20210601/V1808JinXiaLiWei180859_CD_1080.mp4",
-     @"https://oss.changsha.cn/2021/20210602/V152262LingDongShuGuang798152241JiaoBiaoPianWei_CD_1080.mp4"
-                     ];
-
-    NSMutableArray * newArr = [NSMutableArray arrayWithArray:arr];
-    [newArr addObjectsFromArray:dataArr];
-    dataArr = newArr;
-
-    [collectionView reloadData];
-    
-    
-    NSIndexPath * indexpath =  [[collectionView indexPathsForVisibleItems] firstObject];
-    NSInteger kk = indexpath.row;
-    NSLog(@"mj_%d",kk);
-    
-    [collectionView scrollToItemAtIndexPath:[NSIndexPath indexPathForRow:kk+ arr.count inSection:0] atScrollPosition:UICollectionViewScrollPositionTop animated:NO];
-}
-
 
 -(void)viewWillAppear:(BOOL)animated
 {
@@ -76,11 +72,11 @@
     
     self.navigationController.navigationBar.hidden=YES;
     
-    
     originStatusStyle = [UIApplication sharedApplication].statusBarStyle;
     [[UIApplication sharedApplication]setStatusBarStyle:UIStatusBarStyleLightContent];
+    
+    [self checkLoginStatus];
 }
-
 -(void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
@@ -89,27 +85,235 @@
     
     [[UIApplication sharedApplication]setStatusBarStyle:originStatusStyle];
 }
-
 -(void)viewDidDisappear:(BOOL)animated
 {
     [super viewDidDisappear:animated];
     
     [MJVideoManager cancelPlayingWindowVideo];
 }
+-(void)dealloc
+{
+    NSLog(@"MJDEALLOC_VIDEOVC");
+}
 
 
+#pragma mark - Login
+-(void)checkLoginStatus
+{
+    
+    NSString * csToken = [[SZManager sharedManager].delegate onGetAuthCode];
+    BOOL b = [SZManager mjgetLoginStatus];
+    
+    //没有我的长沙token，则清空token
+    if (csToken.length==0)
+    {
+        [SZManager sharedManager].SZRMToken=nil;
+    }
+    else
+    {
+        [self requestToken:csToken];
+    }
+    
+}
 
-#pragma mark - 界面&布局
+
+#pragma mark - Setter
+-(void)setPannelId:(NSString *)pannelId
+{
+    if (pannelId.length)
+    {
+        _pannelId = pannelId;
+    }
+}
+-(void)setContentId:(NSString *)contentId
+{
+    if (contentId.length)
+    {
+        _contentId = contentId;
+    }
+}
+
+#pragma mark - Request
+-(void)requestVideosInPannel
+{
+    NSString * pagesize = [NSString stringWithFormat:@"%d",VIDEO_PAGE_SIZE];
+    
+    NSMutableDictionary * param=[NSMutableDictionary dictionary];
+    [param setValue:self.pannelId forKey:@"panelId"];
+    [param setValue:pagesize forKey:@"pageSize"];
+    [param setValue:self.contentId forKey:@"contentId"];
+    [param setValue:@"0" forKey:@"removeFirst"];
+    
+    
+    VideoListModel * dataModel = [VideoListModel model];
+    __weak typeof (self) weakSelf = self;
+    [dataModel GETRequestInView:self.view WithUrl:APPEND_SUBURL(BASE_URL, API_URL_VIDEO_LIST) Params:param Success:^(id responseObject){
+        [weakSelf requestDone:dataModel];
+        } Error:^(id responseObject) {
+            [weakSelf requestFailed];
+        } Fail:^(NSError *error) {
+            [weakSelf requestFailed];
+        }];
+}
+
+-(void)requestSingleVideo
+{
+    NSString * url = APPEND_SUBURL(BASE_URL, API_URL_VIDEO);
+    url = APPEND_SUBURL(url, self.contentId);
+    
+    VideoModel * model = [VideoModel model];
+    __weak typeof (self) weakSelf = self;
+    [model GETRequestInView:self.view WithUrl:url Params:nil Success:^(id responseObject) {
+        
+        VideoListModel * list = [VideoListModel model];
+        [list.dataArr addObject:model];
+        [weakSelf requestDone:list];
+        
+        //加载更多
+        [weakSelf fetchMoreVideos];
+        
+        } Error:^(id responseObject) {
+            [weakSelf requestFailed];
+        } Fail:^(NSError *error) {
+            [weakSelf requestFailed];
+        }];
+}
+
+-(void)requestRandomVideos
+{
+    NSString * pagesize = [NSString stringWithFormat:@"%d",VIDEO_PAGE_SIZE];
+    
+    NSMutableDictionary * param=[NSMutableDictionary dictionary];
+    [param setValue:pagesize forKey:@"pageSize"];
+    
+    VideoListModel * dataModel = [VideoListModel model];
+    __weak typeof (self) weakSelf = self;
+    [dataModel GETRequestInView:self.view WithUrl:APPEND_SUBURL(BASE_URL, API_URL_RANDOM_VIDEO_LIST) Params:param Success:^(id responseObject){
+        [weakSelf requestDone:dataModel];
+        } Error:^(id responseObject) {
+            [weakSelf requestFailed];
+        } Fail:^(NSError *error) {
+            [weakSelf requestFailed];
+        }];
+}
+
+-(void)requestMoreRandomVideos
+{
+    NSString * pagesize = [NSString stringWithFormat:@"%d",VIDEO_PAGE_SIZE];
+    
+    NSMutableDictionary * param=[NSMutableDictionary dictionary];
+    [param setValue:pagesize forKey:@"pageSize"];
+    
+    VideoListModel * dataModel = [VideoListModel model];
+    dataModel.hideLoading=YES;
+    __weak typeof (self) weakSelf = self;
+    [dataModel GETRequestInView:self.view WithUrl:APPEND_SUBURL(BASE_URL, API_URL_RANDOM_VIDEO_LIST) Params:param Success:^(id responseObject){
+        [weakSelf requestMoreVideoDone:dataModel];
+        } Error:^(id responseObject) {
+            [weakSelf requestFailed];
+        } Fail:^(NSError *error) {
+            [weakSelf requestFailed];
+        }];
+
+}
+
+
+-(void)requestMoreVideosInPannel
+{
+    //获取最后一条视频的ID
+    VideoModel * lastModel = dataArr.lastObject;
+    NSString * lastContentId =  lastModel.id;
+    NSString * pagesize = [NSString stringWithFormat:@"%d",VIDEO_PAGE_SIZE];
+    
+    NSMutableDictionary * param=[NSMutableDictionary dictionary];
+    [param setValue:self.pannelId forKey:@"panelId"];
+    [param setValue:lastContentId forKey:@"contentId"];
+    [param setValue:pagesize forKey:@"pageSize"];
+    [param setValue:@"1" forKey:@"removeFirst"];
+    
+    VideoListModel * model = [VideoListModel model];
+    model.hideLoading=YES;
+    __weak typeof (self) weakSelf = self;
+    [model GETRequestInView:self.view WithUrl:APPEND_SUBURL(BASE_URL, API_URL_VIDEO_LIST) Params:param Success:^(id responseObject){
+        [weakSelf requestMoreVideoDone:model];
+        } Error:^(id responseObject) {
+            [weakSelf requestFailed];
+        } Fail:^(NSError *error) {
+            [weakSelf requestFailed];
+        }];
+}
+
+-(void)requestToken:(NSString*)code
+{
+    TokenExchangeModel * model = [TokenExchangeModel model];
+    model.isJSON = YES;
+    
+    NSMutableDictionary * param=[NSMutableDictionary dictionary];
+    [param setValue:code forKey:@"code"];
+    
+    __weak typeof (self) weakSelf = self;
+    [model PostRequestInView:self.view WithUrl:APPEND_SUBURL(BASE_URL_SYSTEM, API_URL_TOKEN_EXCHANGE) Params:param Success:^(id responseObject) {
+            [weakSelf requestTokenDone:model];
+        } Error:^(id responseObject) {
+            
+        } Fail:^(NSError *error) {
+            
+        }];
+}
+
+#pragma mark - Request Done
+-(void)requestDone:(VideoListModel*)model
+{
+    [collectionView.mj_footer endRefreshing];
+    [collectionView.mj_header endRefreshing];
+    
+    [dataArr removeAllObjects];
+    [dataArr addObjectsFromArray:model.dataArr];
+    
+    [collectionView reloadData];
+    [collectionView layoutIfNeeded];
+    dispatch_async(dispatch_get_main_queue(),^{
+        [self playCurrentRow];
+    });
+    
+}
+
+-(void)requestMoreVideoDone:(VideoListModel*)model
+{
+    [collectionView.mj_footer endRefreshing];
+    [collectionView.mj_header endRefreshing];
+    
+    if (model.dataArr.count==0 && [self getCurrentRow].row==dataArr.count-1)
+    {
+        [MJHUD_Notice showNoticeView:@"没有更多视频了" inView:self.view hideAfterDelay:2];
+        return;
+    }
+    
+    [dataArr addObjectsFromArray:model.dataArr];
+    
+    [collectionView reloadData];
+    [collectionView layoutIfNeeded];
+    dispatch_async(dispatch_get_main_queue(),^{
+        [self playCurrentRow];
+    });
+}
+
+-(void)requestFailed
+{
+    [collectionView.mj_footer endRefreshing];
+    [collectionView.mj_header endRefreshing];
+}
+
+-(void)requestTokenDone:(TokenExchangeModel*)model
+{
+    [SZManager sharedManager].SZRMToken = model.token;
+}
+
+
+#pragma mark - init
 -(void)MJInitSubviews
 {
-    self.view.backgroundColor=[UIColor whiteColor];
-    
-    dataArr = [NSMutableArray array];
-    [dataArr addObjectsFromArray: @[
-                @"https://oss.changsha.cn/2021/20210520/V1116WangLiJun1116491080_1080.mp4",
-                @"https://oss.changsha.cn/2020/20200730/V115620200730softRYShuPing115654.mp4",
-                @"https://oss.changsha.cn/2021/20210428/V0915ShiPinXiaZai091510.mp4"
-                ]];
+    self.view.backgroundColor=HW_BLACK;
     
     
     //collectionview
@@ -118,6 +322,10 @@
     if (@available(iOS 11.0, *))
     {
         collectionView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
+    }
+    else
+    {
+        self.automaticallyAdjustsScrollViewInsets = NO;
     }
     collectionView.showsHorizontalScrollIndicator = NO;
     collectionView.backgroundColor=HW_BLACK;
@@ -139,72 +347,107 @@
     
     
     //commentview
-    SZCommentBar * bar = [[SZCommentBar alloc]init];
-    [bar mjsetContentId:@"1234567890"];
-    [self.view addSubview:bar];
-    
-    
+    commentBar = [[SZCommentBar alloc]init];
+    [self.view addSubview:commentBar];
 }
 
-
-#pragma mark - CellDelegate
--(void)didSelectCell:(id)data
+-(void)MJInitData
 {
-    [MJHUD_Selection showEpisodeSelectionView:self.view episode:22 clickAction:^(id objc) {
-        NSLog(@"%@",objc);
-    }];
+    dataArr = [NSMutableArray array];
+    
+    if (self.pannelId.length==0)
+    {
+        randomMode = YES;
+    }
 }
 
 
 #pragma mark - 下拉/上拉
 -(void)pulldownRefreshAction:(MJRefreshHeader*)refreshHeader
 {
-    [collectionView.mj_header endRefreshing];
+    randomMode = YES;
+    [self requestRandomVideos];
 }
 
 
--(void)pullupLoadAction:(MJRefreshAutoFooter*)footer
+-(void)pullupLoadAction:(MJRefreshFooter*)footer
 {
-    
-    NSArray * arr = @[
-     @"https://oss.changsha.cn/2021/20210531/V1648164809JiaoBiaoPianHuaPianWei_CD_1080.mp4",
-     @"https://oss.changsha.cn/2021/20210531/V2005JianZou2005241080JiaoBiaoPianHuaPianWei_1080.mp4",
-     @"https://oss.changsha.cn/2021/20210601/V1808JinXiaLiWei180859_CD_1080.mp4",
-     @"https://oss.changsha.cn/2021/20210602/V152262LingDongShuGuang798152241JiaoBiaoPianWei_CD_1080.mp4"
-                     ];
-    [dataArr addObjectsFromArray:arr];
-    
-    [collectionView reloadData];
-    
-    [collectionView.mj_footer endRefreshing];
+    [self fetchMoreVideos];
+}
+-(void)fetchMoreVideos
+{
+    if (randomMode==YES)
+    {
+        [self requestMoreRandomVideos];
+    }
+    else
+    {
+        [self requestMoreVideosInPannel];
+    }
 }
 
 
 
 
-#pragma mark - scrollview delegate
+#pragma mark - Scroll delegate
 -(void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
+{
+    NSIndexPath * indexpath = [self getCurrentRow];
+    
+    [self playCurrentRow];
+    
+    //如果是倒数第二个则加载更多
+    if (indexpath.row==dataArr.count-2)
+    {
+        [self fetchMoreVideos];
+    }
+    
+}
+
+#pragma mark - Cell Delegate
+- (void)didSelectVideo:(VideoModel*)model
+{
+    NSString * contentid = model.id;
+    [commentBar updateCommentBarData:contentid];
+}
+
+
+
+#pragma mark - 播放
+-(NSIndexPath*)getCurrentRow
 {
     //获取当前cell的index
     CGPoint pt = collectionView.contentOffset;
     pt.y = pt.y + collectionView.frame.size.height/2;
     NSIndexPath * idx = [collectionView indexPathForItemAtPoint:pt];
-    
-    
-    //播放视频
-    SZVideoCell * cell = (SZVideoCell*)[collectionView cellForItemAtIndexPath:idx];
-    [cell playingVideo];
+    return idx;
 }
 
-
-
+-(void)playCurrentRow
+{
+    //model
+    NSIndexPath * path = [self getCurrentRow];
+    if (path==nil)
+    {
+        return;
+    }
+    VideoModel * videoM = dataArr[path.row];
+    
+    //commenbar
+    NSString * contentid = videoM.id;
+    [commentBar updateCommentBarData:contentid];
+    
+    //playvideo
+    SZVideoCell * cell = (SZVideoCell*)[collectionView cellForItemAtIndexPath:path];
+    [cell playingVideo];
+}
 
 #pragma mark - CollectionView Datasource & Delegate
 -(UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
     SZVideoCell * cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"shortSZVideoCell" forIndexPath:indexPath];
-    [cell setCellData:dataArr[indexPath.row]];
     cell.delegate=self;
+    [cell setCellData:dataArr[indexPath.row]];
     return  cell;
 }
 - (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath

@@ -39,8 +39,6 @@
 @property (nonatomic, strong) UIButton                *MJRateBtn;
 /** 分辨率的View */
 @property (nonatomic, strong) VideoRateView           *videoRateView;
-/** 播放按钮 */
-@property (nonatomic, strong) UIButton                *playBtn;
 /** 加载失败按钮 */
 @property (nonatomic, strong) UIButton                *middleBtn;
 /** 更多设置View */
@@ -64,8 +62,8 @@
 
 
 //网络状态
-@property(strong,nonatomic)UIView * MJNetStatusView;
-
+@property(strong,nonatomic)UIView * MJStatusView;
+@property(strong,nonatomic)UIView * MJErrorMsgView;
 
 @property BOOL isLive;
 

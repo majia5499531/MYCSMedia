@@ -11,7 +11,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface MJHUD_Selection : MJHUD_Base
 
-+(void)showEpisodeSelectionView:(UIView*)view episode:(NSInteger)count clickAction:(HUD_BLOCK)block;
++(void)showEpisodeSelectionView:(UIView*)view currenIdx:(NSInteger)idx episode:(NSInteger)count clickAction:(HUD_BLOCK)block;
 
 @end
 

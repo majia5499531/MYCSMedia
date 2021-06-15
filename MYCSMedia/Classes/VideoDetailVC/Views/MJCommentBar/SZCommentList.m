@@ -17,7 +17,9 @@
 #import "SZCommentCell.h"
 #import "CustomFooter.h"
 #import "CustomAnimatedHeader.h"
-
+#import "CommentDataModel.h"
+#import "CommentModel.h"
+#import "MJHUD.h"
 
 @interface SZCommentList ()<UICollectionViewDataSource,UICollectionViewDelegate>
 
@@ -25,6 +27,9 @@
 
 @implementation SZCommentList
 {
+    //data
+    CommentDataModel * dataModel;
+    
     CGFloat gestvH;
     
     UILabel * countLabel;
@@ -51,13 +56,18 @@
     return self;
 }
 
+-(void)dealloc
+{
+    NSLog(@"MJDEALLOC_COMMENTLIST");
+}
 
--(void)show:(BOOL)show
+#pragma mark - Public
+-(void)showCommentList:(BOOL)show
 {
     if (show)
     {
         BG.hidden=NO;
-        [UIView animateWithDuration:0.2 animations:^{
+        [UIView animateWithDuration:0.15 animations:^{
             [self->BG setFrame:CGRectMake(0, self->gestvH, SCREEN_WIDTH, SCREEN_HEIGHT-self->gestvH)];
         }];
     }
@@ -73,6 +83,52 @@
     }
 }
 
+
+#pragma mark - Update
+-(void)updateCommentData:(CommentDataModel*)model
+{
+    countLabel.text = [NSString stringWithFormat:@"(%ld)",model.total];
+    dataModel = model;
+    
+    [collectionView reloadData];
+    
+    if (model.dataArr.count)
+    {
+        collectionView.hidden=NO;
+    }
+    else
+    {
+        collectionView.hidden=YES;
+    }
+    
+}
+-(void)updateZanState:(BOOL)b count:(NSInteger)num
+{
+    zanBtn.MJSelectState = b;
+    
+    //点赞数
+    if (num>=0)
+    {
+        [zanBtn setBadgeNum:[NSString stringWithFormat:@"%ld",num] style:2];
+    }
+    else
+    {
+        NSInteger count = zanBtn.badgeCount;
+        if (b)
+        {
+            count++;
+        }
+        else
+        {
+            count--;
+        }
+        [zanBtn setBadgeNum:[NSString stringWithFormat:@"%ld",count] style:2];
+    }
+}
+-(void)updateCollectState:(BOOL)b
+{
+    collectBtn.MJSelectState = b;
+}
 
 #pragma mark - 界面&布局
 -(void)MJInitSubviews
@@ -93,17 +149,16 @@
     //评论
     UILabel * titleLabel = [[UILabel alloc]init];
     titleLabel.text=@"最新评论";
-    titleLabel.font=BOLD_FONT(13);
+    titleLabel.font= [UIFont systemFontOfSize:15 weight:UIFontWeightSemibold];
     titleLabel.textColor=HW_BLACK;
     [BG addSubview:titleLabel];
     [titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_equalTo(22);
-        make.top.mas_equalTo(12);
+        make.top.mas_equalTo(13);
     }];
 
     //评论数
     countLabel = [[UILabel alloc]init];
-    countLabel.text=@"(711)";
     countLabel.font=FONT(11);
     countLabel.textColor=HW_BLACK;
     [BG addSubview:countLabel];
@@ -111,7 +166,6 @@
         make.left.mas_equalTo(titleLabel.mas_right).offset(5);
         make.bottom.mas_equalTo(titleLabel.mas_bottom);
     }];
-    
     
     
     //关闭按钮
@@ -162,7 +216,6 @@
     zanBtn = [[MJButton alloc]init];
     zanBtn.mj_imageObjec = [UIImage getBundleImage:@"sz_zan_black"];
     zanBtn.mj_imageObject_sel = [UIImage getBundleImage:@"sz_zan_sel"];
-    [zanBtn setBadgeNum:@"999" style:2];
     [zanBtn addTarget:self action:@selector(zanBtnAction) forControlEvents:UIControlEventTouchUpInside];
     [BG addSubview:zanBtn];
     
@@ -226,8 +279,6 @@
     collectionView.showsHorizontalScrollIndicator = NO;
     collectionView.backgroundColor=HW_WHITE;
     [collectionView registerClass:[SZCommentCell class] forCellWithReuseIdentifier:@"commentCell"];
-    collectionView.mj_header = [CustomAnimatedHeader headerWithRefreshingTarget:self refreshingAction:@selector(pulldownRefreshAction:)];
-    collectionView.mj_footer = [CustomFooter footerWithRefreshingTarget:self refreshingAction:@selector(pullupLoadAction:)];
     collectionView.delegate = self;
     collectionView.dataSource = self;
     [BG addSubview:collectionView];
@@ -244,8 +295,9 @@
 #pragma mark - CollectionView Datasource & Delegate
 -(UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
+    CommentModel * model = dataModel.dataArr [indexPath.row];
     SZCommentCell * cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"commentCell" forIndexPath:indexPath];
-    [cell setCellData:nil];
+    [cell setCellData:model];
     return  cell;
 }
 - (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath
@@ -258,7 +310,7 @@
 }
 -(NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
 {
-    return 20;
+    return dataModel.dataArr.count;
 }
 - (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout minimumLineSpacingForSectionAtIndex:(NSInteger)section
 {
@@ -284,54 +336,32 @@
 
 
 
-#pragma mark - 下拉/上拉
--(void)pulldownRefreshAction:(MJRefreshHeader*)refreshHeader
-{
-    [collectionView.mj_header endRefreshing];
-}
 
 
--(void)pullupLoadAction:(MJRefreshAutoFooter*)footer
-{
-    [collectionView.mj_footer endRefreshing];
-}
 
 
 
 #pragma mark - btn action
 -(void)listViewBGTapAction
 {
-    
-    [self show:NO];
+    [self showCommentList:NO];
 }
-
 
 -(void)sendCommentAction
 {
-    [SZInputView callInputView:0 newsID:@"" placeHolder:@"发表您的评论" completion:^(id responseObject) {
-        NSLog(@"completion callback");
-    }];
+    [self.commentbar sendCommentAction];
 }
 
 -(void)zanBtnAction
 {
-    zanBtn.MJSelectState = !zanBtn.MJSelectState;
-    
-    if ([SZManager sharedManager].delegate) {
-        NSLog(@"query token:%@",[[SZManager sharedManager].delegate getAccessToken]);
-    }
-    
+    [self.commentbar requestZan];
 }
 
 -(void)collectBtnAction
 {
-    collectBtn.MJSelectState = !collectBtn.MJSelectState;
-    
-    
-    if ([SZManager sharedManager].delegate) {
-        [[SZManager sharedManager].delegate gotoLoginPage];
-    }
+    [self.commentbar requestCollect];
 }
+
 
 
 @end

@@ -9,6 +9,7 @@
 #import "CustomAnimatedHeader.h"
 #import "SZDefines.h"
 #import "UIColor+MJCategory.h"
+#import "UIImage+MJCategory.h"
 
 @implementation CustomAnimatedHeader
 {
@@ -110,7 +111,7 @@
     if (_loadingImage==nil)
     {
         _loadingImage = [[UIImageView alloc]init];
-        _loadingImage.image = MJImageNamed(@"loadingCircle");
+        _loadingImage.image = [UIImage getBundleImage:@"sz_loadingCircle"];
         
         [self addSubview:_loadingImage];
     }

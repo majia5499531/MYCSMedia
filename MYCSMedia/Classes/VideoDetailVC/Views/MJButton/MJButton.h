@@ -56,6 +56,8 @@
 //state
 @property(assign,nonatomic)BOOL MJSelectState;
 
+@property(assign,nonatomic)NSInteger badgeCount;
+
 -(void)setBadgeNum:(NSString*)badge style:(NSInteger)style;
 
 -(void)setRedDotStyle:(NSInteger)style frame:(CGRect)frame;

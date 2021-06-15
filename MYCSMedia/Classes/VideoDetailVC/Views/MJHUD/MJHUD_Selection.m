@@ -16,7 +16,7 @@
 
 @implementation MJHUD_Selection
 
-+(void)showEpisodeSelectionView:(UIView*)view episode:(NSInteger)count clickAction:(HUD_BLOCK)block
++(void)showEpisodeSelectionView:(UIView*)view currenIdx:(NSInteger)idx episode:(NSInteger)count clickAction:(HUD_BLOCK)block
 {
     //Hud
     UIView * window = [UIApplication sharedApplication].keyWindow;
@@ -71,6 +71,9 @@
         MJButton * btn = [[MJButton alloc]initWithFrame:CGRectMake(paddingX + (btnWidth+marginW)*(i%6), paddingY + (btnWidth+marginW)*(i/6), btnWidth, btnWidth)];
         btn.mj_text=[NSString stringWithFormat:@"%d",i+1];
         btn.mj_textColor=HW_WHITE;
+        btn.mj_textColor_sel=HW_BLACK;
+        btn.mj_bgColor=HW_CLEAR;
+        btn.mj_bgColor_sel=HW_WHITE;
         btn.mj_borderColor=HW_WHITE;
         btn.layer.cornerRadius=4;
         btn.tag=i;
@@ -78,6 +81,15 @@
         btn.layer.borderWidth=1;
         btn.mj_font=FONT(17);
         [scroll addSubview:btn];
+        
+        //设置选中
+        if (idx >= 0)
+        {
+            if (idx == i)
+            {
+                btn.MJSelectState=YES;
+            }
+        }
     }
     CGFloat bottomY = [scroll getBottomY];
     
@@ -93,6 +105,7 @@
     [closebtn addTarget:hud action:@selector(hidding) forControlEvents:UIControlEventTouchUpInside];
     closebtn.mj_imageObjec = [UIImage getBundleImage:@"sz_episode_close"];
     [hud addSubview:closebtn];
+    
 }
 
 

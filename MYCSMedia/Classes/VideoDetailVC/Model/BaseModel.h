@@ -11,11 +11,12 @@
 @interface BaseModel : RootModel
 
 @property(assign,nonatomic)BOOL isJSON;
-@property(assign,nonatomic)BOOL customLoading;
+@property(assign,nonatomic)BOOL hideLoading;
 @property(assign,nonatomic)BOOL hideErrorMsg;
 @property(strong,nonatomic)NSString * resultcode;
 @property(strong,nonatomic)NSString * message;
 @property(strong,nonatomic)NSMutableArray * dataArr;
+@property(assign,nonatomic)NSInteger pageIndex;
 
 -(void)GETRequestInView:(UIView*)view WithUrl:(NSString *)url Params:(NSDictionary *)params Success:(SuccessBlock)successblock Error:(ErrorBlock)errorblock Fail:(FailBlock)failblock;
 -(void)PostRequestInView:(UIView*)view WithUrl:(NSString *)url Params:(NSDictionary *)params Success:(SuccessBlock)successblock Error:(ErrorBlock)errorblock Fail:(FailBlock)failblock;

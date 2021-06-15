@@ -10,7 +10,7 @@
 #import "MJHUD.h"
 #import "NSObject+MJCategory.h"
 #import "SZManager.h"
-
+#import <YYModel/YYModel.h>
 @implementation BaseModel
 
 //GET
@@ -41,14 +41,14 @@
 #pragma mark - 普通请求
 -(void)request:(NSString*)method view:(UIView*)view WithUrl:(NSString *)url Params:(NSDictionary *)params Success:(SuccessBlock)successblock Error:(ErrorBlock)errorblock Fail:(FailBlock)failblock
 {
-    if (!self.customLoading || !view)
+    if (!self.hideLoading || !view)
     {
         [MJHUD_Loading showMiniLoading:view];
     }
     
     [self RequestWithUrl:url method:method isJSON:self.isJSON params:params success:^(id responseObject , NSURLSessionDataTask * task) {
     
-            if (!self.customLoading)
+            if (!self.hideLoading)
             {
                 [MJHUD_Loading hideLoadingView:view];
             }
@@ -57,34 +57,22 @@
     
             //读取公共字段
             self.resultcode = [responseObject mj_valueForKey:@"code"];
-            self.message = [responseObject mj_valueForKey:@"resultMessage"];
+            self.message = [responseObject mj_valueForKey:@"message"];
     
-    
+        
             //业务成功
-            if (self.resultcode.integerValue==0)
+            if (self.resultcode.integerValue==200)
             {
                 [self parseData:[responseObject mj_valueForKey:@"data"]];
                 successblock(responseObject);
             }
-        
-            //未登录
-            else if (self.resultcode.integerValue==401)
-            {
-                [[SZManager sharedManager].delegate gotoLoginPage];
-            }
-        
-            //未实人认证
-            else if (self.resultcode.integerValue==402)
-            {
-                [MJHUD_Notice showNoticeView:self.message inView:view hideAfterDelay:1.6];
-            }
     
-            //业务错误
+            //其他业务错误
             else
             {
                 if (!self.hideErrorMsg)
                 {
-                    [MJHUD_Notice showNoticeView:self.message inView:view hideAfterDelay:1.6];
+                    [MJHUD_Notice showNoticeView:self.message inView:view hideAfterDelay:2];
                 }
                 errorblock(responseObject);
             }
@@ -94,23 +82,27 @@
         
         NSLog(@"\n【HTTP响应错误】 \n URL = %@ \n error = \n %@",task.currentRequest.URL.absoluteString,error);
         
-        if (!self.customLoading)
+        if (!self.hideLoading)
         {
             [MJHUD_Loading hideLoadingView:view];
         }
         
-
-        //token失效
+        NSHTTPURLResponse * resp = (NSHTTPURLResponse*)task.response;
+        NSInteger httpcode = resp.statusCode;
+        
+        //处理401错误
+        if (httpcode==401)
+        {
+            [SZManager sharedManager].SZRMToken=@"";
+            [SZManager mjgoToLoginPage];
+            return;
+        }
+        
+        
+        //显示Http错误码
         if (!self.hideErrorMsg)
         {
-            if(DEBUG)
-            {
-                [MJHUD_Notice showNoticeView:[NSString stringWithFormat:@"网络开小差了\n%@",[error.userInfo valueForKey:@"NSLocalizedDescription"]] inView:view hideAfterDelay:2];
-            }
-            else
-            {
-                [MJHUD_Notice showNoticeView:@"网络开小差了" inView:view hideAfterDelay:2];
-            }
+            [MJHUD_Notice showNoticeView:[NSString stringWithFormat:@"网络开小差了\ncode:%ld",(long)httpcode] inView:view hideAfterDelay:2];
         }
         
         
@@ -125,7 +117,7 @@
     AFHTTPSessionManager * httpManager = [AFHTTPSessionManager manager];
     
     //设置请求头
-    if ([[SZManager sharedManager] getToken].length)
+    if ([SZManager sharedManager].SZRMToken.length)
     {
         //超时
         [httpManager.requestSerializer willChangeValueForKey:@"timeoutInterval"];
@@ -133,10 +125,10 @@
         [httpManager.requestSerializer didChangeValueForKey:@"timeoutInterval"];
         
         //token
-        NSString * token = [NSString stringWithFormat:@"Bearer %@",[[SZManager sharedManager]getToken]];
-        if ([[SZManager sharedManager] getToken].length)
+        NSString * token = [NSString stringWithFormat:@"%@",[SZManager sharedManager].SZRMToken];
+        if ([SZManager sharedManager].SZRMToken.length)
         {
-            [httpManager.requestSerializer setValue:token forHTTPHeaderField:@"authorization"];
+            [httpManager.requestSerializer setValue:token forHTTPHeaderField:@"token"];
         }
         
         //ContentType
@@ -252,7 +244,7 @@
 #pragma mark - 解析数据
 -(void)parseData:(id)data
 {
-    
+    [self yy_modelSetWithJSON:data];
 }
 -(void)parseDataFromDic:(NSDictionary *)dic
 {

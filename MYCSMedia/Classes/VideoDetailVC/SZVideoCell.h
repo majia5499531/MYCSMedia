@@ -12,7 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @protocol VideoCellDelegate <NSObject>
 
--(void)didSelectCell:(id)data;
+-(void)didSelectVideo:(id)model;
 
 @end
 

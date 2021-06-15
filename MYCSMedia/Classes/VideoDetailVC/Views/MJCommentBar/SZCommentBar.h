@@ -11,7 +11,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface SZCommentBar : UIView
 
--(void)mjsetContentId:(NSString*)contentId;
+@property(strong,nonatomic)NSString * contentId;
+
+-(void)updateCommentBarData:(NSString*)contentId;
+
+
+-(void)sendCommentAction;
+-(void)requestZan;
+-(void)requestCollect;
 
 @end
 

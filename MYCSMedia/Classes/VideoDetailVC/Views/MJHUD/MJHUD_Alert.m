@@ -64,8 +64,8 @@
     [hud.contentView addSubview:descLabel];
     
     //lineH
-    UIView * line1 = [[UIView alloc]initWithFrame:CGRectMake(0, descLabel.bottom+20, hud.contentView.width, 1)];
-    line1.backgroundColor=HW_GRAY_BG_2;
+    UIView * line1 = [[UIView alloc]initWithFrame:CGRectMake(0, descLabel.bottom+20, hud.contentView.width, 0.5)];
+    line1.backgroundColor=[UIColor lightGrayColor];
     [hud.contentView addSubview:line1];
     
     //sureBtn

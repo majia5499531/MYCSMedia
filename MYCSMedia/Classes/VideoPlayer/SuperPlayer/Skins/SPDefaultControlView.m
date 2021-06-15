@@ -50,14 +50,14 @@
         //旋转锁定按钮
         [self addSubview:self.lockBtn];
         
-        //播放按钮
-        [self addSubview:self.playBtn];
-        
         //返回直播
         [self addSubview:self.backLiveBtn];
         
         //网络状态
-        [self addSubview:self.MJNetStatusView];
+        [self addSubview:self.MJStatusView];
+        
+        //错误状态
+        [self addSubview:self.MJErrorMsgView];
         
         //添加约束
         [self makeSubViewsConstraints];
@@ -167,19 +167,20 @@
     }];
     
     
-    [self.playBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.width.height.mas_equalTo(50);
-        make.center.equalTo(self);
-    }];
-    
-    
     [self.backLiveBtn mas_makeConstraints:^(MASConstraintMaker *make) {
         make.bottom.mas_equalTo(self.startBtn.mas_top).mas_offset(-15);
         make.width.mas_equalTo(70);
         make.centerX.equalTo(self);
     }];
     
-    [self.MJNetStatusView mas_makeConstraints:^(MASConstraintMaker *make) {
+    [self.MJStatusView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.mas_equalTo(0);
+        make.top.mas_equalTo(0);
+        make.width.mas_equalTo(self.mas_width);
+        make.height.mas_equalTo(self.mas_height);
+    }];
+    
+    [self.MJErrorMsgView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_equalTo(0);
         make.top.mas_equalTo(0);
         make.width.mas_equalTo(self.mas_width);
@@ -195,7 +196,6 @@
     self.videoSlider.progressView.progress = 0;
     self.currentTimeLabel.text       = @"00:00";
     self.totalTimeLabel.text         = @"00:00";
-    self.playBtn.hidden             = YES;
     self.videoRateView.hidden       = YES;
     self.backgroundColor             = [UIColor clearColor];
     self.moreBtn.enabled         = YES;
@@ -415,7 +415,7 @@
 }
 -(void)MJNetStatusBtnAction
 {
-    self.MJNetStatusView.hidden=YES;
+    self.MJStatusView.hidden=YES;
     self.ignoreWWAN=YES;
     [self.delegate MJRealoadPlaying];
 }
@@ -683,23 +683,22 @@
     return _moreContentView;
 }
 
--(UIView *)MJNetStatusView
+-(UIView *)MJStatusView
 {
-    if (!_MJNetStatusView)
+    if (!_MJStatusView)
     {
-        _MJNetStatusView = [[UIView alloc]init];
+        _MJStatusView = [[UIView alloc]init];
         
         UIImageView * bg = [[UIImageView alloc]init];
         bg.backgroundColor=[UIColor blackColor];
-//        bg.image = [UIImage imageWithContentsOfFile:MJLocalFilePath(@"video_4G_BG.png")];
         bg.contentMode=UIViewContentModeScaleAspectFill;
         bg.layer.masksToBounds=YES;
-        [_MJNetStatusView addSubview:bg];
+        [_MJStatusView addSubview:bg];
         [bg mas_makeConstraints:^(MASConstraintMaker *make) {
             make.left.mas_equalTo(0);
             make.top.mas_equalTo(0);
-            make.width.mas_equalTo(_MJNetStatusView.mas_width);
-            make.height.mas_equalTo(_MJNetStatusView.mas_height);
+            make.width.mas_equalTo(_MJStatusView.mas_width);
+            make.height.mas_equalTo(_MJStatusView.mas_height);
         }];
         
         UILabel * desc=[[UILabel alloc]init];
@@ -708,10 +707,10 @@
         desc.textAlignment=NSTextAlignmentCenter;
         desc.font=[UIFont systemFontOfSize:12];;
         desc.alpha=0.5;
-        [_MJNetStatusView addSubview:desc];
+        [_MJStatusView addSubview:desc];
         [desc mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.centerX.mas_equalTo(_MJNetStatusView.mas_centerX);
-            make.centerY.mas_equalTo(_MJNetStatusView.mas_centerY).offset(-20);
+            make.centerX.mas_equalTo(_MJStatusView.mas_centerX);
+            make.centerY.mas_equalTo(_MJStatusView.mas_centerY).offset(-20);
         }];
         
         UIButton * btn=[[UIButton alloc]init];
@@ -722,17 +721,46 @@
         [btn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
         btn.titleLabel.font=[UIFont systemFontOfSize:14];
         [btn addTarget:self action:@selector(MJNetStatusBtnAction) forControlEvents:UIControlEventTouchUpInside];
-        [_MJNetStatusView addSubview:btn];
+        [_MJStatusView addSubview:btn];
         [btn mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.centerX.mas_equalTo(_MJNetStatusView.mas_centerX);
-            make.centerY.mas_equalTo(_MJNetStatusView.mas_centerY).offset(17);;
+            make.centerX.mas_equalTo(_MJStatusView.mas_centerX);
+            make.centerY.mas_equalTo(_MJStatusView.mas_centerY).offset(17);;
             make.height.mas_equalTo(30);
             make.width.mas_equalTo(100);
         }];
     }
     
-    return _MJNetStatusView;
+    return _MJStatusView;
 }
+-(UIView *)MJErrorMsgView
+{
+    if (!_MJErrorMsgView)
+    {
+        _MJErrorMsgView = [[UIView alloc]init];
+        _MJErrorMsgView.backgroundColor=[UIColor blackColor];
+        
+        SuperPlayerView * view = (SuperPlayerView*)self.delegate;
+        NSString * videoUrl = view.playerModel.playingDefinitionUrl;
+        NSString * errmsg = [NSString stringWithFormat:@"当前播放地址:%@ 是一个无效地址",videoUrl];
+        
+        UILabel * desc=[[UILabel alloc]init];
+        desc.text=errmsg;
+        desc.numberOfLines=0;
+        desc.textColor=[UIColor whiteColor];
+        desc.textAlignment=NSTextAlignmentCenter;
+        desc.font=[UIFont systemFontOfSize:12];;
+        desc.alpha=0.5;
+        [_MJErrorMsgView addSubview:desc];
+        [desc mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.width.mas_equalTo(_MJErrorMsgView.mas_width).multipliedBy(0.5);
+            make.centerX.mas_equalTo(_MJErrorMsgView.mas_centerX);
+            make.centerY.mas_equalTo(_MJErrorMsgView.mas_centerY);
+        }];
+    }
+    
+    return _MJErrorMsgView;
+}
+
 
 
 #pragma mark - UIGestureRecognizerDelegate
@@ -842,6 +870,10 @@
 {
     [super setTitle:title];
     self.titleLabel.text = title;
+}
+-(void)setMJStatusViewContent:(NSInteger)type
+{
+    
 }
 
 @end

@@ -7,29 +7,39 @@
 
 #import <Foundation/Foundation.h>
 
-NS_ASSUME_NONNULL_BEGIN
 
-
+typedef NS_ENUM(NSUInteger, SZ_SHARE_PLATFORM)
+{
+    WECHAT_PLATFORM = 0,
+    TIMELINE_PLATFORM,
+    QQ_PLATFORM
+};
+typedef NS_ENUM(NSUInteger, SZ_ENV)
+{
+    UAT_ENVIROMENT = 0,
+    PRD_ENVIROMENT,
+};
 
 @protocol SZDelegate <NSObject>
-
--(NSString*)getAccessToken;
--(void)onShareAction:(NSString*)title image:(NSString*)imgurl desc:(NSString*)desc URL:(NSString*)url;
--(void)gotoLoginPage;
-
+-(NSString*)onGetAuthCode;
+-(void)onShareAction:(SZ_SHARE_PLATFORM)platform title:(NSString*)title image:(NSString*)imgurl desc:(NSString*)desc URL:(NSString*)url;
+-(void)onLoginAction;
 @end
-
-
 
 
 @interface SZManager : NSObject
 
+//开发环境
+@property(assign,nonatomic)SZ_ENV enviroment;
 @property(weak,nonatomic) id <SZDelegate> delegate;
+@property(strong,nonatomic)NSString * SZRMToken;
 
-+ (SZManager *)sharedManager;
 
--(NSString *)getToken;
-
++(SZManager *)sharedManager;
++(NSString*)mjgetBaseURL;
++(NSString*)mjgetBaseSysURL;
++(BOOL)mjgetLoginStatus;
++(void)mjgoToLoginPage;
 
 @end
 
@@ -37,5 +47,3 @@ NS_ASSUME_NONNULL_BEGIN
 
 
 
-
-NS_ASSUME_NONNULL_END

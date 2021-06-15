@@ -17,23 +17,29 @@
 #import <SDWebImage/SDWebImage.h>
 #import "SZManager.h"
 #import "UIView+MJCategory.h"
+#import "MJHUD.h"
+#import "VideoModel.h"
+#import "VideoCollectModel.h"
+#import "MJLabel.h"
+#import "UIScrollView+MJCategory.h"
 
 @implementation SZVideoCell
 {
     //data
-    NSString * videoUrl;
-    NSString * imageUrl;
-    NSString * descStr;
+    VideoModel * dataModel;
     
+    VideoCollectModel * collectModel;
     NSMutableArray * videoBtns;
     
     //UI
     UILabel * titleLabel;
     UILabel * authorLabel;
     UIButton * videoBtn;
-    UILabel * descLabel;
-    MJButton * foldBtn;
+    MJLabel * descLabel;
+    MJButton * selecBtn;
     UIView * descBG;
+    UILabel * shareTitle;
+    UIScrollView * tagScrollBG;
 }
 
 -(instancetype)initWithFrame:(CGRect)frame
@@ -45,7 +51,7 @@
         
         //标题
         titleLabel = [[UILabel alloc]init];
-        titleLabel.font=BOLD_FONT(21);
+        titleLabel.font=BOLD_FONT(20);
         titleLabel.textColor=HW_WHITE;
         titleLabel.numberOfLines=2;
         titleLabel.lineBreakMode=NSLineBreakByTruncatingTail;
@@ -53,9 +59,8 @@
         [titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
             make.left.mas_equalTo(20);
             make.right.mas_equalTo(self.contentView.mas_right).offset(-20);
-            make.top.mas_equalTo(STATUS_BAR_HEIGHT+70);
+            make.top.mas_equalTo(STATUS_BAR_HEIGHT+60);
         }];
-        
         
         
         //来源
@@ -73,17 +78,45 @@
         }];
         
         
+        //选集按钮
+        selecBtn = [[MJButton alloc]init];
+        selecBtn.mj_imageObjec=[UIImage getBundleImage:@"sz_videoFilter"];
+        selecBtn.imageFrame=CGRectMake(12.5, 6.5, 13, 12);
+        selecBtn.mj_text=@"选集";
+        selecBtn.titleFrame=CGRectMake(30, 4, 24, 17);
+        selecBtn.mj_textColor=HW_BLACK;
+        selecBtn.mj_bgColor=HW_WHITE;
+        selecBtn.mj_font=FONT(12);
+        selecBtn.layer.cornerRadius=12.5;
+        [selecBtn addTarget:self action:@selector(selectBtnAction) forControlEvents:UIControlEventTouchUpInside];
+        [self addSubview:selecBtn];
+        [selecBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.right.mas_equalTo(self.contentView).offset(-15);
+            make.top.mas_equalTo(authorLabel.mas_bottom).offset(10);
+            make.width.mas_equalTo(65);
+            make.height.mas_equalTo(25);
+        }];
         
+        //视频标签
+        [tagScrollBG MJRemoveAllSubviews];
+        tagScrollBG = [[UIScrollView alloc]init];
+        [self addSubview:tagScrollBG];
+        [tagScrollBG mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.left.mas_equalTo(titleLabel.mas_left);
+            make.right.mas_equalTo(selecBtn.mas_left).offset(-15);
+            make.height.mas_equalTo(30);
+            make.centerY.mas_equalTo(selecBtn.mas_centerY);
+        }];
         
         //视频
         CGFloat videoHeight = SCREEN_WIDTH*0.56;
         videoBtn = [[UIButton alloc]init];
-        videoBtn.backgroundColor=HW_GRAY_BG_3;
+        videoBtn.backgroundColor=HW_BLACK;
         [self.contentView addSubview:videoBtn];
         [videoBtn mas_makeConstraints:^(MASConstraintMaker *make) {
             make.left.mas_equalTo(0);
             make.right.mas_equalTo(self.contentView.mas_right);
-            make.top.mas_equalTo(authorLabel.mas_bottom).offset(45);
+            make.centerY.mas_equalTo(self.mas_centerY).offset(-15);
             make.height.mas_equalTo(videoHeight);
         }];
         
@@ -104,16 +137,15 @@
         
         
         //分享
-        UILabel * label = [[UILabel alloc]init];
-        label.textColor=HW_WHITE;
-        label.font=FONT(12);
-        label.text=@"分享到";
-        [self addSubview:label];
-        [label mas_makeConstraints:^(MASConstraintMaker *make) {
+        shareTitle = [[UILabel alloc]init];
+        shareTitle.textColor=HW_WHITE;
+        shareTitle.font=FONT(12);
+        shareTitle.text=@"分享到";
+        [self addSubview:shareTitle];
+        [shareTitle mas_makeConstraints:^(MASConstraintMaker *make) {
             make.centerX.mas_equalTo(self.mas_centerX);
-            make.bottom.mas_equalTo(self.mas_bottom).offset(-COMMENT_BAR_HEIGHT-65);
+            make.top.mas_equalTo(self.mas_bottom).offset(-COMMENT_BAR_HEIGHT-65);
         }];
-        
         
         
         //timeline
@@ -123,10 +155,11 @@
         [self addSubview:timelineBtn];
         [timelineBtn mas_makeConstraints:^(MASConstraintMaker *make) {
             make.centerX.mas_equalTo(self.mas_centerX);
-            make.top.mas_equalTo(label.mas_bottom).offset(5);
+            make.top.mas_equalTo(shareTitle.mas_bottom).offset(5);
             make.width.mas_equalTo(44);
             make.height.mas_equalTo(38);
         }];
+        
         
         //wechat
         MJButton * wechatBtn = [[MJButton alloc]init];
@@ -134,11 +167,12 @@
         [wechatBtn addTarget:self action:@selector(wechatBtnAction) forControlEvents:UIControlEventTouchUpInside];
         [self addSubview:wechatBtn];
         [wechatBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.centerX.mas_equalTo(self.mas_centerX).offset(-60);
+            make.centerX.mas_equalTo(self.mas_centerX).offset(-47);
             make.bottom.mas_equalTo(timelineBtn.mas_bottom);
             make.width.mas_equalTo(44);
             make.height.mas_equalTo(38);
         }];
+        
         
         //qq
         MJButton * qqBtn = [[MJButton alloc]init];
@@ -146,17 +180,16 @@
         [qqBtn addTarget:self action:@selector(qqBtnAction) forControlEvents:UIControlEventTouchUpInside];
         [self addSubview:qqBtn];
         [qqBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.centerX.mas_equalTo(self.mas_centerX).offset(60);
+            make.centerX.mas_equalTo(self.mas_centerX).offset(47);
             make.bottom.mas_equalTo(timelineBtn.mas_bottom);
             make.width.mas_equalTo(44);
             make.height.mas_equalTo(38);
         }];
         
         
-        
         //简述
-        descLabel = [[UILabel alloc]init];
-        descLabel.numberOfLines=3;
+        descLabel = [[MJLabel alloc]init];
+        descLabel.numberOfLines=0;
         descLabel.lineBreakMode=NSLineBreakByTruncatingTail;
         descLabel.textColor=HW_GRAY_WORD_1;
         descLabel.backgroundColor=HW_CLEAR;
@@ -165,13 +198,7 @@
         UITapGestureRecognizer * tap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(descTapAction)];
         [descLabel addGestureRecognizer:tap];
         [self addSubview:descLabel];
-        [descLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.left.mas_equalTo(titleLabel.mas_left);
-            make.right.mas_equalTo(titleLabel.mas_right);
-            make.top.mas_equalTo(videoBtn.mas_bottom).offset(30);
-        }];
-        
-        
+
         
         //文字BG
         descBG = [[UIView alloc]init];
@@ -186,90 +213,127 @@
         }];
         
         
-        //折叠按钮
-        foldBtn = [[MJButton alloc]init];
-        foldBtn.backgroundColor=HW_BLACK;
-        foldBtn.mj_text=@"展开";
-        foldBtn.mj_imageObjec = [UIImage getBundleImage:@"sz_fold_down"];
-        foldBtn.imageFrame=CGRectMake(9, 6, 4, 3);
-        foldBtn.mj_font=FONT(12);
-        foldBtn.titleFrame=CGRectMake(18.5, 0, 40, 15);
-        foldBtn.mj_textColor=HW_WHITE;
-        [foldBtn addTarget:self action:@selector(foldBtnAction) forControlEvents:UIControlEventTouchUpInside];
-        [self addSubview:foldBtn];
-        [foldBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.width.mas_equalTo(48);
-            make.height.mas_offset(35);
-            make.right.mas_equalTo(descLabel.mas_right);
-            make.top.mas_equalTo(descBG.mas_bottom).offset(-15);
-        }];
         
-        
-        
-        //选集按钮
-        MJButton * selecBtn = [[MJButton alloc]init];
-        selecBtn.mj_text=@"选集";
-        selecBtn.mj_textColor=HW_WHITE;
-        selecBtn.mj_font=FONT(14);
-        [selecBtn addTarget:self action:@selector(selectBtnAction) forControlEvents:UIControlEventTouchUpInside];
-        selecBtn.backgroundColor=HW_GRAY_BG_1;
-        selecBtn.layer.cornerRadius=4;
-        [self addSubview:selecBtn];
-        [selecBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.left.mas_equalTo(32);
-            make.top.mas_equalTo(videoBtn.mas_bottom);
-            make.width.mas_equalTo(40);
-            make.height.mas_equalTo(30);
-        }];
-        
-        
-        
-        
-
-
         
     }
     return self;
 }
 
 
--(void)setCellData:(NSObject*)news
+
+
+-(void)setCellData:(VideoModel*)objc
 {
-    
-    videoUrl = news;
+    //model
+    dataModel = objc;
     
     //video
-    imageUrl = @"https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fimg.mp.sohu.com%2Fupload%2F20170718%2F917887432c1b4f96a40e0ab28fdbe1e3_th.png&refer=http%3A%2F%2Fimg.mp.sohu.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1625057654&t=9e3d1dda25d561813098c329a8f9ec5e";
-    [videoBtn sd_setImageWithURL:[NSURL URLWithString:imageUrl] forState:UIControlStateNormal];
-    
+    [videoBtn sd_setBackgroundImageWithURL:[NSURL URLWithString:dataModel.thumbnailUrl] forState:UIControlStateNormal];
+    videoBtn.imageView.contentMode=UIViewContentModeScaleAspectFill;
     
     //author
-    authorLabel.text = @"智慧长沙  2021-05-21 11:30:46";
+    authorLabel.text = [NSString stringWithFormat:@"%@ %@",dataModel.source,dataModel.startTime];
     
     //title
-    NSString * titlestr = @"长沙实景交响诗MV丨红色经典激荡起“一身挂满音符的河,红色经典激荡起“一身挂满音符的河,红色经典激荡起“一身挂满音符的河";
-    titleLabel.attributedText = [NSString makeTitleStr:titlestr lineSpacing:5 indent:0];
+    titleLabel.attributedText = [NSString makeTitleStr:dataModel.title lineSpacing:5 indent:0];
+    
+    //标签
+    
+    NSString * tagsStr = dataModel.keywords;
+    if (tagsStr.length)
+    {
+        NSArray * tagArr = [tagsStr componentsSeparatedByString:@","];
+        if (tagArr.count)
+        {
+            CGFloat orginX = 0;
+            for (int i = 0; i<tagArr.count; i++)
+            {
+                NSString * tagStr = tagArr[i];
+                
+                MJLabel * tagLabel=[[MJLabel alloc]init];
+                tagLabel.text=tagStr;
+                tagLabel.textColor=HW_GRAY_WORD_2;
+                tagLabel.font=FONT(12);
+                [tagLabel sizeToFit];
+                [tagLabel setFrame:CGRectMake(orginX, 2.5, tagLabel.width+22, 25)];
+                tagLabel.textAlignment=NSTextAlignmentCenter;
+                tagLabel.layer.borderColor=HW_GRAY_BORDER_2.CGColor;
+                tagLabel.layer.borderWidth=1;
+                tagLabel.layer.cornerRadius=12.5;
+                [tagScrollBG addSubview:tagLabel];
+                orginX = tagLabel.right+10;
+            }
+            [tagScrollBG MJAutoSetContentSize];
+        }
+        
+    }
+    
+    
     
     
     //desc
-    descStr = @"用一曲《浏阳河》唱响一条浏阳河，以一首首红色经典旋律激荡起这“一身挂满音符的河”，并沿着她的水路行走，一路唱响我们党一百年的历史长卷和新时代》唱响一条浏阳河，以一首首红色经典旋律激荡起这“一身挂满音符的河”，并沿着她的水路行走，一路唱响我们党一百年的历史长卷和新时代画卷，重温我们党一百年的光辉历程和伟大成就。以一首首红色经典旋律激荡起这“一身挂满音符的河”，并沿着她挂满音符的河”，并沿着她的的水路行走，一路唱响我们党一百年的历史长卷和新时代画卷，重温我们党一百年的光辉历程和伟大成就。";
-    descLabel.attributedText = [NSString makeTitleStr:descStr lineSpacing:5 indent:0];
+    descLabel.attributedText = [NSString makeTitleStr:dataModel.brief lineSpacing:5 indent:0];
     
+    //是否可以展开简介
+    [self layoutIfNeeded];
     
+    [descLabel setFrame:CGRectMake(titleLabel.left, videoBtn.bottom+30, titleLabel.width, 0)];
+    CGFloat maxHeight = shareTitle.top - videoBtn.bottom-30-10;
+    CGFloat estimateHeight = [descLabel estimatedHeight];
     
+    if (estimateHeight>maxHeight)
+    {
+        [descLabel setFrame:CGRectMake(titleLabel.left, videoBtn.bottom+30, titleLabel.width, maxHeight)];
+        descLabel.userInteractionEnabled=YES;
+    }
+    else
+    {
+        [descLabel setFrame:CGRectMake(titleLabel.left, videoBtn.bottom+30, titleLabel.width, estimateHeight)];
+        descLabel.userInteractionEnabled=NO;
+    }
+    descLabel.lineBreakMode=NSLineBreakByTruncatingTail;
     
+    //是否显示合集
+    if (dataModel.pid.length)
+    {
+        selecBtn.hidden=NO;
+    }
+    else
+    {
+        selecBtn.hidden=YES;
+    }
 }
 
 
 -(void)playingVideo
 {
-    NSLog(@"playingVideo %@",imageUrl);
-    
-    [MJVideoManager playWindowVideoAtView:videoBtn url:videoUrl coverImage:nil silent:NO repeat:NO controlStyle:0];
-    
+    [MJVideoManager cancelPlayingWindowVideo];
+    [MJVideoManager playWindowVideoAtView:videoBtn url:dataModel.playUrl coverImage:dataModel.thumbnailUrl silent:NO repeat:NO controlStyle:0];
 }
 
 
+
+
+#pragma mark - Request
+-(void)requestVideoCollection
+{
+    VideoCollectModel * model = [VideoCollectModel model];
+    __weak typeof (self) weakSelf = self;
+    [model GETRequestInView:self.window WithUrl:APPEND_COMPONENT(BASE_URL, API_URL_VIDEO_COLLECTION, dataModel.pid) Params:nil Success:^(id responseObject) {
+        [weakSelf requestDone:model];
+        } Error:^(id responseObject) {
+            
+        } Fail:^(NSError *error) {
+            
+        }];
+}
+
+-(void)requestDone:(VideoCollectModel*)model
+{
+    collectModel = model;
+    
+    [self showSelectionView];
+}
 
 
 #pragma mark - Btn Action
@@ -277,33 +341,50 @@
 {
     [self playingVideo];
 }
+
 -(void)wechatBtnAction
 {
-    [[SZManager sharedManager].delegate onShareAction:@"" image:@"" desc:@"" URL:@""];
+    if ([self checkDelegate])
+    {
+        [[SZManager sharedManager].delegate onShareAction:WECHAT_PLATFORM title:dataModel.shareTitle image:dataModel.shareImageUrl desc:dataModel.shareBrief URL:dataModel.shareH5];
+    }
+    
 }
 -(void)timelineBtnAction
 {
-    [[SZManager sharedManager].delegate onShareAction:@"" image:@"" desc:@"" URL:@""];
+    if ([self checkDelegate])
+    {
+        [[SZManager sharedManager].delegate onShareAction:TIMELINE_PLATFORM title:dataModel.shareTitle image:dataModel.shareImageUrl desc:dataModel.shareBrief URL:dataModel.shareH5];
+    }
+    
 }
 -(void)qqBtnAction
 {
-    [[SZManager sharedManager].delegate onShareAction:@"" image:@"" desc:@"" URL:@""];
+    if ([self checkDelegate])
+    {
+        [[SZManager sharedManager].delegate onShareAction:QQ_PLATFORM title:dataModel.shareTitle image:dataModel.shareImageUrl desc:dataModel.shareBrief URL:dataModel.shareH5];
+    }
 }
 -(void)selectBtnAction
 {
-    [self.delegate didSelectCell:nil];
+    if (collectModel==nil)
+    {
+        [self requestVideoCollection];
+        return;
+    }
+    
+    [self showSelectionView];
+
 }
+
+
+
 
 
 -(void)descTapAction
 {
-    [self foldBtnAction];
-}
-
--(void)foldBtnAction
-{
-    NSInteger maxrow = 6;
-    if (descLabel.numberOfLines < maxrow)
+    //展开
+    if (descLabel.unfold==NO)
     {
         [descBG mas_remakeConstraints:^(MASConstraintMaker *make) {
             make.left.mas_equalTo(0);
@@ -312,19 +393,19 @@
             make.bottom.mas_equalTo(self).offset(-COMMENT_BAR_HEIGHT);
         }];
         
-        [foldBtn mas_remakeConstraints:^(MASConstraintMaker *make) {
-            make.width.mas_equalTo(48);
-            make.height.mas_offset(35);
-            make.right.mas_equalTo(descLabel.mas_right);
-            make.top.mas_equalTo(descBG.mas_bottom).offset(-22);
-        }];
         
-        
-        foldBtn.mj_text=@"收起";
-        foldBtn.mj_imageObjec=[UIImage getBundleImage:@"sz_fold_up"];
-        descLabel.numberOfLines=maxrow;
+        //展开
+        [descLabel setFrame:CGRectMake(titleLabel.left, videoBtn.bottom+30, titleLabel.width, 0)];
+        CGFloat maxHeight = SCREEN_HEIGHT - videoBtn.bottom-30-COMMENT_BAR_HEIGHT;
+        CGFloat estimateHeight = [descLabel estimatedHeight];
+        CGFloat targetheight = estimateHeight>maxHeight? maxHeight:estimateHeight;
+        [descLabel setFrame:CGRectMake(titleLabel.left, videoBtn.bottom+30, titleLabel.width, targetheight)];
 
+        descLabel.unfold=YES;
     }
+    
+    
+    //收起
     else
     {
         [descBG mas_remakeConstraints:^(MASConstraintMaker *make) {
@@ -333,19 +414,61 @@
             make.width.mas_equalTo(descLabel.mas_width);
             make.bottom.mas_equalTo(descLabel.mas_bottom);
         }];
+    
         
-        [foldBtn mas_remakeConstraints:^(MASConstraintMaker *make) {
-            make.width.mas_equalTo(48);
-            make.height.mas_offset(35);
-            make.right.mas_equalTo(descLabel.mas_right);
-            make.top.mas_equalTo(descBG.mas_bottom).offset(-15);
-        }];
+        //展开
+        [descLabel setFrame:CGRectMake(titleLabel.left, videoBtn.bottom+30, titleLabel.width, 0)];
+        CGFloat maxHeight = shareTitle.top - videoBtn.bottom-30-10;
+        [descLabel setFrame:CGRectMake(titleLabel.left, videoBtn.bottom+30, titleLabel.width, maxHeight)];
         
-        foldBtn.mj_text=@"展开";
-        foldBtn.mj_imageObjec=[UIImage getBundleImage:@"sz_fold_down"];
-        descLabel.numberOfLines=3;
+        descLabel.unfold=NO;
     }
 }
+
+
+#pragma mark - other
+-(void)showSelectionView
+{
+    //show
+    __weak typeof (self) weakSelf = self;
     
+    NSInteger idx = -1;
+    for (int i = 0; i<collectModel.dataArr.count; i++)
+    {
+        VideoModel * model = collectModel.dataArr[i];
+        if ([model.id isEqualToString: dataModel.id])
+        {
+            idx = i;
+        }
+    }
+    
+    [MJHUD_Selection showEpisodeSelectionView:self.superview currenIdx:idx episode:collectModel.dataArr.count clickAction:^(id objc) {
+        NSNumber * idex = objc;
+        [weakSelf reloadDataWithIndex:[idex integerValue]];
+        
+    }];
+}
+
+-(void)reloadDataWithIndex:(NSInteger)idx
+{
+    VideoModel * newVideoModel = collectModel.dataArr[idx];
+    [self setCellData:newVideoModel];
+    [self.delegate didSelectVideo:newVideoModel];
+    [self playingVideo];
+}
+
+-(BOOL)checkDelegate
+{
+    id delegate = [SZManager sharedManager].delegate;
+    if (delegate && [delegate respondsToSelector:@selector(onShareAction:title:image:desc:URL:)])
+    {
+        return YES;;
+    }
+    else
+    {
+        NSLog(@"请实现SZDelegate方法");
+        return NO;;
+    }
+}
 
 @end

@@ -286,7 +286,6 @@ static UISlider * _volumeSlider;
     //双击失败响应单击事件
     [self.singleTap requireGestureRecognizerToFail:self.doubleTap];
     
-    //加载完成后，再添加平移手势
     //添加平移手势，用来控制音量、亮度、快进快退
     UIPanGestureRecognizer *panRecognizer = [[UIPanGestureRecognizer alloc]initWithTarget:self action:@selector(panGestureAction:)];
     panRecognizer.delegate = self;
@@ -533,10 +532,14 @@ static UISlider * _volumeSlider;
 
     if ([gestureRecognizer isKindOfClass:[UIPanGestureRecognizer class]])
     {
-        if (!self.isLoaded) { return NO; }
-        if (self.controlView.isLockScreen) { return NO; }
-//        if (SuperPlayerWindowShared.isShowing) { return NO; }
-        
+        if (!self.isLoaded)
+        {
+            return NO;
+        }
+        if (self.controlView.isLockScreen)
+        {
+            return NO;
+        }
         
         //非全屏一律不响应滑动手势
         if (self.controlView.isFullScreen==NO)
@@ -544,14 +547,6 @@ static UISlider * _volumeSlider;
             return NO;
         }
         
-        
-//        if (self.disableGesture)
-//        {
-//            if (!self.isFullScreen)
-//            {
-//                return NO;
-//            }
-//        }
         return YES;
     }
     
@@ -572,11 +567,6 @@ static UISlider * _volumeSlider;
     {
         return NO;
     }
-    
-//    if (SuperPlayerWindowShared.isShowing)
-//    {
-//        return NO;
-//    }
 
     return YES;
 }
@@ -922,19 +912,29 @@ static UISlider * _volumeSlider;
     [self pause];
     
     
-    //判读网络状态
+    //判读网络 和 播放地址
     AFNetworkReachabilityStatus st = [AFNetworkReachabilityManager sharedManager].networkReachabilityStatus;
-    if (st == AFNetworkReachabilityStatusReachableViaWWAN && !self.controlView.ignoreWWAN)
+    if (playerModel.playingDefinitionUrl.length==0)
+    {
+        //判断url
+        SPDefaultControlView * controlV = (SPDefaultControlView*)self.controlView;
+        controlV.MJStatusView.hidden=YES;
+        controlV.MJErrorMsgView.hidden=NO;
+        return;
+    }
+    else if (st == AFNetworkReachabilityStatusReachableViaWWAN && !self.controlView.ignoreWWAN)
     {
         //移动网络状态则弹窗
         SPDefaultControlView * controlV = (SPDefaultControlView*)self.controlView;
-        controlV.MJNetStatusView.hidden=NO;
+        controlV.MJStatusView.hidden=NO;
+        controlV.MJErrorMsgView.hidden=YES;
         return;
     }
     else
     {
         SPDefaultControlView * controlV = (SPDefaultControlView*)self.controlView;
-        controlV.MJNetStatusView.hidden=YES;
+        controlV.MJStatusView.hidden=YES;
+        controlV.MJErrorMsgView.hidden=YES;
     }
     
     //如果是普通URL视频
@@ -2005,7 +2005,6 @@ static UISlider * _volumeSlider;
     {
         _coverImageView = [[UIImageView alloc] init];
         _coverImageView.userInteractionEnabled = YES;
-//        _coverImageView.contentMode = UIViewContentModeScaleAspectFit;
         _coverImageView.alpha = 0;
         _coverImageView.contentMode = UIViewContentModeScaleAspectFill;
         _coverImageView.layer.masksToBounds=YES;

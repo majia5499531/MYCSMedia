@@ -8,11 +8,13 @@
 
 #import "SZInputView.h"
 #import <FSTextView/FSTextView.h>
-#import "SZCommentNotify.h"
 #import "MJButton.h"
 #import "SZDefines.h"
 #import "UIColor+MJCategory.h"
 #import "UIView+MJCategory.h"
+#import "SZManager.h"
+#import "MJHud.h"
+#import "BaseModel.h"
 
 
 @interface SZInputView ()<UITextViewDelegate>
@@ -30,9 +32,7 @@
     MJButton * sendBtn;
     
     //data
-    NSString * newsID;
-    NSString * commentID;
-    NSString * replyID;
+    NSString * contentId;
     
     //block
     CompletionBlock resultBlock;
@@ -101,15 +101,14 @@
 
 
 #pragma mark - 公共方法
-+(void)callInputView:(NSInteger)type newsID:(NSString*)newsID placeHolder:(NSString*)placeholder completion:(CompletionBlock)finish;
++(void)callInputView:(NSInteger)type contentId:(NSString*)contentId placeHolder:(NSString*)placeholder completion:(CompletionBlock)finish
 {
-//    //未登录则跳转登录
-//    if (![DataManager loginStatus])
-//    {
-//        [DataManager tokenIsInvalid];
-//
-//        return;
-//    }
+    //未登录则跳转登录
+    if (![SZManager mjgetLoginStatus])
+    {
+        [SZManager mjgoToLoginPage];
+        return;
+    }
     
     SZInputView * view = [SZInputView sharedSZInputView];
     
@@ -117,7 +116,7 @@
     [view.inputWindow makeKeyAndVisible];
     
     
-    view->newsID = newsID;
+    view->contentId = contentId;
     view->input.placeholder = placeholder;
     view->resultBlock = finish;
     
@@ -180,59 +179,61 @@
 
 -(void)sendBtnAction
 {
-//    NSString * text = [input.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-//    if (text.length)
-//    {
-//        [self closeCustomWindow];
-//        [self requestForSendingComment:input.text];
-//    }
-//    else
-//    {
-//        [MJHUD showNoticeView:@"评论不能为空" inView:self.inputWindow hideAfterDelay:1.0];
-//    }
+    NSString * text = [input.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    if (text.length)
+    {
+        
+        [self requestForSendingComment:input.text];
+    }
+    else
+    {
+        
+        [MJHUD_Notice showNoticeView:@"评论不能为空" inView:self.inputWindow hideAfterDelay:1.0];
+    }
 }
 
 
 #pragma mark - Request
 -(void)requestForSendingComment:(NSString*)text
 {
-//    CommentModel * sendModel = [CommentModel model];
-//
-//    NSString * url = APPEND_SUBURL(BASE_URL, NEWS_HOME_BASE);
-//    url = APPEND_SUBURL(url, newsID);
-//    url = APPEND_SUBURL(url, NEWS_SEND_COMMENT_URL);
-//
-//    NSMutableDictionary * param=[NSMutableDictionary dictionary];
-//    [param setValue:text forKey:@"discussContent"];
-//    [param setValue:newsID forKey:@"newsId"];
-//    [param setValue:commentID forKey:@"pDiscussId"];
-//    [param setValue:replyID forKey:@"rDiscussId"];
-//
-//    sendModel.isJSON = YES;
-//    __weak typeof (self) weakSelf = self;
-//
-//    [sendModel PostRequestInView:[UIApplication sharedApplication].keyWindow WithUrl:url Params:param Success:^(id responseObject) {
-//        [weakSelf requestSendingDone];
-//    } Error:^(id responseObject) {
-//
-//    } Fail:^(NSError *error) {
-//
-//    }];
+    BaseModel * model = [BaseModel model];
+    __weak typeof (self) weakSelf = self;
+    model.isJSON = YES;
+    NSMutableDictionary * param=[NSMutableDictionary dictionary];
+    [param setValue:text forKey:@"content"];
+    [param setValue:contentId forKey:@"contentId"];
+    
+    UIWindow * keywindow = MJ_KEY_WINDOW;
+    
+    
+    [model PostRequestInView:keywindow WithUrl:APPEND_SUBURL(BASE_URL, API_URL_SEND_COMMENT) Params:param Success:^(id responseObject) {
+        [weakSelf requestSendingDone];
+        } Error:^(id responseObject) {
+            [weakSelf requestFailed];
+        } Fail:^(NSError *error) {
+            [weakSelf requestFailed];
+        }];
+    
+    
 }
 
 
 #pragma mark - Request Done
 -(void)requestSendingDone
 {
-//    [SZCommentNotify postCommentNotificationItemID:newsID delay:0.4];
-//
-//    //清空输入框
-//    input.text=@"";
-//
-//    //回调
-//    resultBlock(newsID);
-}
+    //关闭窗口
+    [self closeCustomWindow];
+    
+    //清空输入框
+    input.text=@"";
 
+    //回调
+    resultBlock(contentId);
+}
+-(void)requestFailed
+{
+//    [self closeCustomWindow];
+}
 
  
 

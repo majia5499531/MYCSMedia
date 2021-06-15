@@ -14,7 +14,7 @@ typedef void (^CompletionBlock)(id responseObject);
 
 +(instancetype)sharedSZInputView;
 
-+(void)callInputView:(NSInteger)type newsID:(NSString*)newsID placeHolder:(NSString*)placeholder completion:(CompletionBlock)finish;
++(void)callInputView:(NSInteger)type contentId:(NSString*)contentId placeHolder:(NSString*)placeholder completion:(CompletionBlock)finish;
 
 @end
 

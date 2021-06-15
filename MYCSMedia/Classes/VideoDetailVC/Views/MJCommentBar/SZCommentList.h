@@ -6,12 +6,22 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "SZCommentBar.h"
+#import "CommentDataModel.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface SZCommentList : UIView
 
--(void)show:(BOOL)show;
+@property(weak,nonatomic)SZCommentBar * commentbar;
+
+-(void)updateCommentData:(CommentDataModel*)model;
+
+-(void)updateZanState:(BOOL)b count:(NSInteger)count;
+
+-(void)updateCollectState:(BOOL)b;
+
+-(void)showCommentList:(BOOL)show;
 
 @end
 

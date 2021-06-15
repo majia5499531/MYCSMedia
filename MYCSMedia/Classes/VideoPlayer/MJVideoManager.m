@@ -8,7 +8,7 @@
 
 #import "MJVideoManager.h"
 #import "MJVideoFullScreen.h"
-
+#import <SDWebImage/SDWebImage.h>
 
 
 @interface MJVideoManager ()<SuperPlayerDelegate>
@@ -55,13 +55,6 @@
 
 +(void)playWindowVideoAtView:(UIView*)view url:(NSString*)videoURL coverImage:(NSString*)image silent:(BOOL)silent repeat:(BOOL)repeat controlStyle:(MJVideoControlStyle)style
 {
-    //播放地址容错
-    if (videoURL.length==0)
-    {
-        NSLog(@"播放地址出错啦");
-        return;
-    }
-
     //设置播放层
     MJVideoManager * manager = [MJVideoManager sharedMediaManager];
     manager.MJVideoView.fatherView = view;
@@ -85,7 +78,7 @@
     }
     
     //封面
-    manager.MJVideoView.coverImageView.backgroundColor=[UIColor blackColor];
+    [manager.MJVideoView.coverImageView sd_setImageWithURL:[NSURL URLWithString:image]];
     
     //重复播放
     manager.MJVideoView.loop = repeat;
@@ -106,6 +99,7 @@
     //更新配置
     [manager.MJVideoView controlViewDidUpdateConfig:manager.MJVideoView withReload:NO];
 }
+
 
 //销毁或暂停
 +(void)cancelPlayingWindowVideo

@@ -96,15 +96,15 @@
     [httpManager.requestSerializer didChangeValueForKey:@"timeoutInterval"];
     
     //加token到请求头
-    NSString * token = [SZManager sharedManager].getToken;
+    NSString * token = [SZManager sharedManager].SZRMToken;
     if (token.length)
     {
-        NSString * authTokenStr = [NSString stringWithFormat:@"Bearer %@",token];
-        [httpManager.requestSerializer setValue:authTokenStr forHTTPHeaderField:@"authorization"];
+        NSString * authTokenStr = [NSString stringWithFormat:@"%@",token];
+        [httpManager.requestSerializer setValue:authTokenStr forHTTPHeaderField:@"token"];
     }
     else
     {
-        [httpManager.requestSerializer setValue:nil forHTTPHeaderField:@"authorization"];
+        [httpManager.requestSerializer setValue:nil forHTTPHeaderField:@"token"];
     }
     
     //加设备号
@@ -138,5 +138,6 @@
     }
     return self;
 }
+
 
 @end

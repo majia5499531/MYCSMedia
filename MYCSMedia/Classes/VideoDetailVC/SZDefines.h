@@ -14,6 +14,9 @@
 
 
 
+#define UAT 1
+
+
 //Debug
 #ifdef DEBUG
     #define CONSOLE_DURATION        0.3
@@ -27,54 +30,32 @@
 
 
 
-//UAT
-#ifdef UAT
-    //本地
-//    #define BASE_URL                @"http://172.16.65.226:9012/api/app"
-
-    //API
-    #define BASE_URL                @"https://uat-app.zhcs.csbtv.com/api/app"
-    //推送
-    #define BASE_URL_PUSH           @"https://uat-pms.zhcs.csbtv.com/api"
-    //服务
-    #define BASE_URL_SERVICE        @"https://uat-srv-service.zhcs.csbtv.com/api/srv"
-    //好用
-    #define BASE_URL_HAOYONG        @"https://uat-handy-service.zhcs.csbtv.com/api"
-    //h5
-    #define BASE_URL_H5             @"https://uat-h5.zhcs.csbtv.com"
-    //埋点
-    #define BASE_URL_STATISTICS     @"https://uat-user-behavior.zhcs.csbtv.com/api/userBehavior"
-    //维权问法
-    #define BASE_URL_WEIQUAN        @"https://uat-rp-service.zhcs.csbtv.com/api/rp"
-    //环境字符串
-    #define ENV_STR                 @"UAT"
 
 
-//PRD
-#else
-    //API
-    #define BASE_URL                @"https://app.zhcs.csbtv.com/api/app"
-    //推送
-    #define BASE_URL_PUSH           @"https://pms.zhcs.csbtv.com/api"
-    //服务
-    #define BASE_URL_SERVICE        @"https://srv-service.zhcs.csbtv.com/api/srv"
-    //好用
-    #define BASE_URL_HAOYONG        @"https://prd-handy-service.zhcs.csbtv.com/api"
-    //h5
-    #define BASE_URL_H5             @"https://h5.zhcs.csbtv.com"
-    //埋点
-    #define BASE_URL_STATISTICS     @"https://prd-user-behavior.zhcs.csbtv.com/api/userBehavior"
-    //维权问法
-    #define BASE_URL_WEIQUAN        @"https://prd-rp-service.zhcs.csbtv.com/api/rp"
-    //环境字符串
-    #define ENV_STR                 @"PRD"
 
-#endif
 
+#define BASE_URL_SYSTEM             [SZManager mjgetBaseSysURL]
+#define BASE_URL                    [SZManager mjgetBaseURL]
+#define API_URL_VIDEO_LIST          @"api/cms/client/video/queryVideoPullDownList"
+#define API_URL_RANDOM_VIDEO_LIST   @"api/cms/client/video/queryRandomVideoList"
+#define API_URL_VIDEO               @"api/cms/client/video/getVideoDetails"
+#define API_URL_VIDEO_COLLECTION    @"api/cms/client/video/getVideoCollect"
+#define API_URL_FAVOR               @"api/cms/client/favor/addOrCancelFavor"
+#define API_URL_ZAN                 @"api/cms/client/like/likeOrCancel"
+#define API_URL_SEND_COMMENT        @"api/cms/client/comment/add"
+#define API_URL_GET_COMMENT_LIST    @"api/cms/client/comment/getCommentByContent"
+#define API_URL_GET_CONTENT_STATE   @"api/cms/client/contentStats/queryStatsData"
+#define API_URL_TOKEN_EXCHANGE      @"api/sys/login/mycs"
 
 
 
 //业务
+#define NOTIFY_NAME_COMMENT         @"commentInfoChange"
+#define NOTIFY_NAME_NEW_COMMENT     @"shouldRequestNewCommentData"
+#define NOTIFY_NAME_ZAN             @"notify_zan"
+#define NOTIFY_NAME_COLLECT         @"notify_collect"
+
+#define VIDEO_PAGE_SIZE             5
 #define COMMENT_BAR_HEIGHT          (CGFloat)(IS_IPHONE_X?(121):(87))
 #define IMG_RADIUS                  5
 #define IMAGE_RATE_169              (9.0/16.0)
@@ -83,11 +64,7 @@
 #define IMAGE_RATE_ACTIVITY         (0.382)
 #define TOPIC_NEWS_IMAGE_RATE       (300.0/750.0)
 
-//一页多少条新闻
-#define NEWS_PAGE_SIZE          15
-#define NEWS_VIDEO_PAGE_SIZE    7
-#define SEARCH_PAGE_SIZE        10
-#define AUDIO_ALBUM_PAGE_SIZE   1000
+
 #define SEARCHBAR_HEIGHT        ([UIApplication sharedApplication].statusBarFrame.size.height+48)
 //REX
 #define MAX_NICKNAME        15
@@ -173,6 +150,7 @@
 #define HW_APP_VERSION                      [[[NSBundle mainBundle] infoDictionary] valueForKey:@"CFBundleShortVersionString"]
 //拼接URL
 #define APPEND_SUBURL(baseUrl,url)          [NSString stringWithFormat:@"%@/%@",baseUrl,url]
+#define APPEND_COMPONENT(baseUrl,url,ID)    [NSString stringWithFormat:@"%@/%@/%@",baseUrl,url,ID]
 //随机色
 #define MJRandomColor                       [UIColor colorWithRed:arc4random_uniform(256)/255.0 green:arc4random_uniform(256)/255.0 blue:arc4random_uniform(256)/255.0 alpha:1.0]
 //通知中心
@@ -226,11 +204,13 @@
 
 #define HW_GRAY_BG_5                [UIColor colorWithHexString:@"F3F4F5"]
 #define HW_GRAY_BORDER              [UIColor colorWithHexString:@"E8E8E8"]
+#define HW_GRAY_BORDER_2            [UIColor colorWithHexString:@"A3A3A3"]
 
 #define HW_GRAY_WORD_1              [UIColor colorWithHexString:@"999999"]
-
+#define HW_GRAY_WORD_2              [UIColor colorWithHexString:@"D4D4D4"]
 
 #define HW_RED_WORD_1               [UIColor colorWithHexString:@"FB3838"]
+
 
 
 #define MINIMUM_PX                  (1.0/[UIScreen mainScreen].scale)

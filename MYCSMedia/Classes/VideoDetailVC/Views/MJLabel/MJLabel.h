@@ -12,6 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface MJLabel : UILabel
 
 @property(assign,nonatomic)BOOL unfold;
+@property(assign,nonatomic)BOOL alignmentTop;
 
 -(void)mjsizeToFit;
 -(CGFloat)estimatedHeight;

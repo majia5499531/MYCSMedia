@@ -10,6 +10,7 @@
 #import "NSObject+MJCategory.h"
 #import "SZManager.h"
 #import "UIDevice+MJCategory.h"
+#import <objc/message.h>
 
 @implementation RootModel
 
@@ -125,18 +126,54 @@
 
 
 #pragma mark - 序列化
--(void)encodeWithCoder:(NSCoder *)coder
+//获取属性列表（字符串数组）
++(NSArray *)propertyOfSelf
 {
-    [self MJ_encode:coder];
+    unsigned int count = 0;
+    Ivar *ivarList = class_copyIvarList(self, &count);
+    NSMutableArray *properNames =[NSMutableArray array];
+    for (int i = 0; i < count; i++)
+    {
+        Ivar ivar = ivarList[i];
+        NSString *name = [NSString stringWithUTF8String:ivar_getName(ivar)];
+        NSString *key = [name substringFromIndex:1];
+        
+        [properNames addObject:key];
+    }
+    free(ivarList);
+    return [properNames copy];
 }
 
--(instancetype)initWithCoder:(NSCoder *)coder
+-(void)encodeWithCoder:(NSCoder *)enCoder
 {
-    if (self = [super init])
+    NSArray *properNames = [[self class] propertyOfSelf];
+    for (NSString *propertyName in properNames)
     {
-        [self MJ_decode:coder];
+        [enCoder encodeObject:[self valueForKey:propertyName] forKey:propertyName];
     }
-    return self;
+}
+
+-(id)initWithCoder:(NSCoder *)aDecoder
+{
+    NSArray *properNames = [[self class] propertyOfSelf];
+    for (NSString *propertyName in properNames)
+    {
+        [self setValue:[aDecoder decodeObjectForKey:propertyName] forKey:propertyName];
+    }
+    return  self;
+}
+
+-(NSString *)description
+{
+    NSMutableString *descriptionString = [NSMutableString stringWithFormat:@"\n"];
+    NSArray *properNames = [[self class] propertyOfSelf];
+    for (NSString *propertyName in properNames)
+    {
+        NSString *propertyNameString = [NSString stringWithFormat:@"%@ - %@\n",propertyName,[self valueForKey:propertyName]];
+        [descriptionString appendString:propertyNameString];
+    }
+    
+    return [descriptionString copy];
 }
 
 

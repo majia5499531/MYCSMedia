@@ -11,6 +11,40 @@
 
 @implementation MJLabel
 
+
+-(id)initWithFrame:(CGRect)frame
+{
+    return [super initWithFrame:frame];
+}
+
+-(CGRect)textRectForBounds:(CGRect)bounds limitedToNumberOfLines:(NSInteger)numberOfLines
+{
+    if (self.alignmentTop)
+    {
+        CGRect textRect = [super textRectForBounds:bounds limitedToNumberOfLines:numberOfLines];
+        textRect.origin.y = bounds.origin.y;
+        return textRect;
+    }
+    else
+    {
+        return [super textRectForBounds:bounds limitedToNumberOfLines:numberOfLines];
+    }
+    
+}
+
+-(void)drawTextInRect:(CGRect)requestedRect
+{
+    if (self.alignmentTop)
+    {
+        CGRect actualRect = [self textRectForBounds:requestedRect limitedToNumberOfLines:self.numberOfLines];
+        [super drawTextInRect:actualRect];
+    }
+    else
+    {
+        [super drawTextInRect:requestedRect];
+    }
+}
+
 -(void)mjsizeToFit
 {
     CGFloat width = self.frame.size.width;

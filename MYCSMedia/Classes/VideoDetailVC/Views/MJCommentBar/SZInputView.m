@@ -104,7 +104,7 @@
 +(void)callInputView:(NSInteger)type contentId:(NSString*)contentId placeHolder:(NSString*)placeholder completion:(CompletionBlock)finish
 {
     //未登录则跳转登录
-    if (![SZManager mjgetLoginStatus])
+    if (![SZManager sharedManager].SZRMToken.length)
     {
         [SZManager mjgoToLoginPage];
         return;

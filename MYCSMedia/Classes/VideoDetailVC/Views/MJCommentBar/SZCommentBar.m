@@ -54,7 +54,6 @@
 }
 -(void)dealloc
 {
-    NSLog(@"MJDEALLOC_COMMENTBAR");
     [self removeObserver];
 }
 

@@ -75,7 +75,7 @@
     originStatusStyle = [UIApplication sharedApplication].statusBarStyle;
     [[UIApplication sharedApplication]setStatusBarStyle:UIStatusBarStyleLightContent];
     
-    [self checkLoginStatus];
+    [SZManager checkLoginStatus];
 }
 -(void)viewWillDisappear:(BOOL)animated
 {
@@ -91,30 +91,9 @@
     
     [MJVideoManager cancelPlayingWindowVideo];
 }
--(void)dealloc
-{
-    NSLog(@"MJDEALLOC_VIDEOVC");
-}
 
 
-#pragma mark - Login
--(void)checkLoginStatus
-{
-    
-    NSString * csToken = [[SZManager sharedManager].delegate onGetAuthCode];
-    BOOL b = [SZManager mjgetLoginStatus];
-    
-    //没有我的长沙token，则清空token
-    if (csToken.length==0)
-    {
-        [SZManager sharedManager].SZRMToken=nil;
-    }
-    else
-    {
-        [self requestToken:csToken];
-    }
-    
-}
+
 
 
 #pragma mark - Setter
@@ -243,24 +222,6 @@
         }];
 }
 
--(void)requestToken:(NSString*)code
-{
-    TokenExchangeModel * model = [TokenExchangeModel model];
-    model.isJSON = YES;
-    
-    NSMutableDictionary * param=[NSMutableDictionary dictionary];
-    [param setValue:code forKey:@"code"];
-    
-    __weak typeof (self) weakSelf = self;
-    [model PostRequestInView:self.view WithUrl:APPEND_SUBURL(BASE_URL_SYSTEM, API_URL_TOKEN_EXCHANGE) Params:param Success:^(id responseObject) {
-            [weakSelf requestTokenDone:model];
-        } Error:^(id responseObject) {
-            
-        } Fail:^(NSError *error) {
-            
-        }];
-}
-
 #pragma mark - Request Done
 -(void)requestDone:(VideoListModel*)model
 {
@@ -304,10 +265,7 @@
     [collectionView.mj_header endRefreshing];
 }
 
--(void)requestTokenDone:(TokenExchangeModel*)model
-{
-    [SZManager sharedManager].SZRMToken = model.token;
-}
+
 
 
 #pragma mark - init

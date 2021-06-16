@@ -93,7 +93,7 @@
         //处理401错误
         if (httpcode==401)
         {
-            [SZManager sharedManager].SZRMToken=@"";
+            [SZManager mjclearLoginInfo];
             [SZManager mjgoToLoginPage];
             return;
         }
@@ -210,7 +210,6 @@
         else if (self.resultcode.integerValue==401)
         {
             errorBLock(responseObject);
-            
         }
 
         //业务错误

@@ -45,7 +45,7 @@
 #define API_URL_SEND_COMMENT        @"api/cms/client/comment/add"
 #define API_URL_GET_COMMENT_LIST    @"api/cms/client/comment/getCommentByContent"
 #define API_URL_GET_CONTENT_STATE   @"api/cms/client/contentStats/queryStatsData"
-#define API_URL_TOKEN_EXCHANGE      @"api/sys/login/mycs"
+#define API_URL_TOKEN_EXCHANGE      @"api/sys/login/mycs/token"
 
 
 

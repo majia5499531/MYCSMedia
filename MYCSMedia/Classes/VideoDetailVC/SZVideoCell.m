@@ -192,13 +192,13 @@
         descLabel.numberOfLines=0;
         descLabel.lineBreakMode=NSLineBreakByTruncatingTail;
         descLabel.textColor=HW_GRAY_WORD_1;
-        descLabel.backgroundColor=HW_CLEAR;
+        descLabel.backgroundColor=[UIColor clearColor];
         descLabel.font=FONT(11);
         descLabel.userInteractionEnabled=YES;
         UITapGestureRecognizer * tap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(descTapAction)];
         [descLabel addGestureRecognizer:tap];
         [self addSubview:descLabel];
-
+        
         
         //文字BG
         descBG = [[UIView alloc]init];
@@ -221,7 +221,7 @@
 
 
 
-
+#pragma mark - Set Data
 -(void)setCellData:(VideoModel*)objc
 {
     //model
@@ -277,10 +277,12 @@
     //是否可以展开简介
     [self layoutIfNeeded];
     
+    //计算最大尺寸和预估尺寸
     [descLabel setFrame:CGRectMake(titleLabel.left, videoBtn.bottom+30, titleLabel.width, 0)];
-    CGFloat maxHeight = shareTitle.top - videoBtn.bottom-30-10;
+    CGFloat maxHeight = shareTitle.top - videoBtn.bottom-30-22;
     CGFloat estimateHeight = [descLabel estimatedHeight];
     
+    //如果预估尺寸大，则可点击展开
     if (estimateHeight>maxHeight)
     {
         [descLabel setFrame:CGRectMake(titleLabel.left, videoBtn.bottom+30, titleLabel.width, maxHeight)];
@@ -418,7 +420,7 @@
         
         //展开
         [descLabel setFrame:CGRectMake(titleLabel.left, videoBtn.bottom+30, titleLabel.width, 0)];
-        CGFloat maxHeight = shareTitle.top - videoBtn.bottom-30-10;
+        CGFloat maxHeight = shareTitle.top - videoBtn.bottom-30-22;
         [descLabel setFrame:CGRectMake(titleLabel.left, videoBtn.bottom+30, titleLabel.width, maxHeight)];
         
         descLabel.unfold=NO;

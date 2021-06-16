@@ -56,10 +56,6 @@
     return self;
 }
 
--(void)dealloc
-{
-    NSLog(@"MJDEALLOC_COMMENTLIST");
-}
 
 #pragma mark - Public
 -(void)showCommentList:(BOOL)show
@@ -252,6 +248,7 @@
         make.width.mas_equalTo(111);
         make.height.mas_equalTo(68);
     }];
+    
     
     //没有评论
     UILabel * nocommentLabel = [[UILabel alloc]init];

@@ -366,7 +366,7 @@
 - (void)didSelectVideo:(VideoModel*)model
 {
     NSString * contentid = model.id;
-    [commentBar updateCommentBarData:contentid];
+    [commentBar updateCommentBarData:contentid cannotComent:model.disableComment.boolValue];
 }
 
 
@@ -393,7 +393,7 @@
     
     //commenbar
     NSString * contentid = videoM.id;
-    [commentBar updateCommentBarData:contentid];
+    [commentBar updateCommentBarData:contentid cannotComent:videoM.disableComment.boolValue];
     
     //playvideo
     SZVideoCell * cell = (SZVideoCell*)[collectionView cellForItemAtIndexPath:path];
@@ -453,11 +453,15 @@
 }
 
 
-
 #pragma mark - StatusBar
 -(UIStatusBarStyle)preferredStatusBarStyle
 {
     return UIStatusBarStyleLightContent;
 }
+-(BOOL)prefersStatusBarHidden
+{
+    return NO;
+}
+
 
 @end

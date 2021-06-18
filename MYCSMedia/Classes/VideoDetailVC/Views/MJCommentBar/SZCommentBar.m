@@ -26,6 +26,7 @@
 
 @implementation SZCommentBar
 {
+    BOOL cannotComment;
     SZCommentList * commentListView;
     UILabel * titleLabel;
     UILabel * countLabel;
@@ -202,7 +203,7 @@
 
 
 #pragma mark - update
--(void)updateCommentBarData:(NSString *)ID
+-(void)updateCommentBarData:(NSString*)ID cannotComent:(BOOL)b;
 {
     if (![_contentId isEqualToString:ID])
     {
@@ -215,6 +216,17 @@
         [self requestContentState];
     }
     
+    //是否禁止评论
+    if (b)
+    {
+        sendBtn.mj_text=@"该内容禁止评论";
+        cannotComment = b;
+    }
+    else
+    {
+        sendBtn.mj_text=@"写评论...";
+        cannotComment = b;
+    }
 }
 
 
@@ -336,6 +348,12 @@
 
 -(void)sendCommentAction
 {
+    //禁止评论
+    if (cannotComment)
+    {
+        return;
+    }
+    
     __weak typeof (self) weakSelf = self;
     [SZInputView callInputView:0 contentId:_contentId placeHolder:@"发表您的评论" completion:^(id responseObject) {
         [weakSelf sendCommentSuccess];

@@ -2,7 +2,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'MYCSMedia'
-  s.version          = '1.0.6'
+  s.version          = '1.0.7'
   s.summary          = 'SZRM Media Module'
 
 
@@ -23,7 +23,6 @@ Pod::Spec.new do |s|
    }
 
   
-  
   s.dependency 'AFNetworking', '>= 4.0'
   s.dependency 'TXLiteAVSDK_Player', '~> 7.1.8775'
   s.dependency 'MMLayout', '>= 0.3.0'
@@ -34,4 +33,5 @@ Pod::Spec.new do |s|
   s.dependency 'YYModel'
   s.dependency 'IQDataBinding'
   s.static_framework = true
+  
 end

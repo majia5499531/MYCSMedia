@@ -13,7 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property(strong,nonatomic)NSString * contentId;
 
--(void)updateCommentBarData:(NSString*)contentId;
+-(void)updateCommentBarData:(NSString*)contentId cannotComent:(BOOL)b;
 
 
 -(void)sendCommentAction;

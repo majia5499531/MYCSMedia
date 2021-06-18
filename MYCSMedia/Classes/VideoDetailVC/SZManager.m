@@ -28,8 +28,6 @@
 }
 
 
-
-
 #pragma mark - Login
 +(void)checkLoginStatus;
 {
@@ -73,12 +71,8 @@
         NSLog(@"MJToken_我的长沙未登录");
         [SZManager mjclearLoginInfo];
     }
-    
-    
-
-
-    
 }
+
 
 
 -(void)requestToken:(NSString*)tgt

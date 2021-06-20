@@ -1294,9 +1294,6 @@ static UISlider * _volumeSlider;
     //改变 方向
     UIDeviceOrientation orient = [self getOrientationForFullScreen:toFull];
     [self makeRotationAnimation:orient];
-        
-    //改变状态栏
-    [self changeStatusBar:toFull];
 }
 
 //切换全屏和窗口
@@ -1308,7 +1305,7 @@ static UISlider * _volumeSlider;
         NSLog(@"---切换到KeyWindow---");
         
         //隐藏状态栏
-        [[UIApplication sharedApplication]setStatusBarHidden:YES];
+        [self setNeedChangeStatusBarHidden:YES];
         
         //移除原来
         [self removeFromSuperview];
@@ -1334,7 +1331,8 @@ static UISlider * _volumeSlider;
     {
         NSLog(@"---切换到窗口---");
         
-        [[UIApplication sharedApplication]setStatusBarHidden:NO];
+        //改变状态栏
+        [self setNeedChangeStatusBarHidden:NO];
         
         //移除遮罩
         [self.fullScreenBlackView removeFromSuperview];
@@ -1367,7 +1365,7 @@ static UISlider * _volumeSlider;
 
 
 
--(void)changeStatusBar:(BOOL)fullScreen
+-(void)setNeedChangeStatusBarHidden:(BOOL)fullScreen
 {
     BOOL need = fullScreen;
     NSNumber * value = [NSNumber numberWithBool:need];

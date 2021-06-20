@@ -26,20 +26,20 @@
 #import "TokenExchangeModel.h"
 
 @interface SZVideoDetailVC ()<UICollectionViewDelegate, UICollectionViewDataSource,VideoCellDelegate>
-
+@property(assign,nonatomic)BOOL MJHideStatusbar;
 @end
 
 @implementation SZVideoDetailVC
 {
     //data
     NSMutableArray * dataArr;
-    UIStatusBarStyle originStatusStyle;
     BOOL randomMode;
     
     //UI
     UICollectionView * collectionView;
     SZCommentBar * commentBar;
 }
+
 
 - (void)viewDidLoad
 {
@@ -64,26 +64,33 @@
             [self.navigationController popViewControllerAnimated:YES];
         }];
     }
+    
+    //监听全屏
+    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(videoViewDidEnterFullSreen:) name:@"MJNeedHideStatusBar" object:nil];
+}
+
+-(void)dealloc
+{
+    //移除监听
+    [[NSNotificationCenter defaultCenter]removeObserver:self];
 }
 
 -(void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
     
+    //隐藏导航栏
     self.navigationController.navigationBar.hidden=YES;
     
-    originStatusStyle = [UIApplication sharedApplication].statusBarStyle;
-    [[UIApplication sharedApplication]setStatusBarStyle:UIStatusBarStyleLightContent];
-    
+    //检查登录
     [SZManager checkLoginStatus];
 }
 -(void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
     
+    //显示导航栏
     self.navigationController.navigationBar.hidden=NO;
-    
-    [[UIApplication sharedApplication]setStatusBarStyle:originStatusStyle];
 }
 -(void)viewDidDisappear:(BOOL)animated
 {
@@ -95,6 +102,15 @@
 
 
 
+#pragma mark - Notifycation
+-(void)videoViewDidEnterFullSreen:(NSNotification*)notify
+{
+    NSNumber * needHidden = notify.object;
+    
+    self.MJHideStatusbar = needHidden.boolValue;
+    
+    [self setNeedsStatusBarAppearanceUpdate];
+}
 
 #pragma mark - Setter
 -(void)setPannelId:(NSString *)pannelId
@@ -460,7 +476,7 @@
 }
 -(BOOL)prefersStatusBarHidden
 {
-    return NO;
+    return self.MJHideStatusbar;
 }
 
 

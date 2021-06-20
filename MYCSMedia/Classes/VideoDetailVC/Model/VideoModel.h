@@ -26,7 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic , copy) NSString              * endTime;
 @property (nonatomic , copy) NSString              * type;
 @property (nonatomic , copy) NSString             * id;
-@property (nonatomic , copy) NSString              * shareH5;
+@property (nonatomic , copy) NSString              * shareUrl;
 @property (nonatomic , assign) NSInteger              likeCountShow;
 @property (nonatomic , copy) NSString              * disableComment;
 @property (nonatomic , copy) NSString              * playUrl;

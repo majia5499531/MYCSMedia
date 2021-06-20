@@ -346,7 +346,7 @@
 {
     if ([self checkDelegate])
     {
-        [[SZManager sharedManager].delegate onShareAction:WECHAT_PLATFORM title:dataModel.shareTitle image:dataModel.shareImageUrl desc:dataModel.shareBrief URL:dataModel.shareH5];
+        [[SZManager sharedManager].delegate onShareAction:WECHAT_PLATFORM title:dataModel.shareTitle image:dataModel.shareImageUrl desc:dataModel.shareBrief URL:dataModel.shareUrl];
     }
     
 }
@@ -354,7 +354,7 @@
 {
     if ([self checkDelegate])
     {
-        [[SZManager sharedManager].delegate onShareAction:TIMELINE_PLATFORM title:dataModel.shareTitle image:dataModel.shareImageUrl desc:dataModel.shareBrief URL:dataModel.shareH5];
+        [[SZManager sharedManager].delegate onShareAction:TIMELINE_PLATFORM title:dataModel.shareTitle image:dataModel.shareImageUrl desc:dataModel.shareBrief URL:dataModel.shareUrl];
     }
     
 }
@@ -362,7 +362,7 @@
 {
     if ([self checkDelegate])
     {
-        [[SZManager sharedManager].delegate onShareAction:QQ_PLATFORM title:dataModel.shareTitle image:dataModel.shareImageUrl desc:dataModel.shareBrief URL:dataModel.shareH5];
+        [[SZManager sharedManager].delegate onShareAction:QQ_PLATFORM title:dataModel.shareTitle image:dataModel.shareImageUrl desc:dataModel.shareBrief URL:dataModel.shareUrl];
     }
 }
 -(void)selectBtnAction

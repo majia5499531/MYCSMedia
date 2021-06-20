@@ -337,6 +337,11 @@
 #pragma mark - Btn Action
 -(void)commentTapAction
 {
+    if(cannotComment)
+    {
+        return;
+    }
+    
     if (commentListView.superview==nil)
     {
         //listview

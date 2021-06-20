@@ -97,6 +97,7 @@
             make.height.mas_equalTo(25);
         }];
         
+        
         //视频标签
         [tagScrollBG MJRemoveAllSubviews];
         tagScrollBG = [[UIScrollView alloc]init];
@@ -107,6 +108,7 @@
             make.height.mas_equalTo(30);
             make.centerY.mas_equalTo(selecBtn.mas_centerY);
         }];
+        
         
         //视频
         CGFloat videoHeight = SCREEN_WIDTH*0.56;
@@ -226,10 +228,6 @@
 {
     //model
     dataModel = objc;
-    
-    //video
-    [videoBtn sd_setBackgroundImageWithURL:[NSURL URLWithString:dataModel.thumbnailUrl] forState:UIControlStateNormal];
-    videoBtn.imageView.contentMode=UIViewContentModeScaleAspectFill;
     
     //author
     authorLabel.text = [NSString stringWithFormat:@"%@ %@",dataModel.source,dataModel.startTime];

@@ -77,14 +77,14 @@
         [manager.MJVideoView playWithModel:playerModel];
     }
     
-    //封面
-    [manager.MJVideoView.coverImageView sd_setImageWithURL:[NSURL URLWithString:image]];
-    
     //重复播放
     manager.MJVideoView.loop = repeat;
     
     //静音
     manager.MJVideoView.playerConfig.mute=silent;
+    
+    //恢复1倍速
+    manager.MJVideoView.playerConfig.playRate = 1.0 ;
     
     if (style==MJControlStyleDisalbeGesture)
     {

@@ -208,6 +208,7 @@
 
 #define HW_GRAY_WORD_1              [UIColor colorWithHexString:@"999999"]
 #define HW_GRAY_WORD_2              [UIColor colorWithHexString:@"D4D4D4"]
+#define HW_GRAY_WORD_3              [UIColor colorWithHexString:@"666666"]
 
 #define HW_RED_WORD_1               [UIColor colorWithHexString:@"FB3838"]
 

@@ -84,7 +84,7 @@
     [param setValue:tgt forKey:@"token"];
     
     __weak typeof (self) weakSelf = self;
-    [model PostRequestInView:MJ_KEY_WINDOW WithUrl:APPEND_SUBURL(BASE_URL_SYSTEM, API_URL_TOKEN_EXCHANGE) Params:param Success:^(id responseObject) {
+    [model PostRequestInView:MJ_KEY_WINDOW WithUrl:APPEND_SUBURL(BASE_URL, API_URL_TOKEN_EXCHANGE) Params:param Success:^(id responseObject) {
             [weakSelf requestTokenDone:model TGT:tgt];
         } Error:^(id responseObject) {
             
@@ -110,21 +110,7 @@
     }
     else
     {
-        return @"https://fuse-cms.zhcs.csbtv.com";
-    }
-}
-
-
-+(NSString*)mjgetBaseSysURL
-{
-    SZManager * instance = [SZManager sharedManager];
-    if (instance.enviroment==UAT_ENVIROMENT)
-    {
-        return @"https://uat-fuse-system.zhcs.csbtv.com";
-    }
-    else
-    {
-        return @"https://fuse-system.zhcs.csbtv.com";
+        return @"https://fuse-api-gw.zhcs.csbtv.com";
     }
 }
 

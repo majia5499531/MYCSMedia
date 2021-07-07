@@ -1,5 +1,5 @@
 //
-//  VideoModel.h
+//  ContentModel.h
 //  MYCSMedia
 //
 //  Created by 马佳 on 2021/6/5.
@@ -9,12 +9,12 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface VideoModel : BaseModel
+@interface ContentModel : BaseModel
 @property (nonatomic , copy) NSString              * source;
 @property (nonatomic , copy) NSString              * title;
-@property (nonatomic , assign) NSInteger              favorCountShow;
+@property (nonatomic , assign) NSInteger             favorCountShow;
 @property (nonatomic , copy) NSString              * external;
-@property (nonatomic , assign) NSInteger              commentCountShow;
+@property (nonatomic , assign) NSInteger             commentCountShow;
 @property (nonatomic , copy) NSString              * liveStartTime;
 @property (nonatomic , copy) NSString              * liveStatus;
 @property (nonatomic , copy) NSString              * shareTitle;

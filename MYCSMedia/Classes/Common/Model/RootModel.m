@@ -165,7 +165,8 @@
 
 -(NSString *)description
 {
-    NSMutableString *descriptionString = [NSMutableString stringWithFormat:@"\n"];
+    NSString * className = NSStringFromClass([self class]);
+    NSMutableString *descriptionString = [NSMutableString stringWithFormat:@"\n打印 %@:\n",className];
     NSArray *properNames = [[self class] propertyOfSelf];
     for (NSString *propertyName in properNames)
     {

@@ -7,7 +7,7 @@
 
 #import "VideoListModel.h"
 #import "NSObject+MJCategory.h"
-#import "VideoModel.h"
+#import "ContentModel.h"
 #import <YYModel/YYModel.h>
 
 @implementation VideoListModel
@@ -16,7 +16,7 @@
     NSArray * arr = [data mj_arrayValue];
     for (int i = 0; i<arr.count; i++)
     {
-        VideoModel * model = [VideoModel  model];
+        ContentModel * model = [ContentModel  model];
         NSDictionary * dic = data[i];
         
         [model yy_modelSetWithJSON:dic];

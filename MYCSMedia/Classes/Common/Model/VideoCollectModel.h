@@ -6,7 +6,7 @@
 //
 
 #import "BaseModel.h"
-#import "VideoModel.h"
+#import "ContentModel.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

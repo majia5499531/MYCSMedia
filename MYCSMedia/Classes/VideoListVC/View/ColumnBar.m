@@ -12,6 +12,7 @@
 #import "UIColor+MJCategory.h"
 #import "MJButton.h"
 #import "UIScrollView+MJCategory.h"
+#import "CategoryModel.h"
 
 @interface ColumnBar ()<UIScrollViewDelegate>
 
@@ -45,13 +46,13 @@
     if (self)
     {
         //滑动条
-        scrollbar = [[UIScrollView alloc]initWithFrame:CGRectMake(0, 0, self.width-40, self.height)];
+        scrollbar = [[UIScrollView alloc]initWithFrame:CGRectMake(0, 0, self.width, self.height)];
         scrollbar.showsHorizontalScrollIndicator=NO;
         scrollbar.backgroundColor=HW_WHITE;
         [self addSubview:scrollbar];
         
         //下划线
-        line = [[UIView alloc]initWithFrame:CGRectMake(0, self.height-3, 12, 3)];
+        line = [[UIView alloc]initWithFrame:CGRectMake(0, self.height-3, 30, 3)];
         line.backgroundColor=HW_RED_WORD_1;
         line.layer.cornerRadius=1.5;
         line.hidden=YES;
@@ -82,30 +83,28 @@
     CGFloat x = oriX;
     for (int i=0; i<columnArr.count; i++)
     {
-        
-        
-//        //data
-//        ColumnModel * columnInfo = columnArr[i];
-//
-//        //按钮
-//        BaseButton * newsbtn=[[BaseButton alloc]init];
-//        newsbtn.tag=i;
-//        newsbtn.mj_text=columnInfo.columnName;
-//        newsbtn.mj_textColor=HW_GRAY_WORD_1;
-//        newsbtn.mj_textColor_sel=HW_BLACK_WORD_1;
-//        newsbtn.mj_font=FONT(16);
-//        newsbtn.mj_font_sel=BOLD_FONT(16);
-//        [newsbtn sizeToFit];
-//        newsbtn.width += 10;
-//
-//        //设置按钮Frame
-//        CGFloat tgtW = 0;
-//        tgtW = minWidth > newsbtn.width ? minWidth : newsbtn.width;
-//        [newsbtn setFrame:CGRectMake(x, 0, tgtW, scrollbar.height-1)];
-//        x = newsbtn.right + interSpace;
-//        [newsbtn addTarget:self action:@selector(newsBtnActions:) forControlEvents:UIControlEventTouchUpInside];
-//        [scrollbar addSubview:newsbtn];
-//        [ColumnBtnArr addObject:newsbtn];
+        //data
+        CategoryModel * subcateM = columnArr[i];
+
+        //按钮
+        MJButton * newsbtn=[[MJButton alloc]init];
+        newsbtn.tag=i;
+        newsbtn.mj_text=subcateM.name;
+        newsbtn.mj_textColor=HW_GRAY_WORD_3;
+        newsbtn.mj_textColor_sel=HW_BLACK;
+        newsbtn.mj_font=FONT(19);
+        newsbtn.mj_font_sel=BOLD_FONT(20);
+        [newsbtn sizeToFit];
+        newsbtn.width += 10;
+
+        //设置按钮Frame
+        CGFloat targetWidth = 0;
+        targetWidth = minWidth > newsbtn.width ? minWidth : newsbtn.width;
+        [newsbtn setFrame:CGRectMake(x, 0, targetWidth, scrollbar.height-1)];
+        x = newsbtn.right + interSpace;
+        [newsbtn addTarget:self action:@selector(newsBtnActions:) forControlEvents:UIControlEventTouchUpInside];
+        [scrollbar addSubview:newsbtn];
+        [ColumnBtnArr addObject:newsbtn];
     }
     
     //配置Bar
@@ -134,6 +133,22 @@
         {
             MJButton * item = ColumnBtnArr[i];
             [item setCenterX:(item.centerX+offset)];
+        }
+    }
+    
+    
+    //偶数个，则均分
+    else
+    {
+        NSInteger sectionCount = columnDataArr.count+1;
+        
+        for (int i = 0; i<columnDataArr.count; i++)
+        {
+            MJButton * item = ColumnBtnArr[i];
+            
+            CGFloat centerX = (self.width/sectionCount)*(i+1);
+            
+            [item setCenterX:centerX];
         }
     }
     
@@ -250,10 +265,10 @@
     
     
     //通知代理刷新列表
-//    if (self.columnDelegate && [self.columnDelegate respondsToSelector:@selector(mjview:didSelectColumn:subColumn:bookMark:collectionviewIndex:)])
-//    {
-//        [self.columnDelegate mjview:self didSelectColumn:columnDataArr[index] subColumn:nil bookMark:nil collectionviewIndex:index];
-//    }
+    if (self.columnDelegate && [self.columnDelegate respondsToSelector:@selector(mjview:didSelectColumn:collectionviewIndex:)])
+    {
+        [self.columnDelegate mjview:self didSelectColumn:columnDataArr[index] collectionviewIndex:index];
+    }
 }
 
 

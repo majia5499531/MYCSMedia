@@ -22,7 +22,7 @@
 #import "MJHUD.h"
 #import "BaseModel.h"
 #import "VideoListModel.h"
-#import "VideoModel.h"
+#import "ContentModel.h"
 #import "TokenExchangeModel.h"
 
 @interface SZVideoDetailVC ()<UICollectionViewDelegate, UICollectionViewDataSource,VideoCellDelegate>
@@ -156,7 +156,7 @@
     NSString * url = APPEND_SUBURL(BASE_URL, API_URL_VIDEO);
     url = APPEND_SUBURL(url, self.contentId);
     
-    VideoModel * model = [VideoModel model];
+    ContentModel * model = [ContentModel model];
     __weak typeof (self) weakSelf = self;
     [model GETRequestInView:self.view WithUrl:url Params:nil Success:^(id responseObject) {
         
@@ -216,7 +216,7 @@
 -(void)requestMoreVideosInPannel
 {
     //获取最后一条视频的ID
-    VideoModel * lastModel = dataArr.lastObject;
+    ContentModel * lastModel = dataArr.lastObject;
     NSString * lastContentId =  lastModel.id;
     NSString * pagesize = [NSString stringWithFormat:@"%d",VIDEO_PAGE_SIZE];
     
@@ -379,7 +379,7 @@
 }
 
 #pragma mark - Cell Delegate
-- (void)didSelectVideo:(VideoModel*)model
+- (void)didSelectVideo:(ContentModel*)model
 {
     NSString * contentid = model.id;
     [commentBar updateCommentBarData:contentid cannotComent:model.disableComment.boolValue];
@@ -405,7 +405,7 @@
     {
         return;
     }
-    VideoModel * videoM = dataArr[path.row];
+    ContentModel * videoM = dataArr[path.row];
     
     //commenbar
     NSString * contentid = videoM.id;

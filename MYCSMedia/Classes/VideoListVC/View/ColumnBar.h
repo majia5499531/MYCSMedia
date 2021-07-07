@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 
 @protocol NewsColumnDelegate <NSObject>
+-(void)mjview:(UIView*)view didSelectColumn:(id)model collectionviewIndex:(NSInteger)index;
 @optional
 
 @end

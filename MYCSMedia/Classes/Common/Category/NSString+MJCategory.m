@@ -193,6 +193,26 @@
     return leftTime;
 }
 
++(NSString*)converUTCDateStr:(NSString*)utc
+{
+    
+    NSDateFormatter *format1 = [[NSDateFormatter alloc] init];
+    [format1 setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"];
+    NSDate *originDate = [format1 dateFromString:utc];
+    
+    NSTimeZone *localTimeZone = [NSTimeZone localTimeZone];
+    NSInteger timeoffsets = [localTimeZone secondsFromGMT];
+    NSInteger timestamp = [originDate timeIntervalSince1970];
+    timestamp += timeoffsets;
+    
+    NSDate * newDate = [NSDate dateWithTimeIntervalSince1970:timestamp];
+    NSDateFormatter * nowFormat = [[NSDateFormatter alloc]init];
+    [nowFormat setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
+    NSString *dateString = [nowFormat stringFromDate:newDate];
+    return dateString;
+
+}
+
 
 #pragma mark - 带标签的标题
 -(UIImage*)imageWithUIView:(UIView*)view

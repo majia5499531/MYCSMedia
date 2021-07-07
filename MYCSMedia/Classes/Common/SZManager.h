@@ -40,7 +40,6 @@ typedef NS_ENUM(NSUInteger, SZ_ENV)
 
 +(SZManager*)sharedManager;
 +(NSString*)mjgetBaseURL;
-+(NSString*)mjgetBaseSysURL;
 
 +(void)mjgoToLoginPage;
 +(void)mjclearLoginInfo;

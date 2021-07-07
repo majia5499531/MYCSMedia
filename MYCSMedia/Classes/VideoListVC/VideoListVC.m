@@ -22,9 +22,13 @@
 #import "MJHUD.h"
 #import "BaseModel.h"
 #import "VideoListModel.h"
-#import "VideoModel.h"
+#import "ContentModel.h"
 #import "TokenExchangeModel.h"
 #import "MJLabel.h"
+#import "CategoryView.h"
+#import "MJProvider.h"
+#import "IQDataBinding.h"
+#import "NSString+MJCategory.h"
 
 @interface VideoListVC ()
 
@@ -38,6 +42,10 @@
     [super viewDidLoad];
     
     [self MJInitSubviews];
+    
+    [NSString converUTCDateStr:@""];
+    
+    
 }
 
 #pragma mark - 界面&布局
@@ -67,7 +75,7 @@
     searchBtn.backgroundColor=HW_GRAY_BG_5;
     searchBtn.layer.cornerRadius=5;
     searchBtn.mj_imageObjec=[UIImage getBundleImage:@"mysearch"];
-    searchBtn.mj_text=@"守护解放西8";
+    searchBtn.mj_text=@"守护解放西12";
     searchBtn.mj_textColor=HW_GRAY_WORD_3;
     searchBtn.mj_font=FONT(13);
     searchBtn.imageFrame=CGRectMake(15, 10.5, 14, 13.5);
@@ -90,13 +98,12 @@
     collectBtn.titleFrame=CGRectMake(30, 9.5, 55, 15.5);
     [self.view addSubview:collectBtn];
     
-    //columnBar
-    
-    //scrollview
-    
-    //tags
-    
-    //collectionView
+    //categoryview
+    CategoryView * cateView = [[CategoryView alloc]init];
+    [cateView setFrame:CGRectMake(0, searchBtn.bottom+5, SCREEN_WIDTH, SCREEN_HEIGHT-searchBtn.bottom-5)];
+    [self.view addSubview:cateView];
+    cateView.categoryCode = @"mycs.video";
+    [cateView fetchData];
 }
 
 -(void)viewWillAppear:(BOOL)animated
@@ -114,6 +121,13 @@
     
     self.navigationController.navigationBar.hidden=NO;
 }
+
+
+
+
+
+
+
 
 
 

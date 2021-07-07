@@ -96,8 +96,8 @@
     {
         collectionView.hidden=YES;
     }
-    
 }
+
 -(void)updateZanState:(BOOL)b count:(NSInteger)num
 {
     zanBtn.MJSelectState = b;
@@ -121,10 +121,12 @@
         [zanBtn setBadgeNum:[NSString stringWithFormat:@"%ld",count] style:2];
     }
 }
+
 -(void)updateCollectState:(BOOL)b
 {
     collectBtn.MJSelectState = b;
 }
+
 
 #pragma mark - 界面&布局
 -(void)MJInitSubviews

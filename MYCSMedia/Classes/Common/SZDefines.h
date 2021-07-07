@@ -34,7 +34,6 @@
 
 
 
-#define BASE_URL_SYSTEM             [SZManager mjgetBaseSysURL]
 #define BASE_URL                    [SZManager mjgetBaseURL]
 #define API_URL_VIDEO_LIST          @"api/cms/client/video/queryVideoPullDownList"
 #define API_URL_RANDOM_VIDEO_LIST   @"api/cms/client/video/queryRandomVideoList"
@@ -46,7 +45,7 @@
 #define API_URL_GET_COMMENT_LIST    @"api/cms/client/comment/getCommentByContent"
 #define API_URL_GET_CONTENT_STATE   @"api/cms/client/contentStats/queryStatsData"
 #define API_URL_TOKEN_EXCHANGE      @"api/sys/login/mycs/token"
-
+#define API_URL_QUERYCATEGORY       @"api/cms/client/panel/queryPanelByCategory"
 
 
 //业务
@@ -55,7 +54,7 @@
 #define NOTIFY_NAME_ZAN             @"notify_zan"
 #define NOTIFY_NAME_COLLECT         @"notify_collect"
 
-#define VIDEO_PAGE_SIZE             5
+#define VIDEO_PAGE_SIZE             10
 #define COMMENT_BAR_HEIGHT          (CGFloat)(IS_IPHONE_X?(121):(87))
 #define IMG_RADIUS                  5
 #define IMAGE_RATE_169              (9.0/16.0)

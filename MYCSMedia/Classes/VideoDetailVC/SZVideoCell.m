@@ -18,7 +18,7 @@
 #import "SZManager.h"
 #import "UIView+MJCategory.h"
 #import "MJHUD.h"
-#import "VideoModel.h"
+#import "ContentModel.h"
 #import "VideoCollectModel.h"
 #import "MJLabel.h"
 #import "UIScrollView+MJCategory.h"
@@ -26,7 +26,7 @@
 @implementation SZVideoCell
 {
     //data
-    VideoModel * dataModel;
+    ContentModel * dataModel;
     
     VideoCollectModel * collectModel;
     NSMutableArray * videoBtns;
@@ -224,19 +224,19 @@
 
 
 #pragma mark - Set Data
--(void)setCellData:(VideoModel*)objc
+-(void)setCellData:(ContentModel*)objc
 {
     //model
     dataModel = objc;
     
-    //author
-    authorLabel.text = [NSString stringWithFormat:@"%@ %@",dataModel.source,dataModel.startTime];
-    
     //title
     titleLabel.attributedText = [NSString makeTitleStr:dataModel.title lineSpacing:5 indent:0];
     
-    //标签
+    //author
+    NSString * dateStr = [NSString converUTCDateStr:dataModel.startTime];
+    authorLabel.text = [NSString stringWithFormat:@"%@ %@",dataModel.source,dateStr];
     
+    //标签
     NSString * tagsStr = dataModel.keywords;
     if (tagsStr.length)
     {
@@ -435,7 +435,7 @@
     NSInteger idx = -1;
     for (int i = 0; i<collectModel.dataArr.count; i++)
     {
-        VideoModel * model = collectModel.dataArr[i];
+        ContentModel * model = collectModel.dataArr[i];
         if ([model.id isEqualToString: dataModel.id])
         {
             idx = i;
@@ -451,9 +451,9 @@
 
 -(void)reloadDataWithIndex:(NSInteger)idx
 {
-    VideoModel * newVideoModel = collectModel.dataArr[idx];
-    [self setCellData:newVideoModel];
-    [self.delegate didSelectVideo:newVideoModel];
+    ContentModel * newContentModel = collectModel.dataArr[idx];
+    [self setCellData:newContentModel];
+    [self.delegate didSelectVideo:newContentModel];
     [self playingVideo];
 }
 

@@ -15,6 +15,7 @@
 #import <SDWebImage/SDWebImage.h>
 #import "SZManager.h"
 #import "CommentModel.h"
+#import "NSString+MJCategory.h"
 
 @implementation SZCommentCell
 {
@@ -150,7 +151,7 @@
     
     name.text = data.nickname;
     
-    date.text = dataModel.createTime;
+    date.text = [NSString converUTCDateStr:dataModel.createTime];
     
     desc.text = dataModel.content;
     

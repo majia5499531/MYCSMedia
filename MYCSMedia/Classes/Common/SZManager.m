@@ -106,7 +106,7 @@
     SZManager * instance = [SZManager sharedManager];
     if (instance.enviroment==UAT_ENVIROMENT)
     {
-        return @"https://uat-fuse-cms.zhcs.csbtv.com";
+        return @"https://uat-fuse-api-gw.zhcs.csbtv.com";
     }
     else
     {

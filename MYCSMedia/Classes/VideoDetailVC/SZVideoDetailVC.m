@@ -24,6 +24,7 @@
 #import "VideoListModel.h"
 #import "ContentModel.h"
 #import "TokenExchangeModel.h"
+#import "ConsoleVC.h"
 
 @interface SZVideoDetailVC ()<UICollectionViewDelegate, UICollectionViewDataSource,VideoCellDelegate>
 @property(assign,nonatomic)BOOL MJHideStatusbar;
@@ -320,6 +321,14 @@
     [self.view addSubview:btn];
     
     
+    //console
+    UIView * consoleBtn = [[UIView alloc]initWithFrame:CGRectMake(SCREEN_WIDTH-50, STATUS_BAR_HEIGHT, 50, 50)];
+    consoleBtn.backgroundColor=[UIColor clearColor];
+    UILongPressGestureRecognizer * gest = [[UILongPressGestureRecognizer alloc]initWithTarget:self action:@selector(consoleBtnAction:)];
+    gest.minimumPressDuration = 3;
+    [consoleBtn addGestureRecognizer:gest];
+    [self.view addSubview:consoleBtn];
+    
     //commentview
     commentBar = [[SZCommentBar alloc]init];
     [self.view addSubview:commentBar];
@@ -343,11 +352,11 @@
     [self requestRandomVideos];
 }
 
-
 -(void)pullupLoadAction:(MJRefreshFooter*)footer
 {
     [self fetchMoreVideos];
 }
+
 -(void)fetchMoreVideos
 {
     if (randomMode==YES)
@@ -379,7 +388,7 @@
 }
 
 #pragma mark - Cell Delegate
-- (void)didSelectVideo:(ContentModel*)model
+-(void)didSelectVideo:(ContentModel*)model
 {
     NSString * contentid = model.id;
     [commentBar updateCommentBarData:contentid cannotComent:model.disableComment.boolValue];
@@ -411,7 +420,7 @@
     NSString * contentid = videoM.id;
     [commentBar updateCommentBarData:contentid cannotComent:videoM.disableComment.boolValue];
     
-    //playvideo
+    //PlayVideo
     SZVideoCell * cell = (SZVideoCell*)[collectionView cellForItemAtIndexPath:path];
     [cell playingVideo];
 }
@@ -467,7 +476,14 @@
 {
     [self.navigationController popViewControllerAnimated:YES];
 }
-
+-(void)consoleBtnAction:(UILongPressGestureRecognizer *)longGes
+{
+    if (longGes.state == UIGestureRecognizerStateBegan)
+    {
+        ConsoleVC * vc = [[ConsoleVC alloc]init];
+        [self.navigationController pushViewController:vc animated:YES];
+    }
+}
 
 #pragma mark - StatusBar
 -(UIStatusBarStyle)preferredStatusBarStyle

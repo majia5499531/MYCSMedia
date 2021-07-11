@@ -586,7 +586,7 @@
 {
     if (str.length==0)
     {
-        str = @"暂无";
+        str = @" ";
     }
     
     NSMutableAttributedString *attributedStr = [[NSMutableAttributedString alloc] initWithString:str];
@@ -602,7 +602,7 @@
 {
     if (str.length==0)
     {
-        str = @"暂无";
+        str = @" ";
     }
     
     NSMutableAttributedString *attributedStr = [[NSMutableAttributedString alloc] initWithString:str];
@@ -619,7 +619,7 @@
 {
     if (str.length==0)
     {
-        str = @"暂无";
+        str = @" ";
     }
     
     NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc]initWithString:str];

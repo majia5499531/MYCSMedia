@@ -353,11 +353,23 @@
 
 -(void)zanBtnAction
 {
+    //未登录则跳转登录
+    if (![SZManager sharedManager].SZRMToken.length)
+    {
+        [SZManager mjgoToLoginPage];
+        return;
+    }
     [self.commentbar requestZan];
 }
 
 -(void)collectBtnAction
 {
+    //未登录则跳转登录
+    if (![SZManager sharedManager].SZRMToken.length)
+    {
+        [SZManager mjgoToLoginPage];
+        return;
+    }
     [self.commentbar requestCollect];
 }
 

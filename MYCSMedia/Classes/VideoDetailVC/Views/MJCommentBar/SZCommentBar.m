@@ -368,8 +368,7 @@
 -(void)sendCommentSuccess
 {
     [[NSNotificationCenter defaultCenter]postNotificationName:NOTIFY_NAME_NEW_COMMENT object:nil];
-    [MJHUD_Notice showSuccessView:@"评论成功" inView:self.window hideAfterDelay:0.7];
-    [self performSelector:@selector(commentTapAction) withObject:nil afterDelay:0.3];
+    [MJHUD_Notice showSuccessView:@"评论已提交，请等待审核通过！" inView:self.window hideAfterDelay:1.2];
 }
 
 -(void)zanBtnAction

@@ -158,7 +158,7 @@
     if (data.dataArr.count)
     {
         CommentModel * replyModel = data.dataArr[0];
-        replyDate.text = replyModel.createTime;
+        replyDate.text = [NSString converUTCDateStr:replyModel.createTime];
         replyContent.text = replyModel.content;
         
         replyBG.hidden=NO;

@@ -76,7 +76,6 @@
     //PUT
     if ([method isEqualToString:@"PUT"])
     {
-        
         [httpManager PUT:url parameters:params headers:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
                     successblock(responseObject,task);
                 } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {

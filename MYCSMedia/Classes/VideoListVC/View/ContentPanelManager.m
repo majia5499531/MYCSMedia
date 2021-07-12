@@ -190,7 +190,6 @@ NSString * CellKeyOther = @"OtherPanelCellReuse";           //调试用
             [cell setCellData:panelM];
             return cell;
         }
-        
     }
     
     //电视回看

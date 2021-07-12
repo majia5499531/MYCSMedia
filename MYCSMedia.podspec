@@ -1,7 +1,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'MYCSMedia'
-  s.version          = '1.0.14'
+  s.version          = '1.0.15'
   s.summary          = 'SZRM Media Module'
 
 

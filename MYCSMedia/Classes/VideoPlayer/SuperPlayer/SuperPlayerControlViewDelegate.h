@@ -31,7 +31,14 @@
 - (void)controlViewSeek:(UIView *)controlView where:(CGFloat)pos;
 /** 滑动预览，pos 0~1 */
 - (void)controlViewPreview:(UIView *)controlView where:(CGFloat)pos;
+
+
+
 - (void)MJRealoadPlaying;
+
+//点击分享按钮
+- (void)controlViewDidClickShareBtn;
+
 @end
 
 

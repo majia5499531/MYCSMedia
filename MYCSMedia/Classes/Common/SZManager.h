@@ -7,6 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
+//分享平台
 typedef NS_ENUM(NSUInteger, SZ_SHARE_PLATFORM)
 {
     WECHAT_PLATFORM = 0,
@@ -14,6 +15,7 @@ typedef NS_ENUM(NSUInteger, SZ_SHARE_PLATFORM)
     QQ_PLATFORM
 };
 
+//环境
 typedef NS_ENUM(NSUInteger, SZ_ENV)
 {
     UAT_ENVIROMENT = 0,
@@ -25,6 +27,7 @@ typedef NS_ENUM(NSUInteger, SZ_ENV)
 -(NSString*)onGetTGT;
 -(void)onShareAction:(SZ_SHARE_PLATFORM)platform title:(NSString*)title image:(NSString*)imgurl desc:(NSString*)desc URL:(NSString*)url;
 -(void)onLoginAction;
+-(void)onOpenWebview:(NSString *)url param:(NSDictionary*)param;
 @end
 
 
@@ -32,17 +35,11 @@ typedef NS_ENUM(NSUInteger, SZ_ENV)
 
 @interface SZManager : NSObject
 
-//开发环境
+
 @property(assign,nonatomic)SZ_ENV enviroment;
-@property(weak,nonatomic) id <SZDelegate> delegate;
-@property(strong,nonatomic)NSString * SZRMToken;
-@property(strong,nonatomic)NSString * localTGT;
+@property(weak,nonatomic)id <SZDelegate> delegate;
 
 +(SZManager*)sharedManager;
-+(NSString*)mjgetBaseURL;
 
-+(void)mjgoToLoginPage;
-+(void)mjclearLoginInfo;
-+(void)loginSuccess:(NSString*)token TGT:(NSString*)tgt;
-+(void)checkLoginStatus;
+
 @end

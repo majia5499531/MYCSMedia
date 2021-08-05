@@ -31,13 +31,7 @@
 
 @implementation PlayerSlider
 
-/*
- // Only override drawRect: if you perform custom drawing.
- // An empty implementation adversely affects performance during animation.
- - (void)drawRect:(CGRect)rect {
- // Drawing code
- }
- */
+
 
 - (instancetype)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
@@ -51,16 +45,17 @@
     return self;
 }
 
-- (void)initUI {
+- (void)initUI
+{
     _progressView                   = [[UIProgressView alloc] initWithProgressViewStyle:UIProgressViewStyleDefault];
-    _progressView.progressTintColor = [UIColor colorWithRed:1 green:1 blue:1 alpha:0.3];
+    _progressView.progressTintColor = [UIColor colorWithRed:1 green:1 blue:1 alpha:0];            //缓冲进度色
     _progressView.trackTintColor    = [UIColor clearColor];
     
     [self addSubview:_progressView];
     
     self.pointArray = [NSMutableArray new];
     self.maximumValue = 1;
-    self.maximumTrackTintColor = [UIColor colorWithRed:0.5 green:0.5 blue:0.5 alpha:0.5];
+    self.maximumTrackTintColor = [UIColor colorWithRed:1 green:1 blue:1 alpha:0.2];           //总进度色
     
     [_progressView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.equalTo(self);

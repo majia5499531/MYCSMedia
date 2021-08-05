@@ -50,7 +50,7 @@
     playview.controlView.onlyFullscreenMode=YES;
     playview.delegate=self;
     
-    [playview changeLayersToFullScreen:YES];
+    [playview switchToFullScreenMode:YES];
 }
 
 
@@ -62,7 +62,7 @@
     [player setFatherView:nil];
     playview.controlView.fullScreenState=NO;
     playview.controlView.onlyFullscreenMode=NO;
-    [playview changeLayersToFullScreen:NO];
+    [playview switchToFullScreenMode:NO];
     
     [player pause];
     

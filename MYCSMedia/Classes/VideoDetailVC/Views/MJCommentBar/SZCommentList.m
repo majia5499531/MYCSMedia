@@ -12,7 +12,7 @@
 #import <Masonry/Masonry.h>
 #import "MJButton.h"
 #import "UIImage+MJCategory.h"
-#import "SZManager.h"
+#import "SZGlobalInfo.h"
 #import "SZInputView.h"
 #import "SZCommentCell.h"
 #import "CustomFooter.h"
@@ -20,6 +20,10 @@
 #import "CommentDataModel.h"
 #import "CommentModel.h"
 #import "MJHUD.h"
+#import "SZData.h"
+#import "ContentStateModel.h"
+#import "ContentModel.h"
+#import "SZManager.h"
 
 @interface SZCommentList ()<UICollectionViewDataSource,UICollectionViewDelegate>
 
@@ -30,7 +34,7 @@
     //data
     CommentDataModel * dataModel;
     
-    CGFloat gestvH;
+    CGFloat topspace;
     
     UILabel * countLabel;
     UIView * BG;
@@ -40,106 +44,41 @@
     MJButton * sendBtn;
     MJButton * collectBtn;
     MJButton * zanBtn;
-    
+    MJButton * shareBtn;
 }
+
+
 - (instancetype)initWithFrame:(CGRect)frame
 {
     self = [super initWithFrame:frame];
-    if (self) {
+    if (self)
+    {
+        [self MJSetupLayouts];
         
-        self.backgroundColor=HW_CLEAR;
-        
-        gestvH = SCREEN_HEIGHT * 0.3;
-        [self MJInitSubviews];
-        
+        [self addDataBinding];
     }
     return self;
 }
 
 
-#pragma mark - Public
--(void)showCommentList:(BOOL)show
-{
-    if (show)
-    {
-        BG.hidden=NO;
-        [UIView animateWithDuration:0.15 animations:^{
-            [self->BG setFrame:CGRectMake(0, self->gestvH, SCREEN_WIDTH, SCREEN_HEIGHT-self->gestvH)];
-        }];
-    }
-    else
-    {
-        [UIView animateWithDuration:0.1 animations:^{
-            [self->BG setFrame:CGRectMake(0, SCREEN_HEIGHT, SCREEN_WIDTH, SCREEN_HEIGHT-self->gestvH)];
-                } completion:^(BOOL finished) {
-                    self->BG.hidden=YES;
-                    
-                    [self removeFromSuperview];
-        }];
-    }
-}
-
-
-#pragma mark - Update
--(void)updateCommentData:(CommentDataModel*)model
-{
-    countLabel.text = [NSString stringWithFormat:@"(%ld)",model.total];
-    dataModel = model;
-    
-    [collectionView reloadData];
-    
-    if (model.dataArr.count)
-    {
-        collectionView.hidden=NO;
-    }
-    else
-    {
-        collectionView.hidden=YES;
-    }
-}
-
--(void)updateZanState:(BOOL)b count:(NSInteger)num
-{
-    zanBtn.MJSelectState = b;
-    
-    //点赞数
-    if (num>=0)
-    {
-        [zanBtn setBadgeNum:[NSString stringWithFormat:@"%ld",num] style:2];
-    }
-    else
-    {
-        NSInteger count = zanBtn.badgeCount;
-        if (b)
-        {
-            count++;
-        }
-        else
-        {
-            count--;
-        }
-        [zanBtn setBadgeNum:[NSString stringWithFormat:@"%ld",count] style:2];
-    }
-}
-
--(void)updateCollectState:(BOOL)b
-{
-    collectBtn.MJSelectState = b;
-}
-
-
 #pragma mark - 界面&布局
--(void)MJInitSubviews
+-(void)MJSetupLayouts
 {
+    topspace = SCREEN_HEIGHT * 0.3;
+    
+    //view
+    self.backgroundColor=HW_CLEAR;
+    
+    
     //手势
-    UIView * gestview =[[UIView alloc]initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH, gestvH)];
+    UIView * gestview =[[UIView alloc]initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH, topspace)];
     [self addSubview:gestview];
     UITapGestureRecognizer * tap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(listViewBGTapAction)];
     [gestview addGestureRecognizer:tap];
     
     //BG
     BG = [[UIView alloc]init];
-    [BG setFrame:CGRectMake(0, SCREEN_HEIGHT, SCREEN_WIDTH, SCREEN_HEIGHT-self->gestvH)];
+    [BG setFrame:CGRectMake(0, SCREEN_HEIGHT, SCREEN_WIDTH, SCREEN_HEIGHT-self->topspace)];
     BG.backgroundColor=HW_WHITE;
     [self addSubview:BG];
     [BG MJSetPartRadius:8 RoundingCorners:UIRectCornerTopLeft|UIRectCornerTopRight];
@@ -201,6 +140,12 @@
     sendBtn.layer.cornerRadius=16;
     [sendBtn addTarget:self action:@selector(sendCommentAction) forControlEvents:UIControlEventTouchUpInside];
     [BG addSubview:sendBtn];
+    [sendBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.mas_equalTo(20);
+        make.top.mas_equalTo(sepeline.mas_bottom).offset(5);
+        make.height.mas_equalTo(32);
+        make.right.mas_equalTo(BG).offset(-145);
+    }];
 
     //收藏
     collectBtn = [[MJButton alloc]init];
@@ -208,6 +153,12 @@
     collectBtn.mj_imageObject_sel = [UIImage getBundleImage:@"sz_collect_sel"];
     [collectBtn addTarget:self action:@selector(collectBtnAction) forControlEvents:UIControlEventTouchUpInside];
     [BG addSubview:collectBtn];
+    [collectBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.mas_equalTo(sendBtn.mas_right).offset(5);
+        make.centerY.mas_equalTo(sendBtn.mas_centerY);
+        make.width.mas_equalTo(44);
+        make.height.mas_equalTo(44);
+    }];
 
 
     //点赞
@@ -216,29 +167,27 @@
     zanBtn.mj_imageObject_sel = [UIImage getBundleImage:@"sz_zan_sel"];
     [zanBtn addTarget:self action:@selector(zanBtnAction) forControlEvents:UIControlEventTouchUpInside];
     [BG addSubview:zanBtn];
-    
-
-    [sendBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.mas_equalTo(20);
-        make.top.mas_equalTo(sepeline.mas_bottom).offset(4.5);
-        make.height.mas_equalTo(32);
-        make.right.mas_equalTo(BG).offset(-110);
-    }];
-
-    [collectBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.mas_equalTo(sendBtn.mas_right).offset(10);
-        make.centerY.mas_equalTo(sendBtn.mas_centerY);
-        make.width.mas_equalTo(44);
-        make.height.mas_equalTo(44);
-    }];
-
     [zanBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.mas_equalTo(collectBtn.mas_right).offset(1);
+        make.left.mas_equalTo(collectBtn.mas_right).offset(-1);
         make.centerY.mas_equalTo(sendBtn.mas_centerY);
         make.width.mas_equalTo(44);
         make.height.mas_equalTo(44);
     }];
     
+    
+    //分享按钮
+    shareBtn = [[MJButton alloc]init];
+    shareBtn.mj_imageObjec = [UIImage getBundleImage:@"sz_share_black"];
+    [shareBtn addTarget:self action:@selector(shareBtnAction) forControlEvents:UIControlEventTouchUpInside];
+    [BG addSubview:shareBtn];
+    [shareBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.mas_equalTo(zanBtn.mas_right).offset(1);
+        make.centerY.mas_equalTo(sendBtn.mas_centerY);
+        make.width.mas_equalTo(44);
+        make.height.mas_equalTo(44);
+    }];
+    
+
     
     //没有评论image
     UIImageView * nocommentImg = [[UIImageView alloc]init];
@@ -289,6 +238,90 @@
     }];
     
 }
+
+
+
+
+#pragma mark - 展开/收起
+-(void)showCommentList:(BOOL)show
+{
+    if (show)
+    {
+        BG.hidden=NO;
+        [UIView animateWithDuration:0.1 animations:^{
+            [self->BG setFrame:CGRectMake(0, self->topspace, SCREEN_WIDTH, SCREEN_HEIGHT-self->topspace)];
+        }];
+    }
+    else
+    {
+        [UIView animateWithDuration:0.1 animations:^{
+            [self->BG setFrame:CGRectMake(0, SCREEN_HEIGHT, SCREEN_WIDTH, SCREEN_HEIGHT-self->topspace)];
+                } completion:^(BOOL finished) {
+                    self->BG.hidden=YES;
+                    
+                    [self removeFromSuperview];
+        }];
+    }
+}
+
+
+#pragma mark - 数据绑定
+-(void)addDataBinding
+{
+    [self bindModel:[SZData sharedSZData]];
+    
+    __weak typeof (self) weakSelf = self;
+    self.observe(@"currentContentId",^(id value){
+        weakSelf.contentId = value;
+    }).observe(@"contentStateUpdateTime",^(id value){
+        [weakSelf updateContentStateData];
+    }).observe(@"contentZanTime",^(id value){
+        [weakSelf updateContentStateData];
+    }).observe(@"contentCollectTime",^(id value){
+        [weakSelf updateContentStateData];
+    }).observe(@"contentCommentsUpdateTime",^(id value){
+        [weakSelf updateCommentData];
+    });
+}
+
+
+#pragma mark - 数据绑定回调
+-(void)updateContentStateData
+{
+    //取数据
+    ContentStateModel * stateM = [[SZData sharedSZData].contentStateDic valueForKey:self.contentId];
+    
+    //更新UI
+    collectBtn.MJSelectState = stateM.whetherFavor;
+    
+    zanBtn.MJSelectState = stateM.whetherLike;
+    
+    [zanBtn setBadgeNum:[NSString stringWithFormat:@"%ld",stateM.likeCountShow] style:2];
+    
+}
+
+-(void)updateCommentData
+{
+    //取数据
+    CommentDataModel * commentM = [[SZData sharedSZData].contentCommentDic valueForKey:self.contentId];
+    
+    //更新UI
+    countLabel.text = [NSString stringWithFormat:@"(%ld)",commentM.total];
+    dataModel = commentM;
+    
+    [collectionView reloadData];
+    
+    if (commentM.dataArr.count)
+    {
+        collectionView.hidden=NO;
+    }
+    else
+    {
+        collectionView.hidden=YES;
+    }
+}
+
+
 
 
 #pragma mark - CollectionView Datasource & Delegate
@@ -348,31 +381,58 @@
 
 -(void)sendCommentAction
 {
-    [self.commentbar sendCommentAction];
+    ContentModel * model = [[SZData sharedSZData].contentDic valueForKey:self.contentId];
+    
+    //禁止评论
+    if (model.disableComment.boolValue)
+    {
+        return;
+    }
+
+    __weak typeof (self) weakSelf = self;
+    [SZInputView callInputView:0 contentId:_contentId placeHolder:@"发表您的评论" completion:^(id responseObject) {
+        [MJHUD_Notice showSuccessView:@"评论已提交，请等待审核通过！" inView:weakSelf.window hideAfterDelay:2];
+    }];
+    
 }
 
 -(void)zanBtnAction
 {
     //未登录则跳转登录
-    if (![SZManager sharedManager].SZRMToken.length)
+    if (![SZGlobalInfo sharedManager].SZRMToken.length)
     {
-        [SZManager mjgoToLoginPage];
+        [SZGlobalInfo mjshowLoginAlert];
         return;
     }
-    [self.commentbar requestZan];
+    
+    [[SZData sharedSZData]requestZan];
 }
 
 -(void)collectBtnAction
 {
     //未登录则跳转登录
-    if (![SZManager sharedManager].SZRMToken.length)
+    if (![SZGlobalInfo sharedManager].SZRMToken.length)
     {
-        [SZManager mjgoToLoginPage];
+        [SZGlobalInfo mjshowLoginAlert];
         return;
     }
-    [self.commentbar requestCollect];
+    
+    [[SZData sharedSZData]requestCollect];
 }
 
+-(void)shareBtnAction
+{
+    
+    [MJHUD_Selection showShareView:^(id objc) {
+        
+        NSNumber * number = objc;
+        SZ_SHARE_PLATFORM plat = number.integerValue;
+        ContentModel * contentModel = [[SZData sharedSZData].contentDic valueForKey:self.contentId];
+        [SZGlobalInfo mjshareToPlatform:plat content:contentModel];
+        
+    }];
+    
+}
 
 
 @end

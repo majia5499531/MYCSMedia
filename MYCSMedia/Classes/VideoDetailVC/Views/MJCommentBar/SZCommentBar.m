@@ -12,7 +12,7 @@
 #import <Masonry/Masonry.h>
 #import "MJButton.h"
 #import "UIImage+MJCategory.h"
-#import "SZManager.h"
+#import "SZGlobalInfo.h"
 #import "SZInputView.h"
 #import "SZCommentList.h"
 #import "CommentDataModel.h"
@@ -20,19 +20,23 @@
 #import "MJHUD.h"
 #import "StatusModel.h"
 #import "ContentStateModel.h"
+#import "IQDataBinding.h"
+#import "SZData.h"
+#import "ContentModel.h"
+#import "SZManager.h"
 
 @interface SZCommentBar ()
 @end
 
 @implementation SZCommentBar
 {
-    BOOL cannotComment;
     SZCommentList * commentListView;
     UILabel * titleLabel;
     UILabel * countLabel;
     MJButton * sendBtn;
     MJButton * collectBtn;
     MJButton * zanBtn;
+    MJButton * shareBtn;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -40,86 +44,54 @@
     self = [super initWithFrame:frame];
     if (self)
     {
-        self.backgroundColor=HW_GRAY_BG_1;
-        
-        UITapGestureRecognizer * tap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(commentTapAction)];
-        [self addGestureRecognizer:tap];
-        
-        [self setFrame:CGRectMake(0, SCREEN_HEIGHT-COMMENT_BAR_HEIGHT, SCREEN_WIDTH, COMMENT_BAR_HEIGHT)];
-        
-        [self MJInitSubviews];
+        [self setupUI];
         
         [self addObserver];
     }
     return self;
-}
--(void)dealloc
-{
-    [self removeObserver];
 }
 
 
 #pragma mark - 监听
 -(void)addObserver
 {
-    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(commentInfoDidChange:) name:NOTIFY_NAME_COMMENT object:nil];
-    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(shouldRequestNewData:) name:NOTIFY_NAME_NEW_COMMENT object:nil];
-    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(zanStateChange:) name:NOTIFY_NAME_ZAN object:nil];
-    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(collectStateChange:) name:NOTIFY_NAME_COLLECT object:nil];
-}
--(void)removeObserver
-{
-    [[NSNotificationCenter defaultCenter]removeObserver:self];
+
+    //绑定数据
+    [self bindModel:[SZData sharedSZData]];
+    
+    __weak typeof (self) weakSelf = self;
+    self.observe(@"currentContentId",^(id value){
+        weakSelf.contentId = value;
+        
+        ContentModel * model = [[SZData sharedSZData].contentDic valueForKey:value];
+        NSLog(@"contentTitle_%@",model.title);
+        
+    }).observe(@"contentStateUpdateTime",^(id value){
+        [weakSelf updateContentStateData];
+    }).observe(@"contentZanTime",^(id value){
+        [weakSelf updateContentStateData];
+    }).observe(@"contentCollectTime",^(id value){
+        [weakSelf updateContentStateData];
+    }).observe(@"contentCommentsUpdateTime",^(id value){
+        [weakSelf updateCommentData];
+    });
+    
 }
 
-//评论数据变化
--(void)commentInfoDidChange:(NSNotification*)notify
-{
-    CommentDataModel * model = notify.object;
-    countLabel.text = [NSString stringWithFormat:@"(%ld)",model.total];
-    
-    [commentListView updateCommentData:model];
-}
 
-//刷新评论列表
--(void)shouldRequestNewData:(NSNotification*)notify
-{
-    [self requestCommentListData];
-}
 
-//点赞变化
--(void)zanStateChange:(NSNotification*)notify
-{
-    NSString * str = notify.object;
-    zanBtn.MJSelectState = str.boolValue;
-    
-    //点赞数
-    NSInteger count = zanBtn.badgeCount;
-    if (str.boolValue)
-    {
-        count++;
-    }
-    else
-    {
-        count--;
-    }
-    [zanBtn setBadgeNum:[NSString stringWithFormat:@"%ld",count] style:2];
-    
-    [commentListView updateZanState:str.boolValue count:-1];
-}
 
-//收藏变化
--(void)collectStateChange:(NSNotification*)notify
-{
-    NSString * str = notify.object;
-    collectBtn.MJSelectState = str.boolValue;
-    
-    [commentListView updateCollectState:str.boolValue];
-}
 
 #pragma mark - 界面&布局
--(void)MJInitSubviews
+-(void)setupUI
 {
+    //view
+    self.backgroundColor=HW_GRAY_BG_1;
+    
+    UITapGestureRecognizer * tap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(commentTapAction)];
+    [self addGestureRecognizer:tap];
+    
+    [self setFrame:CGRectMake(0, SCREEN_HEIGHT-COMMENT_BAR_HEIGHT, SCREEN_WIDTH, COMMENT_BAR_HEIGHT)];
     [self MJSetPartRadius:8 RoundingCorners:UIRectCornerTopLeft|UIRectCornerTopRight];
     
     //标题
@@ -161,7 +133,7 @@
         make.left.mas_equalTo(20);
         make.top.mas_equalTo(40);
         make.height.mas_equalTo(32);
-        make.right.mas_equalTo(self).offset(-110);
+        make.right.mas_equalTo(self).offset(-145);
     }];
 
 
@@ -173,12 +145,13 @@
     [collectBtn addTarget:self action:@selector(collectBtnAction) forControlEvents:UIControlEventTouchUpInside];
     [self addSubview:collectBtn];
     [collectBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.mas_equalTo(sendBtn.mas_right).offset(10);
+        make.left.mas_equalTo(sendBtn.mas_right).offset(5);
         make.centerY.mas_equalTo(sendBtn.mas_centerY);
         make.width.mas_equalTo(44);
         make.height.mas_equalTo(44);
     }];
 
+    
     //点赞
     zanBtn = [[MJButton alloc]init];
     zanBtn.mj_imageObjec = [UIImage getBundleImage:@"sz_zan"];
@@ -186,158 +159,67 @@
     [zanBtn addTarget:self action:@selector(zanBtnAction) forControlEvents:UIControlEventTouchUpInside];
     [self addSubview:zanBtn];
     [zanBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.mas_equalTo(collectBtn.mas_right).offset(1);
+        make.left.mas_equalTo(collectBtn.mas_right).offset(-1);
         make.centerY.mas_equalTo(sendBtn.mas_centerY);
         make.width.mas_equalTo(44);
         make.height.mas_equalTo(44);
     }];
     
+    //分享按钮
+    shareBtn = [[MJButton alloc]init];
+    shareBtn.mj_imageObjec = [UIImage getBundleImage:@"sz_share"];
+    [shareBtn addTarget:self action:@selector(shareBtnAction) forControlEvents:UIControlEventTouchUpInside];
+    [self addSubview:shareBtn];
+    [shareBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.mas_equalTo(zanBtn.mas_right).offset(1);
+        make.centerY.mas_equalTo(sendBtn.mas_centerY);
+        make.width.mas_equalTo(44);
+        make.height.mas_equalTo(44);
+    }];
     
     //评论列表
     commentListView = [[SZCommentList alloc]init];
-    commentListView.commentbar = self;
     [commentListView setFrame:CGRectMake(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT)];
     
 }
 
 
 
-#pragma mark - update
--(void)updateCommentBarData:(NSString*)ID cannotComent:(BOOL)b;
+
+
+
+#pragma mark - 数据绑定回调
+-(void)updateContentStateData
 {
-    if (![_contentId isEqualToString:ID])
-    {
-        _contentId = ID;
-        
-        [[NSNotificationCenter defaultCenter]postNotificationName:NOTIFY_NAME_COMMENT object:nil];
-        
-        [self requestCommentListData];
-        
-        [self requestContentState];
-    }
+    //取数据
+    ContentStateModel * stateM = [[SZData sharedSZData].contentStateDic valueForKey:self.contentId];
     
-    //是否禁止评论
-    if (b)
-    {
-        sendBtn.mj_text=@"该内容禁止评论";
-        cannotComment = b;
-    }
-    else
-    {
-        sendBtn.mj_text=@"写评论...";
-        cannotComment = b;
-    }
-}
-
-
-#pragma mark - Request
--(void)requestCommentListData
-{
-    CommentDataModel * model = [CommentDataModel model];
-    model.isJSON = YES;
-    model.hideLoading = YES;
-    model.hideErrorMsg = YES;
-    NSMutableDictionary * param=[NSMutableDictionary dictionary];
-    [param setValue:_contentId forKey:@"contentId"];
-    [param setValue:@"9999" forKey:@"pageSize"];
-    [param setValue:@"1" forKey:@"pageNum"];
+    collectBtn.MJSelectState = stateM.whetherFavor;
     
-    __weak typeof (self) weakSelf = self;
-    [model PostRequestInView:self WithUrl:APPEND_SUBURL(BASE_URL, API_URL_GET_COMMENT_LIST) Params:param Success:^(id responseObject) {
-        [weakSelf requestCommentListDone:model];
-        } Error:^(id responseObject) {
-            
-        } Fail:^(NSError *error) {
-            
-        }];
-}
-
-
--(void)requestCollect
-{
-    StatusModel * model = [StatusModel model];
-    model.isJSON=YES;
-    model.hideLoading=YES;
-    NSMutableDictionary * param=[NSMutableDictionary dictionary];
-    [param setValue:self.contentId forKey:@"contentId"];
-    [param setValue:@"short_video" forKey:@"type"];
-    __weak typeof (self) weakSelf = self;
-    [model PostRequestInView:self.superview WithUrl:APPEND_SUBURL(BASE_URL, API_URL_FAVOR) Params:param Success:^(id responseObject) {
-        [weakSelf requestCollectDone:model];
-        } Error:^(id responseObject) {
-            
-        } Fail:^(NSError *error) {
-            
-        }];
-}
-
-
-
--(void)requestContentState
-{
-    ContentStateModel * model = [ContentStateModel model];
-    model.hideLoading=YES;
-    model.hideErrorMsg=YES;
-    __weak typeof (self) weakSelf = self;
-    NSMutableDictionary * param=[NSMutableDictionary dictionary];
-    [param setValue:_contentId forKey:@"contentId"];
-    [model GETRequestInView:self.superview WithUrl:APPEND_SUBURL(BASE_URL, API_URL_GET_CONTENT_STATE) Params:param Success:^(id responseObject) {
-        [weakSelf requestContentStateDone:model];
-        } Error:^(id responseObject) {
-            
-        } Fail:^(NSError *error) {
-            
-        }];
-}
-
-
--(void)requestZan
-{
-    StatusModel * model = [StatusModel model];
-    model.hideLoading=YES;
-    model.isJSON=YES;
-    NSMutableDictionary * param=[NSMutableDictionary dictionary];
-    [param setValue:_contentId forKey:@"targetId"];
-    [param setValue:@"content" forKey:@"type"];
+    zanBtn.MJSelectState = stateM.whetherLike;
     
-    __weak typeof (self) weakSelf = self;
-    [model PostRequestInView:self.superview WithUrl:APPEND_SUBURL(BASE_URL, API_URL_ZAN) Params:param Success:^(id responseObject) {
-            [weakSelf requestZanDone:model];
-        } Error:^(id responseObject) {
-            
-        } Fail:^(NSError *error) {
-            
-        }];
-}
-
-#pragma mark - Request Done
--(void)requestCommentListDone:(CommentDataModel*)model
-{
-    [[NSNotificationCenter defaultCenter]postNotificationName:NOTIFY_NAME_COMMENT object:model];
-}
--(void)requestContentStateDone:(ContentStateModel*)model
-{
-    collectBtn.MJSelectState = model.whetherFavor;
-    zanBtn.MJSelectState = model.whetherLike;
-    [zanBtn setBadgeNum:[NSString stringWithFormat:@"%ld",model.likeCountShow] style:2];
-    
-    [commentListView updateCollectState:model.whetherFavor];
-    [commentListView updateZanState:model.whetherLike count:model.likeCountShow];
-}
--(void)requestCollectDone:(StatusModel*)model
-{
-    [[NSNotificationCenter defaultCenter]postNotificationName:NOTIFY_NAME_COLLECT object:model.data];
+    [zanBtn setBadgeNum:[NSString stringWithFormat:@"%ld",stateM.likeCountShow] style:2];
     
 }
--(void)requestZanDone:(StatusModel*)model
+
+-(void)updateCommentData
 {
-    [[NSNotificationCenter defaultCenter]postNotificationName:NOTIFY_NAME_ZAN object:model.data];
+    CommentDataModel * commentM = [[SZData sharedSZData].contentCommentDic valueForKey:self.contentId];
+    countLabel.text = [NSString stringWithFormat:@"(%ld)",commentM.total];
 }
+
+
+
+
+
+
 
 #pragma mark - Btn Action
 -(void)commentTapAction
 {
-    if(cannotComment)
+    ContentModel * contenM = [[SZData sharedSZData].contentDic valueForKey:self.contentId];
+    
+    if(contenM.disableComment.boolValue)
     {
         return;
     }
@@ -353,45 +235,61 @@
 
 -(void)sendCommentAction
 {
+    ContentModel * contentModel = [[SZData sharedSZData].contentDic valueForKey:self.contentId];
+    
     //禁止评论
-    if (cannotComment)
+    if (contentModel.disableComment.boolValue)
     {
         return;
     }
     
     __weak typeof (self) weakSelf = self;
     [SZInputView callInputView:0 contentId:_contentId placeHolder:@"发表您的评论" completion:^(id responseObject) {
-        [weakSelf sendCommentSuccess];
+        [MJHUD_Notice showSuccessView:@"评论已提交，请等待审核通过！" inView:weakSelf.window hideAfterDelay:2];
     }];
 }
 
--(void)sendCommentSuccess
-{
-    [[NSNotificationCenter defaultCenter]postNotificationName:NOTIFY_NAME_NEW_COMMENT object:nil];
-    [MJHUD_Notice showSuccessView:@"评论已提交，请等待审核通过！" inView:self.window hideAfterDelay:1.2];
-}
+
 
 -(void)zanBtnAction
 {
     //未登录则跳转登录
-    if (![SZManager sharedManager].SZRMToken.length)
+    if (![SZGlobalInfo sharedManager].SZRMToken.length)
     {
-        [SZManager mjgoToLoginPage];
+        [SZGlobalInfo mjshowLoginAlert];
         return;
     }
-    [self requestZan];
+    
+    [[SZData sharedSZData]requestZan];
 }
 
 -(void)collectBtnAction
 {
     //未登录则跳转登录
-    if (![SZManager sharedManager].SZRMToken.length)
+    if (![SZGlobalInfo sharedManager].SZRMToken.length)
     {
-        [SZManager mjgoToLoginPage];
+        [SZGlobalInfo mjshowLoginAlert];
         return;
     }
-    [self requestCollect];
+    
+    
+    [[SZData sharedSZData]requestCollect];
 }
+
+-(void)shareBtnAction
+{
+    [MJHUD_Selection showShareView:^(id objc) {
+        
+        NSNumber * number = objc;
+        SZ_SHARE_PLATFORM plat = number.integerValue;
+        ContentModel * contentModel = [[SZData sharedSZData].contentDic valueForKey:self.contentId];
+        [SZGlobalInfo mjshareToPlatform:plat content:contentModel];
+        
+    }];
+}
+
+
+
 
 
 @end

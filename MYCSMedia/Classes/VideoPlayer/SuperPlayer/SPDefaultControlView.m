@@ -12,6 +12,12 @@
 #import "SPDefaultControlView.h"
 #import "UIView+Fade.h"
 #import "VideoRateView.h"
+#import "SZData.h"
+#import "IQDataBinding.h"
+#import "ContentStateModel.h"
+#import "ContentModel.h"
+#import "UIImage+MJCategory.h"
+#import "SZGlobalInfo.h"
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored"-Wdeprecated-declarations"
@@ -45,6 +51,9 @@
         [self.topImageView addSubview:self.moreBtn];
         [self.topImageView addSubview:self.backBtn];
         [self.topImageView addSubview:self.titleLabel];
+        [self.topImageView addSubview:self.zanBtn];
+        [self.topImageView addSubview:self.collectBtn];
+        [self.topImageView addSubview:self.shareBtn];
         [self addSubview:self.topImageView];
         
         //旋转锁定按钮
@@ -64,6 +73,15 @@
         
         //初始化时重置controlView
         [self initViewData];
+        
+        //notify
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(MJMediaRemoteEvent:)
+                                                     name:@"MJRemoteEnterFullScreen"
+                                                   object:nil];
+        
+        //数据绑定
+        [self addDataBinding];
     }
     return self;
 }
@@ -90,17 +108,38 @@
         make.width.mas_equalTo(60);
     }];
     
-    [self.moreBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+//    [self.moreBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+//        make.width.mas_equalTo(40);
+//        make.height.mas_equalTo(49);
+//        make.trailing.equalTo(self.topImageView.mas_trailing).offset(-10);
+//        make.centerY.equalTo(self.backBtn.mas_centerY);
+//    }];
+    
+    [self.captureBtn mas_makeConstraints:^(MASConstraintMaker *make) {
         make.width.mas_equalTo(40);
         make.height.mas_equalTo(49);
         make.trailing.equalTo(self.topImageView.mas_trailing).offset(-10);
         make.centerY.equalTo(self.backBtn.mas_centerY);
     }];
     
-    [self.captureBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+    [self.shareBtn mas_makeConstraints:^(MASConstraintMaker *make) {
         make.width.mas_equalTo(40);
         make.height.mas_equalTo(49);
-        make.trailing.equalTo(self.moreBtn.mas_leading).offset(-10);
+        make.trailing.equalTo(self.captureBtn.mas_leading).offset(-10);
+        make.centerY.equalTo(self.backBtn.mas_centerY);
+    }];
+    
+    [self.collectBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.width.mas_equalTo(40);
+        make.height.mas_equalTo(49);
+        make.trailing.equalTo(self.shareBtn.mas_leading).offset(-10);
+        make.centerY.equalTo(self.backBtn.mas_centerY);
+    }];
+    
+    [self.zanBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.width.mas_equalTo(40);
+        make.height.mas_equalTo(49);
+        make.trailing.equalTo(self.collectBtn.mas_leading).offset(-10);
         make.centerY.equalTo(self.backBtn.mas_centerY);
     }];
     
@@ -112,9 +151,9 @@
     }];
     
     [self.titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.leading.equalTo(self.backBtn.mas_trailing).offset(5);
+        make.left.mas_equalTo(self.backBtn.mas_right);
         make.centerY.equalTo(self.backBtn.mas_centerY);
-        make.trailing.equalTo(self.captureBtn.mas_leading).offset(-10);
+        make.right.mas_equalTo(self.zanBtn.mas_left).offset(-20);
     }];
     
     [self.bottomImageView mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -129,11 +168,7 @@
         make.width.mas_equalTo(50);
     }];
     
-    [self.currentTimeLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.leading.equalTo(self.startBtn.mas_trailing).offset(-10);
-        make.centerY.equalTo(self.startBtn.mas_centerY);
-        make.width.mas_equalTo(60);
-    }];
+
     
     [self.fullScreenBtn mas_makeConstraints:^(MASConstraintMaker *make) {
         make.width.height.mas_equalTo(30);
@@ -148,16 +183,24 @@
         make.centerY.equalTo(self.startBtn.mas_centerY);
     }];
     
-    [self.totalTimeLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.trailing.equalTo(self.fullScreenBtn.mas_leading);
-        make.centerY.equalTo(self.startBtn.mas_centerY);
+
+    
+    [self.videoSlider mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.mas_equalTo(20);
+        make.trailing.equalTo(self.bottomImageView.mas_trailing).offset(-20);
+        make.bottom.equalTo(self.startBtn.mas_top).offset(-10);
+    }];
+    
+    [self.currentTimeLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.equalTo(self.videoSlider.mas_left).offset(-11);
+        make.bottom.equalTo(self.videoSlider.mas_top);
         make.width.mas_equalTo(60);
     }];
     
-    [self.videoSlider mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.leading.equalTo(self.currentTimeLabel.mas_trailing);
-        make.trailing.equalTo(self.totalTimeLabel.mas_leading);
-        make.centerY.equalTo(self.currentTimeLabel.mas_centerY).offset(-1);
+    [self.totalTimeLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.right.equalTo(self.videoSlider.mas_right).offset(10);
+        make.top.mas_equalTo(self.currentTimeLabel.mas_top);
+        make.width.mas_equalTo(60);
     }];
     
     [self.lockBtn mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -205,6 +248,7 @@
     self.captureBtn.enabled = YES;
     self.moreBtn.enabled = YES;
     self.backLiveBtn.hidden              = YES;
+    
 }
 
 
@@ -219,26 +263,41 @@
     self.fullScreenBtn.selected = self.isLockScreen;
     self.fullScreenBtn.hidden   = YES;
     self.MJRateBtn.hidden   = NO;
-    self.moreBtn.hidden         = NO;
+    self.moreBtn.hidden         = YES;
     self.captureBtn.hidden      = NO;
     self.danmakuBtn.hidden      = YES;
+    self.zanBtn.hidden = NO;
+    self.collectBtn.hidden = NO;
+    self.shareBtn.hidden = NO;
+    self.videoSlider.hiddenPoints = NO;
+    self.titleLabel.hidden=NO;
     
     [self.backBtn setImage:SuperPlayerImage(@"back_full") forState:UIControlStateNormal];
-    
-    [self.totalTimeLabel mas_remakeConstraints:^(MASConstraintMaker *make) {
-        
-        make.trailing.equalTo(self.MJRateBtn.mas_leading);
-        
-        make.centerY.equalTo(self.startBtn.mas_centerY);
-        make.width.mas_equalTo(self.isLive?10:60);
-    }];
     
     [self.bottomImageView mas_updateConstraints:^(MASConstraintMaker *make) {
         make.height.mas_equalTo(BOTTOM_IMAGE_VIEW_HEIGHT);
     }];
     
-    self.videoSlider.hiddenPoints = NO;
+    
+    [self.videoSlider mas_remakeConstraints:^(MASConstraintMaker *make) {
+        make.left.mas_equalTo(20);
+        make.trailing.equalTo(self.bottomImageView.mas_trailing).offset(-20);
+        make.bottom.equalTo(self.startBtn.mas_top).offset(0);
+    }];
+    
+    [self.currentTimeLabel mas_remakeConstraints:^(MASConstraintMaker *make) {
+        make.left.equalTo(self.videoSlider.mas_left).offset(-11);
+        make.bottom.equalTo(self.videoSlider.mas_top);
+        make.width.mas_equalTo(60);
+    }];
+    
+    [self.totalTimeLabel mas_remakeConstraints:^(MASConstraintMaker *make) {
+        make.right.equalTo(self.videoSlider.mas_right).offset(10);
+        make.top.mas_equalTo(self.currentTimeLabel.mas_top);
+        make.width.mas_equalTo(60);
+    }];
 }
+
 
 
 //更新竖屏布局
@@ -254,21 +313,103 @@
     self.danmakuBtn.hidden      = YES;
     self.moreContentView.hidden = YES;
     self.videoRateView.hidden  = YES;
-    
-    [self.totalTimeLabel mas_remakeConstraints:^(MASConstraintMaker *make) {
-        make.trailing.equalTo(self.fullScreenBtn.mas_leading);
-        make.centerY.equalTo(self.startBtn.mas_centerY);
-        make.width.mas_equalTo(self.isLive?10:60);
-    }];
+    self.zanBtn.hidden = YES;
+    self.collectBtn.hidden = YES;
+    self.shareBtn.hidden = YES;
+    self.videoSlider.hiddenPoints = YES;
+    self.pointJumpBtn.hidden = YES;
+    self.titleLabel.hidden=YES;
     
     [self.bottomImageView mas_updateConstraints:^(MASConstraintMaker *make) {
         make.height.mas_equalTo(BOTTOM_IMAGE_VIEW_HEIGHT);
     }];
     
-    self.videoSlider.hiddenPoints = YES;
-    self.pointJumpBtn.hidden = YES;
+    
+    
+    [self.currentTimeLabel mas_remakeConstraints:^(MASConstraintMaker *make) {
+        make.left.mas_equalTo(self.startBtn.mas_right).offset(-10);
+        make.centerY.mas_equalTo(self.startBtn);
+        make.width.mas_equalTo(60);
+    }];
+    
+    [self.totalTimeLabel mas_remakeConstraints:^(MASConstraintMaker *make) {
+        make.right.mas_equalTo(self.fullScreenBtn.mas_left);
+        make.centerY.mas_equalTo(self.startBtn);
+        make.width.mas_equalTo(60);
+    }];
+    
+    [self.videoSlider mas_remakeConstraints:^(MASConstraintMaker *make) {
+        make.left.mas_equalTo(self.currentTimeLabel.mas_right);
+        make.right.mas_equalTo(self.totalTimeLabel.mas_left);
+        make.centerY.mas_equalTo(self.startBtn);
+    }];
+    
+    
 }
 
+
+
+
+#pragma mark - Notification
+//远程全屏
+-(void)MJMediaRemoteEvent:(NSNotification*)notify
+{
+    NSNumber * num = notify.object;
+    
+    if (self.isLockScreen)
+    {
+        return;
+    }
+    
+    //远程通知进全屏
+    if (num.boolValue && self.isFullScreen==NO)
+    {
+        [self fullScreenBtnClick:_fullScreenBtn];
+    }
+    
+    //退出全屏
+    else if(self.isFullScreen && num.boolValue==NO)
+    {
+        [self backBtnClick:_backBtn];
+    }
+    
+}
+
+
+#pragma mark - 数据绑定
+-(void)addDataBinding
+{
+
+    //绑定数据
+    [self bindModel:[SZData sharedSZData]];
+    
+    __weak typeof (self) weakSelf = self;
+    self.observe(@"currentContentId",^(id value){
+        weakSelf.contentId = value;
+    }).observe(@"contentStateUpdateTime",^(id value){
+        [weakSelf updateContentStateData];
+    }).observe(@"contentZanTime",^(id value){
+        [weakSelf updateContentStateData];
+    }).observe(@"contentCollectTime",^(id value){
+        [weakSelf updateContentStateData];
+    });
+    
+}
+
+-(void)updateContentStateData
+{
+    //取数据
+    ContentStateModel * stateM = [[SZData sharedSZData].contentStateDic valueForKey:self.contentId];
+    ContentModel * contentM = [[SZData sharedSZData].contentDic valueForKey:self.contentId];
+    
+    self.collectBtn.MJSelectState = stateM.whetherFavor;
+    
+    self.zanBtn.MJSelectState = stateM.whetherLike;
+    
+    [self.zanBtn setBadgeNum:[NSString stringWithFormat:@"%ld",stateM.likeCountShow] style:2];
+    
+    self.titleLabel.text = contentM.title;
+}
 
 
 
@@ -322,8 +463,6 @@
 //全屏按钮
 - (void)fullScreenBtnClick:(UIButton *)sender
 {
-    NSLog(@"MJ 全屏按钮点击");
-    
     //修改状态
     sender.selected = !sender.selected;
     self.fullScreenState = YES;
@@ -419,6 +558,30 @@
     self.ignoreWWAN=YES;
     [self.delegate MJRealoadPlaying];
 }
+-(void)zanBtnAction
+{
+    if (![SZGlobalInfo sharedManager].SZRMToken.length)
+    {
+        [self backBtnClick:_backBtn];
+    }
+    [[SZData sharedSZData]requestZan];
+}
+-(void)collectBtnAction
+{
+    if (![SZGlobalInfo sharedManager].SZRMToken.length)
+    {
+        [self backBtnClick:_backBtn];
+    }
+    [[SZData sharedSZData]requestCollect];
+}
+-(void)shareBtnAction
+{
+    if ([self.delegate respondsToSelector:@selector(controlViewDidClickShareBtn)])
+    {
+        [self.delegate controlViewDidClickShareBtn];
+    }
+}
+
 
 
 #pragma mark - 子控件代理
@@ -460,6 +623,7 @@
     return _videoRateView;
 }
 
+
 - (UILabel *)titleLabel
 {
     if (!_titleLabel)
@@ -476,7 +640,7 @@
     if (!_backBtn)
     {
         _backBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-        [_backBtn setImage:SuperPlayerImage(@"back_full") forState:UIControlStateNormal];
+        [_backBtn setImage:SuperPlayerImage(@"videoplayer_back") forState:UIControlStateNormal];
         [_backBtn addTarget:self action:@selector(backBtnClick:) forControlEvents:UIControlEventTouchUpInside];
     }
     return _backBtn;
@@ -510,8 +674,8 @@
     {
         _lockBtn = [UIButton buttonWithType:UIButtonTypeCustom];
         _lockBtn.exclusiveTouch = YES;
-        [_lockBtn setImage:SuperPlayerImage(@"unlock-nor") forState:UIControlStateNormal];
-        [_lockBtn setImage:SuperPlayerImage(@"lock-nor") forState:UIControlStateSelected];
+        [_lockBtn setImage:SuperPlayerImage(@"videoplayer_unlock") forState:UIControlStateNormal];
+        [_lockBtn setImage:SuperPlayerImage(@"videoplayer_lock") forState:UIControlStateSelected];
         [_lockBtn addTarget:self action:@selector(lockScreenBtnClick:) forControlEvents:UIControlEventTouchUpInside];
         
     }
@@ -523,8 +687,8 @@
     if (!_startBtn)
     {
         _startBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-        [_startBtn setImage:SuperPlayerImage(@"play") forState:UIControlStateNormal];
-        [_startBtn setImage:SuperPlayerImage(@"pause") forState:UIControlStateSelected];
+        [_startBtn setImage:SuperPlayerImage(@"videoplayer_play") forState:UIControlStateNormal];
+        [_startBtn setImage:SuperPlayerImage(@"videoplayer_pause") forState:UIControlStateSelected];
         [_startBtn addTarget:self action:@selector(playBtnClick:) forControlEvents:UIControlEventTouchUpInside];
     }
     return _startBtn;
@@ -577,7 +741,7 @@
     if (!_fullScreenBtn)
     {
         _fullScreenBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-        [_fullScreenBtn setImage:SuperPlayerImage(@"fullscreen") forState:UIControlStateNormal];
+        [_fullScreenBtn setImage:SuperPlayerImage(@"videoplayer_fullscreen") forState:UIControlStateNormal];
         [_fullScreenBtn addTarget:self action:@selector(fullScreenBtnClick:) forControlEvents:UIControlEventTouchUpInside];
     }
     return _fullScreenBtn;
@@ -588,11 +752,45 @@
     if (!_captureBtn)
     {
         _captureBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-        [_captureBtn setImage:SuperPlayerImage(@"capture") forState:UIControlStateNormal];
-        [_captureBtn setImage:SuperPlayerImage(@"capture_pressed") forState:UIControlStateSelected];
+        [_captureBtn setImage:SuperPlayerImage(@"videoplayer_capture") forState:UIControlStateNormal];
         [_captureBtn addTarget:self action:@selector(captureBtnClick:) forControlEvents:UIControlEventTouchUpInside];
     }
     return _captureBtn;
+}
+
+-(MJButton *)zanBtn
+{
+    if (!_zanBtn)
+    {
+        _zanBtn = [[MJButton alloc]init];
+        _zanBtn.mj_imageObjec = SuperPlayerImage(@"videoplayer_zan");
+        _zanBtn.mj_imageObject_sel = SuperPlayerImage(@"videoplayer_zan_sel");
+        [_zanBtn addTarget:self action:@selector(zanBtnAction) forControlEvents:UIControlEventTouchUpInside];
+    }
+    return _zanBtn;
+}
+
+-(MJButton *)collectBtn
+{
+    if (!_collectBtn)
+    {
+        _collectBtn = [[MJButton alloc]init];
+        _collectBtn.mj_imageObjec = SuperPlayerImage(@"videoplayer_collect");
+        _collectBtn.mj_imageObject_sel = SuperPlayerImage(@"videoplayer_collect_sel");
+        [_collectBtn addTarget:self action:@selector(collectBtnAction) forControlEvents:UIControlEventTouchUpInside];
+    }
+    return _collectBtn;
+}
+
+-(MJButton *)shareBtn
+{
+    if (!_shareBtn)
+    {
+        _shareBtn = [[MJButton alloc]init];
+        _shareBtn.mj_imageObjec = SuperPlayerImage(@"videoplayer_share");
+        [_shareBtn addTarget:self action:@selector(shareBtnAction) forControlEvents:UIControlEventTouchUpInside];
+    }
+    return _shareBtn;
 }
 
 - (UIButton *)danmakuBtn

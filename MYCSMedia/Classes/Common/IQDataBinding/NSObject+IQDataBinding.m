@@ -78,6 +78,7 @@ static NSMutableDictionary *stashedObserver = nil;
     viewAssociatedModel.target = model;
     objc_setAssociatedObject(self, &kViewAssociatedModelKey, viewAssociatedModel, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     
+    
     /*借鉴Git stash暂存命令理念，stashedObserver职责如下
      1.如果bindModel调用在绑定keyPath之后调用，会自动把当前@{绑定的Key，回调Block}结构保存到暂存区。
      2.调用bindModel的时候先根据当前view的地址指针去stashedObserver取暂存的数据。

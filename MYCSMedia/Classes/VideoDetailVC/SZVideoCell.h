@@ -17,11 +17,15 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 
+
+
+
 @interface SZVideoCell : UICollectionViewCell
+
 @property(weak,nonatomic)id<VideoCellDelegate>delegate;
+
 -(void)setCellData:(NSObject*)news;
 
--(void)playingVideo;
 
 @end
 

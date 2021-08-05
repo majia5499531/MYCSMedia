@@ -19,8 +19,6 @@
 {
     [super layoutSubviews];
     
-    NSLog(@"MJ controlView will layoutSubviews");
-    
     //根据是否紧凑,重置布局
     if (self.compact)
     {

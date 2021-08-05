@@ -13,6 +13,10 @@
 #import "SPDefaultControlView.h"
 #import "MJVideoFullScreen.h"
 #import "MJVideoManager.h"
+#import "UIImage+MJCategory.h"
+#import "SZData.h"
+#import "SZGlobalInfo.h"
+#import "ContentModel.h"
 
 
 static UISlider * _volumeSlider;
@@ -22,6 +26,7 @@ static UISlider * _volumeSlider;
 //忽略编译器的警告
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored"-Wdeprecated-declarations"
+
 
 
 
@@ -71,7 +76,6 @@ static UISlider * _volumeSlider;
     // 移除通知
     [self removeAllNotifications];
     
-    [self reportPlay];
     [self.netWatcher stopWatch];
     [[AFNetworkReachabilityManager sharedManager]stopMonitoring];
     [self.volumeView removeFromSuperview];
@@ -247,11 +251,13 @@ static UISlider * _volumeSlider;
                                              selector:@selector(onDeviceOrientationChange)
                                                  name:UIDeviceOrientationDidChangeNotification
                                                object:nil];
+    
+    
 
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(onStatusBarOrientationChange)
-                                                 name:UIApplicationDidChangeStatusBarOrientationNotification
-                                               object:nil];
+//    [[NSNotificationCenter defaultCenter] addObserver:self
+//                                             selector:@selector(onStatusBarOrientationChange)
+//                                                 name:UIApplicationDidChangeStatusBarOrientationNotification
+//                                               object:nil];
 }
 
 
@@ -261,6 +267,7 @@ static UISlider * _volumeSlider;
     [[UIDevice currentDevice] endGeneratingDeviceOrientationNotifications];
     [self removeObserver:self forKeyPath:@"state"];
 }
+
 
 //添加手势
 -(void)addGestureRecognizers
@@ -331,7 +338,7 @@ static UISlider * _volumeSlider;
     }
 }
 
-
+//音量
 -(void)volumeChanged:(NSNotification *)notification
 {
     //正在拖动，不响应音量事件
@@ -349,6 +356,23 @@ static UISlider * _volumeSlider;
     [self fastViewImageAvaliable:SuperPlayerImage(@"sound_max") progress:volume];
     [self.fastView fadeOut:1];
 }
+
+//屏幕方向变化
+-(void)onDeviceOrientationChange
+{
+    NSLog(@"MJ 方向变化--设备");
+    
+    //全屏下，响应旋转事件
+    if (self.controlView.isFullScreen)
+    {
+        [self MJChangeScreenOrient];
+    }
+    
+}
+
+
+
+
 
 #pragma mark - 手势回调
 //单击手势
@@ -647,12 +671,14 @@ static UISlider * _volumeSlider;
     //如果是全屏状态
     if (fullScreen)
     {
-        if (targetOrientation == UIDeviceOrientationPortraitUpsideDown)
+        if (targetOrientation == UIDeviceOrientationLandscapeRight)
         {
-            targetOrientation = UIDeviceOrientationPortrait;
+            return UIDeviceOrientationLandscapeRight;
         }
         
-        return targetOrientation;
+            return UIDeviceOrientationLandscapeLeft;
+        
+        
     }
     
     //小窗态
@@ -662,24 +688,14 @@ static UISlider * _volumeSlider;
     }
 }
 
-//状态条变化通知（在前台播放才去处理）
--(void)onStatusBarOrientationChange
-{
-    NSLog(@"方向变化--statusBar");
-}
 
-//屏幕方向变化
--(void)onDeviceOrientationChange
-{
-    NSLog(@"MJ 方向变化--设备");
-    
-    //全屏下，响应旋转事件
-    if (self.controlView.isFullScreen)
-    {
-        [self MJChangeScreenOrient];
-    }
-    
-}
+////状态条变化通知（在前台播放才去处理）
+//-(void)onStatusBarOrientationChange
+//{
+//    NSLog(@"方向变化--statusBar");
+//}
+
+
 
 -(void)MJChangeScreenOrient
 {
@@ -697,7 +713,7 @@ static UISlider * _volumeSlider;
     }
     
     UIDeviceOrientation orient = [UIDevice currentDevice].orientation;
-    if (orient == UIDeviceOrientationLandscapeLeft || orient == UIDeviceOrientationLandscapeRight || orient == UIDeviceOrientationPortrait)
+    if (orient == UIDeviceOrientationLandscapeLeft || orient == UIDeviceOrientationLandscapeRight)
     {
         //执行动画
         [self makeRotationAnimation:orient];
@@ -893,7 +909,6 @@ static UISlider * _volumeSlider;
     //恢复初始状态
     self.isShiftPlayback = NO;
     self.imageSprite = nil;
-    [self reportPlay];
     self.reportTime = [NSDate date];
     [self _removeOldPlayer];
     self.coverImageView.alpha = 1;
@@ -1179,8 +1194,6 @@ static UISlider * _volumeSlider;
     [self.livePlayer removeVideoWidget];
     self.livePlayer = nil;
     
-    //数据上报
-    [self reportPlay];
     
     //修改状态
     self.state = StateStopped;
@@ -1283,10 +1296,13 @@ static UISlider * _volumeSlider;
 
 #pragma mark - 全屏切换
 //修改全屏状态
--(void)changeLayersToFullScreen:(BOOL)toFull
+-(void)switchToFullScreenMode:(BOOL)toFull
 {
     //切换布局模式
     self.controlView.compact = !toFull;
+    
+    //关闭分享弹窗
+    self.sharingView.hidden=YES;
     
     //改变 播放层的父视图
     [self makeLayersToKeyWindow:toFull];
@@ -1295,6 +1311,7 @@ static UISlider * _volumeSlider;
     UIDeviceOrientation orient = [self getOrientationForFullScreen:toFull];
     [self makeRotationAnimation:orient];
 }
+
 
 //切换全屏和窗口
 -(void)makeLayersToKeyWindow:(BOOL)toKeywindow
@@ -1357,8 +1374,9 @@ static UISlider * _volumeSlider;
     //刷新布局
     [self refreshLayersLayouts:orientation];
     
+    NSLog(@"---执行旋转动画---");
+    
     self.transform = [self getRotationAngle:orientation];
-//    self.fullScreenBlackView.transform = self.transform;
     [UIView commitAnimations];
 }
 
@@ -1442,6 +1460,11 @@ static UISlider * _volumeSlider;
 
 
 #pragma mark - 控制层代理
+- (void)controlViewDidClickShareBtn
+{
+    self.sharingView.hidden = NO;
+}
+
 - (void)controlViewPlay:(SuperPlayerControlView *)controlView
 {
     [self resume];
@@ -1465,7 +1488,7 @@ static UISlider * _volumeSlider;
 -(void)controlViewDidClickFullScreenBtn:(UIView *)controlView
 {
     //切换视图布局
-    [self changeLayersToFullScreen:YES];
+    [self switchToFullScreenMode:YES];
 }
 
 
@@ -1482,7 +1505,7 @@ static UISlider * _volumeSlider;
     }
     
     //切换视图布局
-    [self changeLayersToFullScreen:NO];
+    [self switchToFullScreenMode:NO];
 }
 
 - (void)controlViewDidLayoutSubviews:(UIView *)controlView
@@ -1875,31 +1898,89 @@ static UISlider * _volumeSlider;
 //日志回调
 -(void)onLog:(NSString*)log LogLevel:(int)level WhichModule:(NSString*)module
 {
-    NSLog(@"superPlayerLog--%@:%@", module, log);
+    
 }
 
-//上报日志
--(void)reportPlay
-{
-    if (self.reportTime == nil)
-        return;
-    int usedtime = -[self.reportTime timeIntervalSinceNow];
-    if (self.isLive)
-    {
-        [DataReport report:@"superlive" param:@{@"usedtime":@(usedtime)}];
-    }
-    else
-    {
-        [DataReport report:@"supervod" param:@{@"usedtime":@(usedtime), @"fileid":@(self.playerModel.videoId.fileId?1:0)}];
-    }
-    if (self.imageSprite)
-    {
-        [DataReport report:@"image_sprite" param:nil];
-    }
-    self.reportTime = nil;
-}
 
 #pragma mark - 懒加载
+//分享弹窗
+-(UIView *)sharingView
+{
+    if (_sharingView==nil)
+    {
+        _sharingView = [[UIView alloc]init];
+        _sharingView.backgroundColor=[UIColor clearColor];
+        [self addSubview:_sharingView];
+        [_sharingView mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.edges.mas_equalTo(0);
+        }];
+        
+        
+        UIView * maskView = [[UIView alloc]init];
+        maskView.backgroundColor=[UIColor blackColor];
+        [_sharingView addSubview:maskView];
+        maskView.alpha=0.3;
+        [maskView mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.left.mas_equalTo(0);
+            make.bottom.mas_equalTo(0);
+            make.right.mas_equalTo(0);
+            make.height.mas_equalTo(135);
+        }];
+        
+        UIButton * gestview= [[UIButton alloc]init];
+        [gestview addTarget:self action:@selector(hiddenSharingViewBtnAction) forControlEvents:UIControlEventTouchUpInside];
+        [_sharingView addSubview:gestview];
+        [gestview mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.left.mas_equalTo(0);
+            make.top.mas_equalTo(0);
+            make.right.mas_equalTo(0);
+            make.bottom.mas_equalTo(maskView.mas_top);
+        }];
+        
+        
+        //timeline
+        MJButton * timelineBtn = [[MJButton alloc]init];
+        [timelineBtn setImage:[UIImage getBundleImage:@"sz_timeline"] forState:UIControlStateNormal];
+        timelineBtn.tag=1;
+        [timelineBtn addTarget:self action:@selector(timelineBtnAction) forControlEvents:UIControlEventTouchUpInside];
+        [_sharingView addSubview:timelineBtn];
+        [timelineBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.centerX.mas_equalTo(_sharingView);
+            make.centerY.mas_equalTo(maskView.mas_centerY);
+            make.width.mas_equalTo(45);
+            make.height.mas_equalTo(45);
+        }];
+        
+        //wecaht
+        MJButton * wechatBtn = [[MJButton alloc]init];
+        [wechatBtn setImage:[UIImage getBundleImage:@"sz_wechat"] forState:UIControlStateNormal];
+        wechatBtn.tag=0;
+        [wechatBtn addTarget:self action:@selector(wechatBtnAction) forControlEvents:UIControlEventTouchUpInside];
+        [_sharingView addSubview:wechatBtn];
+        [wechatBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.centerX.mas_equalTo(_sharingView).offset(-75);
+            make.centerY.mas_equalTo(maskView.mas_centerY);
+            make.width.mas_equalTo(45);
+            make.height.mas_equalTo(45);
+        }];
+        
+        
+        //qq
+        MJButton * qqBtn = [[MJButton alloc]init];
+        [qqBtn setImage:[UIImage getBundleImage:@"sz_qq"] forState:UIControlStateNormal];
+        qqBtn.tag=2;
+        [qqBtn addTarget:self action:@selector(qqBtnAction) forControlEvents:UIControlEventTouchUpInside];
+        [_sharingView addSubview:qqBtn];
+        [qqBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.centerX.mas_equalTo(_sharingView).offset(75);
+            make.centerY.mas_equalTo(maskView.mas_centerY);
+            make.width.mas_equalTo(45);
+            make.height.mas_equalTo(45);
+        }];
+    }
+    return _sharingView;
+}
+
 //控制层
 -(SuperPlayerControlView *)controlView
 {
@@ -1910,6 +1991,7 @@ static UISlider * _volumeSlider;
     return _controlView;
 }
 
+//黑色遮罩
 -(UIView *)fullScreenBlackView
 {
     if (_fullScreenBlackView==nil)
@@ -2055,5 +2137,30 @@ static UISlider * _volumeSlider;
     [btn fadeOut:0.2];
 }
 
+-(void)hiddenSharingViewBtnAction
+{
+    self.sharingView.hidden = YES;
+}
+
+-(void)wechatBtnAction
+{
+    SZData * sz = [SZData sharedSZData];
+    ContentModel * contentModel = [sz.contentDic valueForKey:sz.currentContentId];
+    [SZGlobalInfo mjshareToPlatform:WECHAT_PLATFORM content:contentModel];
+}
+
+-(void)timelineBtnAction
+{
+    SZData * sz = [SZData sharedSZData];
+    ContentModel * contentModel = [sz.contentDic valueForKey:sz.currentContentId];
+    [SZGlobalInfo mjshareToPlatform:TIMELINE_PLATFORM content:contentModel];
+}
+
+-(void)qqBtnAction
+{
+    SZData * sz = [SZData sharedSZData];
+    ContentModel * contentModel = [sz.contentDic valueForKey:sz.currentContentId];
+    [SZGlobalInfo mjshareToPlatform:QQ_PLATFORM content:contentModel];
+}
 
 @end

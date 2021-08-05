@@ -29,6 +29,7 @@
 #import "MJProvider.h"
 #import "IQDataBinding.h"
 #import "NSString+MJCategory.h"
+#import "SZGlobalInfo.h"
 
 @interface VideoListVC ()
 
@@ -113,7 +114,7 @@
     self.navigationController.navigationBar.hidden=YES;
     
     //检查登录状态
-    [SZManager checkLoginStatus];
+    [SZGlobalInfo checkLoginStatus];
 }
 -(void)viewWillDisappear:(BOOL)animated
 {

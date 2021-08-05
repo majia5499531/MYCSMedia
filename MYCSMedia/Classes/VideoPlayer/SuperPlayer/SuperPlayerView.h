@@ -49,7 +49,8 @@ typedef NS_ENUM(NSInteger, SuperPlayerLayoutStyle) {
 @property (nonatomic,strong) UIImageView *coverImageView;
 @property(strong,nonatomic)UIView *fullScreenBlackView;;
 @property (nonatomic, strong) UIButton *repeatBtn;
-
+//分享view
+@property(strong,nonatomic)UIView * sharingView;
 
 ///样式
 @property (nonatomic, assign) SuperPlayerLayoutStyle layoutStyle;
@@ -119,8 +120,8 @@ typedef NS_ENUM(NSInteger, SuperPlayerLayoutStyle) {
 
 
 
-//pod custom MJ
+
 -(void)controlViewDidUpdateConfig:(SuperPlayerView *)controlView withReload:(BOOL)reload;
--(void)changeLayersToFullScreen:(BOOL)fullScreen;
+-(void)switchToFullScreenMode:(BOOL)fullScreen;
 
 @end

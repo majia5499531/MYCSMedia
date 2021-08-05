@@ -8,7 +8,7 @@
 
 #import "RootModel.h"
 #import "NSObject+MJCategory.h"
-#import "SZManager.h"
+#import "SZGlobalInfo.h"
 #import "UIDevice+MJCategory.h"
 #import <objc/message.h>
 
@@ -36,7 +36,10 @@
     //配置
     [self configAFNetWorking:httpManager];
     
+    
+    
     NSLog(@"\n【HTTP请求】 \n %@ method \n URL = %@ \r param = \r%@ \n Header = \n%@",method,url,params,httpManager.requestSerializer.HTTPRequestHeaders);
+    
     
     //GET
     if ([method isEqualToString:@"GET"])
@@ -51,7 +54,7 @@
     
     
     //POST
-    if ([method isEqualToString:@"POST"])
+    else if ([method isEqualToString:@"POST"])
     {
         [httpManager POST:url parameters:params headers:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
                     successblock(responseObject,task);
@@ -63,7 +66,7 @@
     
     
     //DELETE
-    if ([method isEqualToString:@"DELETE"])
+    else if ([method isEqualToString:@"DELETE"])
     {
         [httpManager DELETE:url parameters:params headers:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
             successblock(responseObject,task);
@@ -74,8 +77,9 @@
     
     
     //PUT
-    if ([method isEqualToString:@"PUT"])
+    else if ([method isEqualToString:@"PUT"])
     {
+        
         [httpManager PUT:url parameters:params headers:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
                     successblock(responseObject,task);
                 } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
@@ -96,7 +100,7 @@
     [httpManager.requestSerializer didChangeValueForKey:@"timeoutInterval"];
     
     //加token到请求头
-    NSString * token = [SZManager sharedManager].SZRMToken;
+    NSString * token = [SZGlobalInfo sharedManager].SZRMToken;
     if (token.length)
     {
         NSString * authTokenStr = [NSString stringWithFormat:@"%@",token];
@@ -107,11 +111,25 @@
         [httpManager.requestSerializer setValue:nil forHTTPHeaderField:@"token"];
     }
     
+    //关闭cookie
+    NSHTTPCookie*cookie;
+
+    NSHTTPCookieStorage*storage = [NSHTTPCookieStorage sharedHTTPCookieStorage];
+
+    for (cookie in[storage cookies])
+    {
+        if ([cookie.name isEqualToString:@"token"])
+        {
+            [storage deleteCookie:cookie];
+        }
+    }
+    
+    
     //加设备号
     NSString * deviceID = [UIDevice getIDFA];
     [httpManager.requestSerializer setValue:deviceID forHTTPHeaderField:@"deviceId"];
     
-    //acceptType
+    //AcceptType
     httpManager.responseSerializer.acceptableContentTypes = [NSSet setWithObjects:@"application/json", @"text/json", @"text/javascript",@"text/html", nil];
 }
 

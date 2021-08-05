@@ -10,7 +10,7 @@
 #import "UIColor+MJCategory.h"
 #import "SZManager.h"
 #import "MJHud.h"
-
+#import "SZGlobalInfo.h"
 @interface ConsoleVC ()
 
 @end
@@ -29,8 +29,8 @@
 {
     self.view.backgroundColor=[UIColor whiteColor];
     
-    NSString * str1 = [SZManager sharedManager].SZRMToken;
-    NSString * str2 = [SZManager sharedManager].localTGT;
+    NSString * str1 = [SZGlobalInfo sharedManager].SZRMToken;
+    NSString * str2 = [SZGlobalInfo sharedManager].localTGT;
     NSUInteger env = [SZManager sharedManager].enviroment;
     
     
@@ -45,7 +45,6 @@
     [self.view addSubview:label1];
     UITapGestureRecognizer * tap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(tapAction:)];
     [label1 addGestureRecognizer:tap];
-    label1.backgroundColor=[UIColor redColor];
     
     UILabel * label2=[[UILabel alloc]init];
     [label2 setFrame:CGRectMake(15, NAVI_HEIGHT+30, SCREEN_WIDTH-30, 20)];
@@ -58,7 +57,6 @@
     [self.view addSubview:label2];
     UITapGestureRecognizer * tap2 = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(tapAction:)];
     [label2 addGestureRecognizer:tap2];
-    label2.backgroundColor=[UIColor redColor];
     
     UILabel * label3=[[UILabel alloc]init];
     [label3 setFrame:CGRectMake(15, NAVI_HEIGHT+60, SCREEN_WIDTH-30, 20)];
@@ -71,7 +69,6 @@
     [self.view addSubview:label3];
     UITapGestureRecognizer * tap3 = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(tapAction:)];
     [label3 addGestureRecognizer:tap3];
-    label3.backgroundColor=[UIColor redColor];
 }
 
 

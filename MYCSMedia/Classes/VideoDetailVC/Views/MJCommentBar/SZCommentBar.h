@@ -13,13 +13,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property(strong,nonatomic)NSString * contentId;
 
--(void)updateCommentBarData:(NSString*)contentId cannotComent:(BOOL)b;
-
-
--(void)sendCommentAction;
--(void)requestZan;
--(void)requestCollect;
-
 @end
 
 NS_ASSUME_NONNULL_END

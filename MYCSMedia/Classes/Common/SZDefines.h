@@ -34,26 +34,22 @@
 
 
 
-#define BASE_URL                    [SZManager mjgetBaseURL]
+#define BASE_URL                    [SZGlobalInfo mjgetBaseURL]
 #define API_URL_VIDEO_LIST          @"api/cms/client/video/queryVideoPullDownList"
 #define API_URL_RANDOM_VIDEO_LIST   @"api/cms/client/video/queryRandomVideoList"
 #define API_URL_VIDEO               @"api/cms/client/video/getVideoDetails"
 #define API_URL_VIDEO_COLLECTION    @"api/cms/client/video/getVideoCollect"
 #define API_URL_FAVOR               @"api/cms/client/favor/addOrCancelFavor"
 #define API_URL_ZAN                 @"api/cms/client/like/likeOrCancel"
+#define API_URL_VIEW_COUNT          @"api/cms/client/contentStats/view/count"
 #define API_URL_SEND_COMMENT        @"api/cms/client/comment/add"
 #define API_URL_GET_COMMENT_LIST    @"api/cms/client/comment/getCommentByContent"
 #define API_URL_GET_CONTENT_STATE   @"api/cms/client/contentStats/queryStatsData"
 #define API_URL_TOKEN_EXCHANGE      @"api/sys/login/mycs/token"
 #define API_URL_QUERYCATEGORY       @"api/cms/client/panel/queryPanelByCategory"
-
+#define API_URL_RELATED_CONTENT     @"api/cms/client/content/recommend"
 
 //业务
-#define NOTIFY_NAME_COMMENT         @"commentInfoChange"
-#define NOTIFY_NAME_NEW_COMMENT     @"shouldRequestNewCommentData"
-#define NOTIFY_NAME_ZAN             @"notify_zan"
-#define NOTIFY_NAME_COLLECT         @"notify_collect"
-
 #define VIDEO_PAGE_SIZE             10
 #define COMMENT_BAR_HEIGHT          (CGFloat)(IS_IPHONE_X?(121):(87))
 #define IMG_RADIUS                  5

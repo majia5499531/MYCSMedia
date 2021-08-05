@@ -7,6 +7,7 @@
 
 #import "SuperPlayerControlView.h"
 #import "VideoRateView.h"
+#import "MJButton.h"
 
 @interface SPDefaultControlView : SuperPlayerControlView
 
@@ -46,6 +47,17 @@
 /** 返回直播 */
 @property (nonatomic, strong) UIButton                *backLiveBtn;
 
+//点赞按钮
+@property(strong,nonatomic)MJButton * zanBtn;
+
+//收藏按钮
+@property(strong,nonatomic)MJButton * collectBtn;
+
+//分享按钮
+@property(strong,nonatomic)MJButton * shareBtn;
+
+
+
 /// 画面比例
 @property CGFloat videoRatio;
 
@@ -59,7 +71,7 @@
 @property (nonatomic, strong) UIButton       *pointJumpBtn;
 
 
-
+@property(strong,nonatomic)NSString * contentId;
 
 //网络状态
 @property(strong,nonatomic)UIView * MJStatusView;

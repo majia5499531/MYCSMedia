@@ -110,6 +110,58 @@
 
 
 
+
++(void)showShareView:(HUD_BLOCK)reslt;
+{
+    //Hud
+    UIView * window = [UIApplication sharedApplication].keyWindow;
+    MJHUD_Selection * hud = [[MJHUD_Selection alloc]initWithFrame:window.frame];
+    [window addSubview:hud];
+    
+    hud.sureBlock = reslt;
+    
+    //Mask
+    [hud.maskView setFrame:hud.bounds];
+    hud.maskView.backgroundColor=[UIColor clearColor];
+    
+    //touch
+    CGFloat height = 135;
+    UIView * touchview = [[UIView alloc]initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH , SCREEN_HEIGHT-height)];
+    touchview.backgroundColor=[UIColor clearColor];
+    UITapGestureRecognizer * tap = [[UITapGestureRecognizer alloc]initWithTarget:hud action:@selector(hidding)];
+    [touchview addGestureRecognizer:tap];
+    [hud addSubview:touchview];
+    
+    //contentBG
+    [hud.contentView setFrame:CGRectMake(0, touchview.bottom, SCREEN_WIDTH, height)];
+    hud.contentView.backgroundColor=[UIColor blackColor];
+    hud.alpha=1;
+    
+    //timeline
+    MJButton * timelineBtn = [[MJButton alloc]initWithFrame:CGRectMake(SCREEN_WIDTH/2-22.5, SCREEN_HEIGHT-90, 45, 45)];
+    [timelineBtn setImage:[UIImage getBundleImage:@"sz_timeline"] forState:UIControlStateNormal];
+    timelineBtn.tag=1;
+    [hud addSubview:timelineBtn];
+    
+    //wecaht
+    MJButton * wechatBtn = [[MJButton alloc]initWithFrame:CGRectMake(timelineBtn.left-80, timelineBtn.top, 45, 45)];
+    [wechatBtn setImage:[UIImage getBundleImage:@"sz_wechat"] forState:UIControlStateNormal];
+    wechatBtn.tag=0;
+    [hud addSubview:wechatBtn];
+    
+    //qq
+    MJButton * qqBtn = [[MJButton alloc]initWithFrame:CGRectMake(timelineBtn.right+35, timelineBtn.top, 45, 45)];
+    [qqBtn setImage:[UIImage getBundleImage:@"sz_qq"] forState:UIControlStateNormal];
+    qqBtn.tag=2;
+    [hud addSubview:qqBtn];
+    
+    [timelineBtn addTarget:hud action:@selector(shareAction:) forControlEvents:UIControlEventTouchUpInside];
+    [wechatBtn addTarget:hud action:@selector(shareAction:) forControlEvents:UIControlEventTouchUpInside];
+    [qqBtn addTarget:hud action:@selector(shareAction:) forControlEvents:UIControlEventTouchUpInside];
+    
+}
+
+
 #pragma mark - Btn Action
 -(void)episodBtnAction:(MJButton*)btn
 {
@@ -118,6 +170,11 @@
     [self hidding];
 }
 
-
+-(void)shareAction:(MJButton*)sender
+{
+    NSNumber * num = [NSNumber numberWithInteger:sender.tag];
+    self.sureBlock(num);
+    [self hidding];
+}
 
 @end

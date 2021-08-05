@@ -60,64 +60,65 @@
     manager.MJVideoView.fatherView = view;
     manager.MJVideoView.delegate = manager;
 
-    //如果是之前播放，被暂停了
+    //如果是老url
     if ([videoURL isEqualToString:manager.MJVideoView.playerModel.videoURL] && manager.MJVideoView.isLoaded && manager.MJVideoView.repeatBtn.hidden==YES)
     {
-        //暂停
-        [manager.MJVideoView resume];
+        
+        //如果是暂停
+        if (manager.MJVideoView.state==StatePause)
+        {
+            [manager.MJVideoView resume];
+        }
+        
+        
+        //正在播放
+        else if (manager.MJVideoView.state==StatePlaying)
+        {
+            
+        }
+        
+        
+        //不是则播放
+        else
+        {
+            [MJVideoManager playNewVideo:videoURL];
+        }
     }
+    
+    
+    //新url
     else
     {
-        //停止
-        [manager.MJVideoView resetPlayer];
+        [MJVideoManager playNewVideo:videoURL];
+    }
 
-        //设置新URL（该方法仅设置URL）
-        SuperPlayerModel * playerModel = [[SuperPlayerModel alloc] init];
-        playerModel.videoURL = videoURL;
-        [manager.MJVideoView playWithModel:playerModel];
-    }
+}
+
+
+
+
+
++(void)playNewVideo:(NSString*)videourl
+{
+    MJVideoManager * manager = [MJVideoManager sharedMediaManager];
     
-    //重复播放
-    manager.MJVideoView.loop = repeat;
+    //reset
+    [manager.MJVideoView resetPlayer];
+
+    //NewModel
+    SuperPlayerModel * playerModel = [[SuperPlayerModel alloc] init];
+    playerModel.videoURL = videourl;
+    [manager.MJVideoView playWithModel:playerModel];
     
-    //静音
-    manager.MJVideoView.playerConfig.mute=silent;
-    
-    //恢复1倍速
+    //config
+    manager.MJVideoView.loop = NO;
+    manager.MJVideoView.playerConfig.mute=NO;
     manager.MJVideoView.playerConfig.playRate = 1.0 ;
-    
-    if (style==MJControlStyleDisalbeGesture)
-    {
-        manager.MJVideoView.controlView.hidden=YES;
-        manager.MJVideoView.disableGesture=YES;
-    }
-    else
-    {
-        manager.MJVideoView.disableGesture=NO;
-    }
-    
-    //更新配置
     [manager.MJVideoView controlViewDidUpdateConfig:manager.MJVideoView withReload:NO];
 }
 
 
-//销毁或暂停
-+(void)cancelPlayingWindowVideo
-{
-    MJVideoManager * manager = [MJVideoManager sharedMediaManager];
 
-    manager.MJVideoView.fatherView = nil;
-    
-    //未加载完时，直接销毁
-    if (manager.MJVideoView.isLoaded == NO)
-    {
-        [manager.MJVideoView resetPlayer];
-    }
-    else
-    {
-        [manager.MJVideoView pause];
-    }
-}
 
 //暂停
 +(void)pauseWindowVideo
@@ -126,5 +127,16 @@
     [manager.MJVideoView pause];
 }
 
+
+//销毁
++(void)destroyVideoPlayer
+{
+    MJVideoManager * manager = [MJVideoManager sharedMediaManager];
+
+    manager.MJVideoView.fatherView = nil;
+    
+    [manager.MJVideoView resetPlayer];
+    
+}
 
 @end

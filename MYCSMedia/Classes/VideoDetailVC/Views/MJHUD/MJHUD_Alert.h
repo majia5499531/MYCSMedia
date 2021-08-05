@@ -13,6 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface MJHUD_Alert : MJHUD_Base
 
 //Alert
++(void)showLoginAlert:(HUD_BLOCK)block;
 +(void)showAlertViewWithTitle:(NSString *)title text:(NSString *)text sure:(HUD_BLOCK)block;
 +(void)showAlertViewWithTitle:(NSString*)title text:(NSString*)text cancel:(HUD_BLOCK)cancel sure:(HUD_BLOCK)sure;
 +(void)hideAlertView;

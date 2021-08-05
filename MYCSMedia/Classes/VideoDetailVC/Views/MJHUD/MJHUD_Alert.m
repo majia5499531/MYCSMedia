@@ -157,6 +157,75 @@
     [hud.contentView setCenterY:hud.centerY];
 }
 
++(void)showLoginAlert:(HUD_BLOCK)block
+{
+    //HUD
+    UIView * window = [UIApplication sharedApplication].keyWindow;
+    MJHUD_Alert * hud = [[MJHUD_Alert alloc]initWithFrame:window.frame];
+    [window addSubview:hud];
+    
+    //保存block
+    hud.sureBlock = block;
+    
+    //Mask
+    [hud.maskView setFrame:hud.bounds];
+    hud.maskView.backgroundColor=[UIColor blackColor];
+    hud.maskView.alpha=0.5;
+     
+    //BG
+    hud.contentView.backgroundColor=[UIColor whiteColor];
+    hud.contentView.layer.cornerRadius=16;
+    [hud.contentView setFrame:CGRectMake(hud.centerX-140, SCREEN_HEIGHT, 280, 500)];
+    
+    //title
+    UILabel * titleLabel=[[UILabel alloc]init];
+    [titleLabel setFrame:CGRectMake(0, 20, hud.contentView.width, 20)];
+    titleLabel.font=BOLD_FONT(17);
+    titleLabel.textAlignment=NSTextAlignmentCenter;
+    titleLabel.textColor=HW_BLACK;
+    titleLabel.text=@"提示";
+    [hud.contentView addSubview:titleLabel];
+     
+    //text
+    UILabel * descLabel = [[UILabel alloc]init];
+    [descLabel setFrame:CGRectMake(40, titleLabel.bottom+15, hud.contentView.width-80, 20)];
+    descLabel.font=FONT(13);
+    descLabel.text = @"您还未登录，请立即登录";
+    descLabel.textColor=HW_BLACK;
+    descLabel.textAlignment=NSTextAlignmentCenter;
+    [hud.contentView addSubview:descLabel];
+    
+    //lineH
+    UIView * line1 = [[UIView alloc]initWithFrame:CGRectMake(0, descLabel.bottom+20, hud.contentView.width, MINIMUM_PX)];
+    line1.backgroundColor=HW_GRAY_BORDER_2;
+    [hud.contentView addSubview:line1];
+     
+    //cancelBtn
+    MJButton * cancelBtn =[[MJButton alloc]initWithFrame:CGRectMake(0, line1.bottom, line1.width/2-0.5, 42)];
+    [cancelBtn addTarget:hud action:@selector(hidding) forControlEvents:UIControlEventTouchUpInside];
+    [cancelBtn setTitle:@"取消" forState:UIControlStateNormal];
+    [cancelBtn setTitleColor:HW_BLACK forState:UIControlStateNormal];
+    cancelBtn.titleLabel.font=BOLD_FONT(14);
+    [hud.contentView addSubview:cancelBtn];
+    
+    //line2
+    UIView * line2 = [[UIView alloc]initWithFrame:CGRectMake(line1.centerX-0.5, line1.bottom, MINIMUM_PX, cancelBtn.height)];
+    line2.backgroundColor=HW_GRAY_BORDER_2;
+    [hud.contentView addSubview:line2];
+    
+    //sureBtn
+    MJButton * sureBtn =[[MJButton alloc]initWithFrame:CGRectMake(cancelBtn.right+1, line1.bottom, cancelBtn.width, cancelBtn.height)];
+    [sureBtn addTarget:hud action:@selector(sureBtnAction) forControlEvents:UIControlEventTouchUpInside];
+    [sureBtn setTitle:@"确定" forState:UIControlStateNormal];
+    [sureBtn setTitleColor:HW_BLACK forState:UIControlStateNormal];
+    sureBtn.titleLabel.font=BOLD_FONT(14);
+    [hud.contentView addSubview:sureBtn];
+
+    //contentview frame
+    [hud.contentView setFrame:CGRectMake(hud.contentView.left, hud.contentView.top, hud.contentView.width, sureBtn.bottom)];
+    [hud.contentView setCenterY:hud.centerY];
+}
+
 
 +(void)hideAlertView
 {

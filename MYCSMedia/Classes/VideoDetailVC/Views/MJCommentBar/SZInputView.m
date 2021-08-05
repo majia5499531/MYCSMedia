@@ -15,6 +15,7 @@
 #import "SZManager.h"
 #import "MJHud.h"
 #import "BaseModel.h"
+#import "SZGlobalInfo.h"
 
 
 @interface SZInputView ()<UITextViewDelegate>
@@ -104,9 +105,9 @@
 +(void)callInputView:(NSInteger)type contentId:(NSString*)contentId placeHolder:(NSString*)placeholder completion:(CompletionBlock)finish
 {
     //未登录则跳转登录
-    if (![SZManager sharedManager].SZRMToken.length)
+    if (![SZGlobalInfo sharedManager].SZRMToken.length)
     {
-        [SZManager mjgoToLoginPage];
+        [SZGlobalInfo mjshowLoginAlert];
         return;
     }
     

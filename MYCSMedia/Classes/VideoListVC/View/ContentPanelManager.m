@@ -192,6 +192,7 @@ NSString * CellKeyOther = @"OtherPanelCellReuse";           //调试用
         }
     }
     
+    
     //电视回看
     else if ([panelM.typeCode isEqualToString:PannelTypeTopicNews])
     {
@@ -199,9 +200,6 @@ NSString * CellKeyOther = @"OtherPanelCellReuse";           //调试用
         [cell setCellData:panelM];
         return cell;
     }
-    
-    
-
     
     
     

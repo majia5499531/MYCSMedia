@@ -17,6 +17,7 @@
 #import "MJProvider.h"
 #import "PanelModel.h"
 #import "PannelListView.h"
+#import "SZGlobalInfo.h"
 
 @interface CategoryView ()<NewsColumnDelegate>
 

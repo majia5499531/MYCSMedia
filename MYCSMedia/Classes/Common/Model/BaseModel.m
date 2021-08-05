@@ -9,8 +9,10 @@
 #import "BaseModel.h"
 #import "MJHUD.h"
 #import "NSObject+MJCategory.h"
-#import "SZManager.h"
+#import "SZGlobalInfo.h"
 #import <YYModel/YYModel.h>
+
+
 @implementation BaseModel
 
 //GET
@@ -93,8 +95,8 @@
         //处理401错误
         if (httpcode==401)
         {
-            [SZManager mjclearLoginInfo];
-            [SZManager mjgoToLoginPage];
+            [SZGlobalInfo mjclearLoginInfo];
+            [SZGlobalInfo mjshowLoginAlert];
             return;
         }
         
@@ -117,7 +119,7 @@
     AFHTTPSessionManager * httpManager = [AFHTTPSessionManager manager];
     
     //设置请求头
-    if ([SZManager sharedManager].SZRMToken.length)
+    if ([SZGlobalInfo sharedManager].SZRMToken.length)
     {
         //超时
         [httpManager.requestSerializer willChangeValueForKey:@"timeoutInterval"];
@@ -125,8 +127,8 @@
         [httpManager.requestSerializer didChangeValueForKey:@"timeoutInterval"];
         
         //token
-        NSString * token = [NSString stringWithFormat:@"%@",[SZManager sharedManager].SZRMToken];
-        if ([SZManager sharedManager].SZRMToken.length)
+        NSString * token = [NSString stringWithFormat:@"%@",[SZGlobalInfo sharedManager].SZRMToken];
+        if ([SZGlobalInfo sharedManager].SZRMToken.length)
         {
             [httpManager.requestSerializer setValue:token forHTTPHeaderField:@"token"];
         }

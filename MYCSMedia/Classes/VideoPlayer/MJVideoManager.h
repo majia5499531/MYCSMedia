@@ -28,8 +28,8 @@ typedef NS_ENUM(NSUInteger, MJVideoControlStyle) {
 #pragma mark - Video
 +(void)playFullScreenVideoAt:(UIViewController*)controller URL:(NSString*)url;
 +(void)playWindowVideoAtView:(UIView*)view url:(NSString*)videoURL coverImage:(NSString*)image silent:(BOOL)silent repeat:(BOOL)repeat controlStyle:(MJVideoControlStyle)style;
-+(void)cancelPlayingWindowVideo;
 +(void)pauseWindowVideo;
++(void)destroyVideoPlayer;
 +(SuperPlayerView *)videoPlayer;
 
 

@@ -8,7 +8,7 @@
 #import "PannelListView.h"
 #import "UIColor+MJCategory.h"
 #import "IQDataBinding.h"
-#import "SZManager.h"
+#import "SZGlobalInfo.h"
 #import "SZDefines.h"
 #import "UIView+MJCategory.h"
 #import "ColumnBar.h"

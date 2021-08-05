@@ -25,16 +25,21 @@
 #import "ContentModel.h"
 #import "TokenExchangeModel.h"
 #import "ConsoleVC.h"
+#import "SZData.h"
+#import "SZGlobalInfo.h"
+
 
 @interface SZVideoDetailVC ()<UICollectionViewDelegate, UICollectionViewDataSource,VideoCellDelegate>
 @property(assign,nonatomic)BOOL MJHideStatusbar;
 @end
 
+
+
 @implementation SZVideoDetailVC
 {
     //data
     NSMutableArray * dataArr;
-    BOOL randomMode;
+    BOOL isRandomMode;
     
     //UI
     UICollectionView * collectionView;
@@ -42,7 +47,7 @@
 }
 
 
-- (void)viewDidLoad
+-(void)viewDidLoad
 {
     [super viewDidLoad];
     
@@ -50,6 +55,51 @@
     
     [self MJInitSubviews];
     
+    [self checkInputParams];
+    
+    [self addNotifications];
+}
+
+-(void)dealloc
+{
+    [self removeNotifications];
+    
+    [SZData sharedSZData].currentContentId = @"";
+    
+    [MJVideoManager destroyVideoPlayer];
+}
+
+-(void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    
+    //隐藏导航栏
+    self.navigationController.navigationBar.hidden=YES;
+    
+    //检查登录
+    [SZGlobalInfo checkLoginStatus];
+}
+
+-(void)viewWillDisappear:(BOOL)animated
+{
+    [super viewWillDisappear:animated];
+    
+    //显示导航栏
+    self.navigationController.navigationBar.hidden=NO;
+}
+
+-(void)viewDidDisappear:(BOOL)animated
+{
+    [super viewDidDisappear:animated];
+    
+    [MJVideoManager pauseWindowVideo];
+}
+
+
+
+#pragma mark - Other
+-(void)checkInputParams
+{
     if (self.pannelId.length)
     {
         [self requestVideosInPannel];
@@ -65,45 +115,37 @@
             [self.navigationController popViewControllerAnimated:YES];
         }];
     }
-    
-    //监听全屏
+}
+
+-(NSIndexPath*)getCurrentRow
+{
+    //获取当前cell的index
+    CGPoint pt = collectionView.contentOffset;
+    pt.y = pt.y + collectionView.frame.size.height/2;
+    NSIndexPath * idx = [collectionView indexPathForItemAtPoint:pt];
+    return idx;
+}
+
+
+#pragma mark - Add Notoify
+-(void)addNotifications
+{
     [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(videoViewDidEnterFullSreen:) name:@"MJNeedHideStatusBar" object:nil];
-}
-
--(void)dealloc
-{
-    //移除监听
-    [[NSNotificationCenter defaultCenter]removeObserver:self];
-}
-
--(void)viewWillAppear:(BOOL)animated
-{
-    [super viewWillAppear:animated];
     
-    //隐藏导航栏
-    self.navigationController.navigationBar.hidden=YES;
+    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(SZRMTokenExchangeDone:) name:@"SZRMTokenExchangeDone" object:nil];
     
-    //检查登录
-    [SZManager checkLoginStatus];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(onDeviceOrientationChange:)
+                                                 name:UIDeviceOrientationDidChangeNotification
+                                               object:nil];
 }
--(void)viewWillDisappear:(BOOL)animated
+-(void)removeNotifications
 {
-    [super viewWillDisappear:animated];
-    
-    //显示导航栏
-    self.navigationController.navigationBar.hidden=NO;
-}
--(void)viewDidDisappear:(BOOL)animated
-{
-    [super viewDidDisappear:animated];
-    
-    [MJVideoManager cancelPlayingWindowVideo];
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 
-
-
-#pragma mark - Notifycation
+#pragma mark - Notification CallBack
 -(void)videoViewDidEnterFullSreen:(NSNotification*)notify
 {
     NSNumber * needHidden = notify.object;
@@ -112,6 +154,28 @@
     
     [self setNeedsStatusBarAppearanceUpdate];
 }
+
+-(void)SZRMTokenExchangeDone:(NSNotification*)notify
+{
+    [self updateCurrentContentId:YES];
+}
+
+-(void)onDeviceOrientationChange:(NSNotification*)notify
+{
+    UIDeviceOrientation orient = [UIDevice currentDevice].orientation;
+    if (orient == UIDeviceOrientationLandscapeLeft || orient == UIDeviceOrientationLandscapeRight)
+    {
+        NSNumber * num = [NSNumber numberWithBool:YES];
+        [[NSNotificationCenter defaultCenter]postNotificationName:@"MJRemoteEnterFullScreen" object:num];
+    }
+    
+    else if(orient == UIDeviceOrientationPortrait)
+    {
+        NSNumber * num = [NSNumber numberWithBool:NO];
+        [[NSNotificationCenter defaultCenter]postNotificationName:@"MJRemoteEnterFullScreen" object:num];
+    }
+}
+
 
 #pragma mark - Setter
 -(void)setPannelId:(NSString *)pannelId
@@ -128,6 +192,7 @@
         _contentId = contentId;
     }
 }
+
 
 #pragma mark - Request
 -(void)requestVideosInPannel
@@ -210,9 +275,7 @@
         } Fail:^(NSError *error) {
             [weakSelf requestFailed];
         }];
-
 }
-
 
 -(void)requestMoreVideosInPannel
 {
@@ -239,6 +302,7 @@
         }];
 }
 
+
 #pragma mark - Request Done
 -(void)requestDone:(VideoListModel*)model
 {
@@ -251,7 +315,7 @@
     [collectionView reloadData];
     [collectionView layoutIfNeeded];
     dispatch_async(dispatch_get_main_queue(),^{
-        [self playCurrentRow];
+        [self updateCurrentContentId:NO];
     });
     
 }
@@ -272,7 +336,7 @@
     [collectionView reloadData];
     [collectionView layoutIfNeeded];
     dispatch_async(dispatch_get_main_queue(),^{
-        [self playCurrentRow];
+        [self updateCurrentContentId:NO];
     });
 }
 
@@ -284,8 +348,7 @@
 
 
 
-
-#pragma mark - init
+#pragma mark - Init
 -(void)MJInitSubviews
 {
     self.view.backgroundColor=HW_BLACK;
@@ -334,13 +397,14 @@
     [self.view addSubview:commentBar];
 }
 
+
 -(void)MJInitData
 {
     dataArr = [NSMutableArray array];
     
     if (self.pannelId.length==0)
     {
-        randomMode = YES;
+        isRandomMode = YES;
     }
 }
 
@@ -348,7 +412,7 @@
 #pragma mark - 下拉/上拉
 -(void)pulldownRefreshAction:(MJRefreshHeader*)refreshHeader
 {
-    randomMode = YES;
+    isRandomMode = YES;
     [self requestRandomVideos];
 }
 
@@ -359,7 +423,7 @@
 
 -(void)fetchMoreVideos
 {
-    if (randomMode==YES)
+    if (isRandomMode==YES)
     {
         [self requestMoreRandomVideos];
     }
@@ -377,36 +441,26 @@
 {
     NSIndexPath * indexpath = [self getCurrentRow];
     
-    [self playCurrentRow];
+    [self updateCurrentContentId:NO];
     
     //如果是倒数第二个则加载更多
     if (indexpath.row==dataArr.count-2)
     {
         [self fetchMoreVideos];
     }
-    
 }
+
 
 #pragma mark - Cell Delegate
 -(void)didSelectVideo:(ContentModel*)model
 {
     NSString * contentid = model.id;
-    [commentBar updateCommentBarData:contentid cannotComent:model.disableComment.boolValue];
+    [SZData sharedSZData].currentContentId = contentid;
 }
 
 
-
-#pragma mark - 播放
--(NSIndexPath*)getCurrentRow
-{
-    //获取当前cell的index
-    CGPoint pt = collectionView.contentOffset;
-    pt.y = pt.y + collectionView.frame.size.height/2;
-    NSIndexPath * idx = [collectionView indexPathForItemAtPoint:pt];
-    return idx;
-}
-
--(void)playCurrentRow
+#pragma mark - 更新currentId
+-(void)updateCurrentContentId:(BOOL)force
 {
     //model
     NSIndexPath * path = [self getCurrentRow];
@@ -414,16 +468,20 @@
     {
         return;
     }
-    ContentModel * videoM = dataArr[path.row];
     
-    //commenbar
-    NSString * contentid = videoM.id;
-    [commentBar updateCommentBarData:contentid cannotComent:videoM.disableComment.boolValue];
+    //contentId
+    ContentModel * contentModel = dataArr[path.row];
+    NSString * contentid = contentModel.id;
     
-    //PlayVideo
-    SZVideoCell * cell = (SZVideoCell*)[collectionView cellForItemAtIndexPath:path];
-    [cell playingVideo];
+    //更新数据
+    if(![[SZData sharedSZData].currentContentId isEqualToString:contentid] || force)
+    {
+        [[SZData sharedSZData].contentDic setValue:contentModel forKey:contentid];
+        [SZData sharedSZData].currentContentId = contentid;
+    }
 }
+
+
 
 #pragma mark - CollectionView Datasource & Delegate
 -(UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
@@ -484,6 +542,7 @@
         [self.navigationController pushViewController:vc animated:YES];
     }
 }
+
 
 #pragma mark - StatusBar
 -(UIStatusBarStyle)preferredStatusBarStyle

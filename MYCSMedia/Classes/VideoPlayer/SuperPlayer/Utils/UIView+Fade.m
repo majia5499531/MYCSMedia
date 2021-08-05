@@ -40,7 +40,7 @@
     int seeds = [self.fadeSeeds intValue];
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delay * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         if (seeds == [self.fadeSeeds intValue]) {
-            [UIView animateWithDuration:0.3 delay:0 options:UIViewAnimationOptionCurveEaseOut animations:^{
+            [UIView animateWithDuration:0.1 delay:0 options:UIViewAnimationOptionCurveEaseOut animations:^{
                 self.alpha=0;
             } completion:^(BOOL finished) {
                 self.hidden = YES;

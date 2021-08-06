@@ -131,7 +131,7 @@
         self.closeHandler();
     } else {
         [self hide];
-        [_superPlayer resetPlayer];
+        [_superPlayer destroyCorePlayer];
         self.backController = nil;
     }
 }

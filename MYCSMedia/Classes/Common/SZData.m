@@ -56,7 +56,6 @@
 }
 
 
-
 #pragma mark - Request
 //请求内容状态
 -(void)requestContentState
@@ -105,8 +104,8 @@
     url = APPEND_SUBURL(url, self.currentContentId);
     
     StatusModel * model = [StatusModel model];
-    [model GETRequestInView:nil WithUrl:url Params:nil Success:^(id responseObject) {
-            NSLog(@"浏览量+1_%@",self.currentContentId);
+    [model PostRequestInView:nil WithUrl:url Params:nil Success:^(id responseObject) {
+            
         } Error:^(id responseObject) {
             
         } Fail:^(NSError *error) {

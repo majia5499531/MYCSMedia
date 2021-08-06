@@ -212,7 +212,6 @@
     {
         
        relateModel = [[SZData sharedSZData].contentRelateContentDic valueForKey:contentId];
-        NSLog(@"notice_%@_%ld",dataModel.id,relateModel.dataArr.count);
        [noticeView reloadDataAndStartRoll];
     }
 }
@@ -230,6 +229,8 @@
 #pragma mark - 播放视频
 -(void)playingVideo
 {
+    NSString * currentId = [SZData sharedSZData].currentContentId;
+    NSLog(@"cellPlay_%@_%@_%@",dataModel.id,currentId,dataModel.title);
     [MJVideoManager playWindowVideoAtView:videoBtn url:dataModel.playUrl coverImage:dataModel.thumbnailUrl silent:NO repeat:NO controlStyle:0];
 }
 

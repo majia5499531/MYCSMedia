@@ -313,12 +313,13 @@
     [dataArr addObjectsFromArray:model.dataArr];
     
     [collectionView reloadData];
-    [collectionView layoutIfNeeded];
+    
     dispatch_async(dispatch_get_main_queue(),^{
         [self updateCurrentContentId:NO];
     });
     
 }
+
 
 -(void)requestMoreVideoDone:(VideoListModel*)model
 {
@@ -331,14 +332,31 @@
         return;
     }
     
+    
+    NSInteger startIdx = dataArr.count;
+    
+    
+    NSMutableArray * idxArr = [NSMutableArray array];
+    for (int i = 0; i<model.dataArr.count; i++)
+    {
+        NSInteger idx = startIdx++;
+        NSIndexPath * idpath = [NSIndexPath indexPathForRow:idx inSection:0];
+        [idxArr addObject:idpath];
+    }
+    
+    
+    
     [dataArr addObjectsFromArray:model.dataArr];
     
-    [collectionView reloadData];
-    [collectionView layoutIfNeeded];
-    dispatch_async(dispatch_get_main_queue(),^{
-        [self updateCurrentContentId:NO];
-    });
+    //追加collectionview数量
+    [collectionView performBatchUpdates:^{
+            [collectionView insertItemsAtIndexPaths:idxArr];
+        } completion:^(BOOL finished) {
+            
+        }];
+    
 }
+
 
 -(void)requestFailed
 {
@@ -486,6 +504,7 @@
 #pragma mark - CollectionView Datasource & Delegate
 -(UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
+    
     SZVideoCell * cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"shortSZVideoCell" forIndexPath:indexPath];
     cell.delegate=self;
     [cell setCellData:dataArr[indexPath.row]];

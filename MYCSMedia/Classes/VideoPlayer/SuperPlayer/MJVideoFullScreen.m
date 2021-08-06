@@ -32,14 +32,14 @@
     
     
     //重置状态
-    [playview resetPlayer];
+    [playview destroyCorePlayer];
     
     //play
     SuperPlayerModel * playerModel = [[SuperPlayerModel alloc] init];
     playerModel.videoURL = self.videoURL;
     [playview playWithModel:playerModel];
     playview.coverImageView.backgroundColor=[UIColor blackColor];
-    playview.loop = NO;
+    playview.playerConfig.loop = NO;
     playview.playerConfig.mute=NO;
     playview.playerConfig.playRate=1.0;
     [playview controlViewDidUpdateConfig:[MJVideoManager videoPlayer] withReload:NO];

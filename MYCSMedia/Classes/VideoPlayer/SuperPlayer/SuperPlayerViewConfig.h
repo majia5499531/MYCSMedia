@@ -27,4 +27,7 @@
 @property NSString *playShiftDomain;
 /// log打印
 @property BOOL enableLog;
+/// 循环播放
+@property (nonatomic) BOOL loop;
+
 @end

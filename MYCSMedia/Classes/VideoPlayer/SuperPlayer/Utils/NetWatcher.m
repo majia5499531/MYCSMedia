@@ -25,13 +25,18 @@
 {
     _playerModel = playerModel;
     
+    //根据数组各项权重（分辨率名称->权重），进行排序
     self.definitions = [self.playerModel.playDefinitions sortedArrayUsingComparator:^NSComparisonResult(NSString *obj1, NSString *obj2) {
         return [NetWatcher weightOfDefinition:obj1] < [NetWatcher weightOfDefinition:obj2];
     }];
     
-    if (AFNetworkReachabilityManager.sharedManager.networkReachabilityStatus == AFNetworkReachabilityStatusReachableViaWWAN) {
+    //根据网络状态，自动计算出推荐分辨率
+    if (AFNetworkReachabilityManager.sharedManager.networkReachabilityStatus == AFNetworkReachabilityStatusReachableViaWWAN)
+    {
         self.adviseDefinition = self.definitions.lastObject;
-    } else {
+    }
+    else
+    {
         self.adviseDefinition = self.definitions.firstObject;
     }
 }
@@ -138,30 +143,30 @@
     }
 }
 
-+(int)weightOfDefinition:(NSString *)def
++(int)weightOfDefinition:(NSString *)definitionStr
 {
-    if ([def isEqualToString:@"流畅"]) {
+    if ([definitionStr isEqualToString:@"流畅"]) {
         return 10;
     }
-    if ([def isEqualToString:@"标清"]) {
+    if ([definitionStr isEqualToString:@"标清"]) {
         return 15;
     }
-    if ([def isEqualToString:@"高清"]) {
+    if ([definitionStr isEqualToString:@"高清"]) {
         return 20;
     }
-    if ([def isEqualToString:@"全高清"]) {
+    if ([definitionStr isEqualToString:@"全高清"]) {
         return 40;
     }
-    if ([def isEqualToString:@"超清"]) {
+    if ([definitionStr isEqualToString:@"超清"]) {
         return 50;
     }
-    if ([def isEqualToString:@"原画"]) {
+    if ([definitionStr isEqualToString:@"原画"]) {
         return 60;
     }
-    if ([def isEqualToString:@"2K"]) {
+    if ([definitionStr isEqualToString:@"2K"]) {
         return 70;
     }
-    if ([def isEqualToString:@"4K"]) {
+    if ([definitionStr isEqualToString:@"4K"]) {
         return 80;
     }
     return 10000;

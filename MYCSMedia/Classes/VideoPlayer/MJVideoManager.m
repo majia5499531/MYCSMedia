@@ -61,12 +61,13 @@
     manager.MJVideoView.delegate = manager;
 
     //如果是老url
-    if ([videoURL isEqualToString:manager.MJVideoView.playerModel.videoURL] && manager.MJVideoView.isLoaded && manager.MJVideoView.repeatBtn.hidden==YES)
+    if ([videoURL isEqualToString:manager.MJVideoView.playerModel.videoURL] && manager.MJVideoView.isLoaded)
     {
         
         //如果是暂停
         if (manager.MJVideoView.state==StatePause)
         {
+            NSLog(@"播放——相同url——恢复播放");
             [manager.MJVideoView resume];
         }
         
@@ -74,13 +75,21 @@
         //正在播放
         else if (manager.MJVideoView.state==StatePlaying)
         {
-            
+            NSLog(@"播放——相同url——正在播放");
+        }
+        
+        //停止播放
+        else if (manager.MJVideoView.state==StateStopped)
+        {
+            NSLog(@"播放——相同url——已停止");
+            [MJVideoManager playNewVideo:videoURL];
         }
         
         
         //不是则播放
         else
         {
+            NSLog(@"播放——相同url——其他");
             [MJVideoManager playNewVideo:videoURL];
         }
     }
@@ -89,6 +98,7 @@
     //新url
     else
     {
+        NSLog(@"播放——不同url");
         [MJVideoManager playNewVideo:videoURL];
     }
 
@@ -103,7 +113,7 @@
     MJVideoManager * manager = [MJVideoManager sharedMediaManager];
     
     //reset
-    [manager.MJVideoView resetPlayer];
+    [manager.MJVideoView destroyCorePlayer];
 
     //NewModel
     SuperPlayerModel * playerModel = [[SuperPlayerModel alloc] init];
@@ -111,7 +121,7 @@
     [manager.MJVideoView playWithModel:playerModel];
     
     //config
-    manager.MJVideoView.loop = NO;
+    manager.MJVideoView.playerConfig.loop = NO;
     manager.MJVideoView.playerConfig.mute=NO;
     manager.MJVideoView.playerConfig.playRate = 1.0 ;
     [manager.MJVideoView controlViewDidUpdateConfig:manager.MJVideoView withReload:NO];
@@ -135,7 +145,7 @@
 
     manager.MJVideoView.fatherView = nil;
     
-    [manager.MJVideoView resetPlayer];
+    [manager.MJVideoView destroyCorePlayer];
     
 }
 

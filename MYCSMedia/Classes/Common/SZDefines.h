@@ -50,7 +50,7 @@
 #define API_URL_RELATED_CONTENT     @"api/cms/client/content/recommend"
 
 //业务
-#define VIDEO_PAGE_SIZE             10
+#define VIDEO_PAGE_SIZE             4
 #define COMMENT_BAR_HEIGHT          (CGFloat)(IS_IPHONE_X?(121):(87))
 #define IMG_RADIUS                  5
 #define IMAGE_RATE_169              (9.0/16.0)

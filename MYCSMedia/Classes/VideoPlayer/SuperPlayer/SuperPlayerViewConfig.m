@@ -18,6 +18,7 @@
     self.maxCacheItem = 5;
     self.playShiftDomain = @"playtimeshift.live.myqcloud.com";
     self.enableLog = NO;
+    self.loop=NO;
     return self;
 }
 

@@ -21,15 +21,25 @@
 @property CGFloat where;
 @property NSString *text;
 @property CGFloat time;
-
 @end
+
 
 @interface SuperPlayerControlView : UIView
 @property (nonatomic, assign,getter=isFullScreen)BOOL fullScreenState;
 @property (nonatomic, assign,getter=isLockScreen)BOOL isLockScreen;
 @property (assign,nonatomic)BOOL onlyFullscreenMode;
 @property (assign, nonatomic) BOOL compact;
-@property(assign,nonatomic)BOOL ignoreWWAN;
+@property NSString *title;
+@property NSArray<SuperPlayerVideoPoint *>  *pointArray;
+@property BOOL  isDragging;
+@property BOOL  isShowSecondView;
+@property (nonatomic, weak) id<SuperPlayerControlViewDelegate> delegate;
+@property SuperPlayerViewConfig *playerConfig;
+
+
+
+
+
 /**
  * 播放进度
  * @param currentTime 当前播放时长
@@ -59,18 +69,8 @@
      isTimeShifting:(BOOL)isTimeShifting
          isAutoPlay:(BOOL)isAutoPlay;
 
-/// 标题
-@property NSString *title;
-/// 打点信息
-@property NSArray<SuperPlayerVideoPoint *>  *pointArray;
-/// 是否在拖动进度
-@property BOOL  isDragging;
-/// 是否显示二级菜单
-@property BOOL  isShowSecondView;
-/// 回调delegate
-@property (nonatomic, weak) id<SuperPlayerControlViewDelegate> delegate;
-/// 播放配置
-@property SuperPlayerViewConfig *playerConfig;
+
+
 
 - (void)setCompactConstraint;
 - (void)setUncompactConstraint;

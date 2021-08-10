@@ -62,10 +62,7 @@
     __weak typeof (self) weakSelf = self;
     self.observe(@"currentContentId",^(id value){
         weakSelf.contentId = value;
-        
-        ContentModel * model = [[SZData sharedSZData].contentDic valueForKey:value];
-        NSLog(@"contentTitle_%@",model.title);
-        
+        [weakSelf updateContentInfo];
     }).observe(@"contentStateUpdateTime",^(id value){
         [weakSelf updateContentStateData];
     }).observe(@"contentZanTime",^(id value){
@@ -75,10 +72,7 @@
     }).observe(@"contentCommentsUpdateTime",^(id value){
         [weakSelf updateCommentData];
     });
-    
 }
-
-
 
 
 
@@ -121,7 +115,7 @@
     sendBtn = [[MJButton alloc]init];
     [sendBtn setImage:[UIImage getBundleImage:@"sz_write"] forState:UIControlStateNormal];
     sendBtn.imageFrame=CGRectMake(13, 9, 12.5, 13);
-    sendBtn.titleFrame=CGRectMake(32, 8, 100, 15);
+    sendBtn.titleFrame=CGRectMake(32, 8, 155, 15);
     sendBtn.mj_text=@"写评论...";
     sendBtn.mj_font=FONT(13);
     sendBtn.mj_textColor=HW_GRAY_WORD_1;
@@ -208,7 +202,19 @@
     countLabel.text = [NSString stringWithFormat:@"(%ld)",commentM.total];
 }
 
-
+-(void)updateContentInfo
+{
+    ContentModel * contenM = [[SZData sharedSZData].contentDic valueForKey:self.contentId];
+    
+    if(contenM.disableComment.boolValue)
+    {
+        sendBtn.mj_text=@"该内容禁止评论";
+    }
+    else
+    {
+        sendBtn.mj_text=@"写评论...";
+    }
+}
 
 
 

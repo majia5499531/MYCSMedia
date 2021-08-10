@@ -238,8 +238,6 @@
 
 -(void)requestVideoRelateContentDone:(VideoRelateModel*)model
 {
-    NSLog(@"notice_requestDone_%@_%ld",self.currentContentId,model.dataArr.count);
-    
     //保存
     [self.contentRelateContentDic setValue:model forKey:self.currentContentId];
     

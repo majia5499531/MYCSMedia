@@ -62,12 +62,6 @@
         //返回直播
         [self addSubview:self.backLiveBtn];
         
-        //网络状态
-        [self addSubview:self.MJStatusView];
-        
-        //错误状态
-        [self addSubview:self.MJErrorMsgView];
-        
         //添加约束
         [self makeSubViewsConstraints];
         
@@ -216,19 +210,7 @@
         make.centerX.equalTo(self);
     }];
     
-    [self.MJStatusView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.mas_equalTo(0);
-        make.top.mas_equalTo(0);
-        make.width.mas_equalTo(self.mas_width);
-        make.height.mas_equalTo(self.mas_height);
-    }];
     
-    [self.MJErrorMsgView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.mas_equalTo(0);
-        make.top.mas_equalTo(0);
-        make.width.mas_equalTo(self.mas_width);
-        make.height.mas_equalTo(self.mas_height);
-    }];
 }
 
 
@@ -552,12 +534,7 @@
     [self.delegate controlViewSeek:self where:point.where];
     [self fadeOut:0.1];
 }
--(void)MJNetStatusBtnAction
-{
-    self.MJStatusView.hidden=YES;
-    self.ignoreWWAN=YES;
-    [self.delegate MJRealoadPlaying];
-}
+
 -(void)zanBtnAction
 {
     if (![SZGlobalInfo sharedManager].SZRMToken.length)
@@ -881,84 +858,6 @@
     return _moreContentView;
 }
 
--(UIView *)MJStatusView
-{
-    if (!_MJStatusView)
-    {
-        _MJStatusView = [[UIView alloc]init];
-        
-        UIImageView * bg = [[UIImageView alloc]init];
-        bg.backgroundColor=[UIColor blackColor];
-        bg.contentMode=UIViewContentModeScaleAspectFill;
-        bg.layer.masksToBounds=YES;
-        [_MJStatusView addSubview:bg];
-        [bg mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.left.mas_equalTo(0);
-            make.top.mas_equalTo(0);
-            make.width.mas_equalTo(_MJStatusView.mas_width);
-            make.height.mas_equalTo(_MJStatusView.mas_height);
-        }];
-        
-        UILabel * desc=[[UILabel alloc]init];
-        desc.text=@"正在使用非Wi-Fi网络，播放将产生流量费用";
-        desc.textColor=[UIColor whiteColor];
-        desc.textAlignment=NSTextAlignmentCenter;
-        desc.font=[UIFont systemFontOfSize:12];;
-        desc.alpha=0.5;
-        [_MJStatusView addSubview:desc];
-        [desc mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.centerX.mas_equalTo(_MJStatusView.mas_centerX);
-            make.centerY.mas_equalTo(_MJStatusView.mas_centerY).offset(-20);
-        }];
-        
-        UIButton * btn=[[UIButton alloc]init];
-        [btn setTitle:@"使用流量播放" forState:UIControlStateNormal];
-        btn.layer.cornerRadius=4;
-        btn.layer.borderWidth=1;
-        btn.layer.borderColor=[UIColor whiteColor].CGColor;
-        [btn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-        btn.titleLabel.font=[UIFont systemFontOfSize:14];
-        [btn addTarget:self action:@selector(MJNetStatusBtnAction) forControlEvents:UIControlEventTouchUpInside];
-        [_MJStatusView addSubview:btn];
-        [btn mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.centerX.mas_equalTo(_MJStatusView.mas_centerX);
-            make.centerY.mas_equalTo(_MJStatusView.mas_centerY).offset(17);;
-            make.height.mas_equalTo(30);
-            make.width.mas_equalTo(100);
-        }];
-    }
-    
-    return _MJStatusView;
-}
--(UIView *)MJErrorMsgView
-{
-    if (!_MJErrorMsgView)
-    {
-        _MJErrorMsgView = [[UIView alloc]init];
-        _MJErrorMsgView.backgroundColor=[UIColor blackColor];
-        
-        SuperPlayerView * view = (SuperPlayerView*)self.delegate;
-        NSString * videoUrl = view.playerModel.playingDefinitionUrl;
-        NSString * errmsg = [NSString stringWithFormat:@"当前播放地址:%@ 是一个无效地址",videoUrl];
-        
-        UILabel * desc=[[UILabel alloc]init];
-        desc.text=errmsg;
-        desc.numberOfLines=0;
-        desc.textColor=[UIColor whiteColor];
-        desc.textAlignment=NSTextAlignmentCenter;
-        desc.font=[UIFont systemFontOfSize:12];;
-        desc.alpha=0.5;
-        [_MJErrorMsgView addSubview:desc];
-        [desc mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.width.mas_equalTo(_MJErrorMsgView.mas_width).multipliedBy(0.5);
-            make.centerX.mas_equalTo(_MJErrorMsgView.mas_centerX);
-            make.centerY.mas_equalTo(_MJErrorMsgView.mas_centerY);
-        }];
-    }
-    
-    return _MJErrorMsgView;
-}
-
 
 
 #pragma mark - UIGestureRecognizerDelegate
@@ -1002,10 +901,11 @@
          isAutoPlay:(BOOL)isAutoPlay
 {
     [self setPlayState:isAutoPlay];
+    
     self.backLiveBtn.hidden = !isTimeShifting;
+    
     self.moreContentView.isLive = isLive;
     
-
     if (self.isLive != isLive)
     {
         self.isLive = isLive;

@@ -37,13 +37,12 @@
     //play
     SuperPlayerModel * playerModel = [[SuperPlayerModel alloc] init];
     playerModel.videoURL = self.videoURL;
-    [playview playWithModel:playerModel];
+    
     playview.coverImageView.backgroundColor=[UIColor blackColor];
     playview.playerConfig.loop = NO;
     playview.playerConfig.mute=NO;
     playview.playerConfig.playRate=1.0;
-    [playview controlViewDidUpdateConfig:[MJVideoManager videoPlayer] withReload:NO];
-    
+    [playview playWithModel:playerModel];
     
     //全屏
     playview.controlView.fullScreenState=YES;

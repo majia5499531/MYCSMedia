@@ -2,6 +2,7 @@
 #import "SuperPlayer.h"
 #import "SuperPlayerModel.h"
 #import "SuperPlayerViewConfig.h"
+#import "VideoErrorMessageView.h"
 
 @class SuperPlayerControlView;
 @class SuperPlayerView;
@@ -25,11 +26,11 @@
 
 // 播放器的状态
 typedef NS_ENUM(NSInteger, SuperPlayerState) {
-    StateFailed,     // 播放失败
-    StateBuffering,  // 缓冲中
-    StatePlaying,    // 播放中
-    StateStopped,    // 停止播放
-    StatePause,      // 暂停播放
+    StateFailed,     // 播放失败  0
+    StateBuffering,  // 缓冲中    1
+    StatePlaying,    // 播放中    2
+    StateStopped,    // 停止播放  3
+    StatePause,      // 暂停播放  4
 };
 
 
@@ -45,62 +46,37 @@ typedef NS_ENUM(NSInteger, SuperPlayerState) {
 @property(strong,nonatomic)UIView *fullScreenBlackView;;
 @property (nonatomic, strong) UIButton *repeatBtn;
 @property(strong,nonatomic)UIView * sharingView;
-
-
+@property(strong,nonatomic)VideoErrorMessageView * MJErrorMsgView;
+@property(strong,nonatomic)UIView * MJStatusView;
 
 //状态
-@property (nonatomic, assign) SuperPlayerState state;                //播放状态
+@property (nonatomic, assign) SuperPlayerState playerState;          //播放状态
 @property (readonly) BOOL isLive;                                      //是否是直播流
-@property (nonatomic) BOOL disableGesture;                            //是否允许竖屏手势
 @property (readonly)  BOOL isDragging;                                //是否在手势中
 @property (readonly)  BOOL  isLoaded;                                 //是否加载成功
 @property BOOL autoPlay;                                               //是否自动播放（在playWithModel前设置)
 @property (nonatomic) CGFloat playDuration;                          //视频总时长
 @property (nonatomic) CGFloat playCurrentTime;                       //视频当前播放时间
-@property CGFloat startTime;                                          //起始播放时间，用于从上次位置开播
+@property CGFloat startTime;                                          //起始播放时间(必须要在内核方法startplay前设置)
 @property (readonly) SuperPlayerModel *playerModel;                 //播放的视频Model
 @property SuperPlayerViewConfig *playerConfig;                      //播放器配置
 @property TXImageSprite *imageSprite;                                //视频雪碧图
 @property NSArray *keyFrameDescList;                                 //关键帧信息
-
+@property(assign,nonatomic)BOOL ignoreWWAN;                         //允许4g播放
 
 
 
 //操作API
-/**
- * 播放model
- */
 - (void)playWithModel:(SuperPlayerModel *)playerModel;
-
-/**
- * 重置player
- */
 - (void)destroyCorePlayer;
-
-/**
- * 播放
- */
 - (void)resume;
-
-/**
- * 暂停
- * @warn isLoaded == NO 时暂停无效
- */
-- (void)pause;
-
-/**
- *  从xx秒开始播放视频跳转
- *
- *  @param dragedSeconds 视频跳转的秒数
- */
-- (void)seekToTime:(NSInteger)dragedSeconds;
+- (void)pause;              //isLoaded == NO 时暂停无效
+- (void)seekToTime:(NSInteger)dragedSeconds;            //从xx秒开始
 
 
 
 
 //补充
--(void)controlViewDidUpdateConfig:(SuperPlayerView *)controlView withReload:(BOOL)reload;
-
 -(void)switchToFullScreenMode:(BOOL)fullScreen;
 
 @end

@@ -74,8 +74,8 @@
 @property(strong,nonatomic)NSString * contentId;
 
 //网络状态
-@property(strong,nonatomic)UIView * MJStatusView;
-@property(strong,nonatomic)UIView * MJErrorMsgView;
+
+
 
 @property BOOL isLive;
 

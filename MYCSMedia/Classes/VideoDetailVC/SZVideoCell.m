@@ -205,6 +205,7 @@
     });
 }
 
+//视频相关新闻
 -(void)updateVideoRelate
 {
     NSString * contentId = [SZData sharedSZData].currentContentId;
@@ -229,8 +230,6 @@
 #pragma mark - 播放视频
 -(void)playingVideo
 {
-    NSString * currentId = [SZData sharedSZData].currentContentId;
-    NSLog(@"cellPlay_%@_%@_%@",dataModel.id,currentId,dataModel.title);
     [MJVideoManager playWindowVideoAtView:videoBtn url:dataModel.playUrl coverImage:dataModel.thumbnailUrl silent:NO repeat:NO controlStyle:0];
 }
 
@@ -358,7 +357,6 @@
     }
     
     [self showSelectionView];
-
 }
 
 

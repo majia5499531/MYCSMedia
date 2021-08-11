@@ -1815,6 +1815,7 @@ static UISlider * _volumeSlider;
             make.height.mas_equalTo(45);
         }];
         
+        
         //wecaht
         MJButton * wechatBtn = [[MJButton alloc]init];
         [wechatBtn setImage:[UIImage getBundleImage:@"sz_wechat"] forState:UIControlStateNormal];

@@ -241,6 +241,10 @@
         
         self.currentCell.frame = CGRectMake(0, -h, w, h);
         self.willShowCell.frame = CGRectMake(0, 0, w, h);
+        
+        self.currentCell.alpha=0.1;
+        self.willShowCell.alpha=1;
+        
     } completion:^(BOOL finished) {
         kGYNotiStrongSelf(self);
         

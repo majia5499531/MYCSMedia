@@ -173,13 +173,11 @@
         [self addSubview:noticeView];
         [noticeView registerClass:[GYNoticeCell class] forCellReuseIdentifier:@"gynoticecellid"];
         [noticeView mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.left.mas_equalTo(descLabel.mas_left);
+            make.left.mas_equalTo(descLabel.mas_left).offset(-3);
             make.bottom.mas_equalTo(descLabel.mas_top).offset(-18);
             make.right.mas_equalTo(-20);
-            make.height.mas_equalTo(36);
+            make.height.mas_equalTo(46);//36
         }];
-        
-        
         
         //数据监听
         [self addDataBinding];
@@ -292,8 +290,6 @@
         }
         
     }
-    
-    
     
     
     //简介

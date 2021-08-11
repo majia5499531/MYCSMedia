@@ -40,7 +40,7 @@
         [self addSubview:icon];
         [icon mas_makeConstraints:^(MASConstraintMaker *make) {
             make.left.mas_equalTo(12);
-            make.centerY.mas_equalTo(self);
+            make.centerY.mas_equalTo(self).offset(6);
             make.width.mas_equalTo(14);
             make.height.mas_equalTo(14);
         }];
@@ -49,6 +49,7 @@
         CGFloat maxW = SCREEN_WIDTH-110;
         label = [[UILabel alloc]init];
         label.font=[UIFont systemFontOfSize:14];
+        label.alpha=0.8;
         label.textColor=[UIColor whiteColor];
         [self addSubview:label];
         [label mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -60,25 +61,25 @@
         //close
         MJButton * close = [[MJButton alloc]init];
         close.mj_imageObjec = [UIImage getBundleImage:@"notice_close"];
-        close.imageFrame=CGRectMake(8, 9, 9, 9 );
+        close.imageFrame=CGRectMake(9, 9, 9, 9 );
         [close addTarget:self action:@selector(closeNoticeBtnAction) forControlEvents:UIControlEventTouchUpInside];
         [self addSubview:close];
         [close mas_makeConstraints:^(MASConstraintMaker *make) {
             make.left.mas_equalTo(label.mas_right);
             make.width.mas_equalTo(30);
             make.height.mas_equalTo(27);
-            make.centerY.mas_equalTo(self);
+            make.centerY.mas_equalTo(icon);
         }];
         
         //bgview
         bgview = [[UIView alloc]init];
-        bgview.layer.cornerRadius = 18;
+        bgview.layer.cornerRadius = 8;
         bgview.backgroundColor = HW_GRAY_BG_3;
         [self insertSubview:bgview belowSubview:icon];
         [bgview mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.left.mas_equalTo(0);
-            make.top.mas_equalTo(0);
-            make.bottom.mas_equalTo(0);
+            make.left.mas_equalTo(1);
+            make.top.mas_equalTo(10);
+            make.height.mas_equalTo(36);
             make.right.mas_equalTo(close.mas_right);
         }];
         UITapGestureRecognizer * tap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(didClickNotice)];

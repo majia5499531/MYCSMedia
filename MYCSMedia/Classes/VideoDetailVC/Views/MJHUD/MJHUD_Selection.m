@@ -139,7 +139,7 @@
     
     //timeline
     MJButton * timelineBtn = [[MJButton alloc]initWithFrame:CGRectMake(SCREEN_WIDTH/2-22.5, SCREEN_HEIGHT-90, 45, 45)];
-    [timelineBtn setImage:[UIImage getBundleImage:@"sz_timeline"] forState:UIControlStateNormal];
+    [timelineBtn setImage:[UIImage getBundleImage:@"sz_wechatZone"] forState:UIControlStateNormal];
     timelineBtn.tag=1;
     [hud addSubview:timelineBtn];
     

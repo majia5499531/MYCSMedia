@@ -1804,7 +1804,7 @@ static UISlider * _volumeSlider;
         
         //timeline
         MJButton * timelineBtn = [[MJButton alloc]init];
-        [timelineBtn setImage:[UIImage getBundleImage:@"sz_timeline"] forState:UIControlStateNormal];
+        [timelineBtn setImage:[UIImage getBundleImage:@"sz_wechatZone"] forState:UIControlStateNormal];
         timelineBtn.tag=1;
         [timelineBtn addTarget:self action:@selector(timelineBtnAction) forControlEvents:UIControlEventTouchUpInside];
         [_sharingView addSubview:timelineBtn];

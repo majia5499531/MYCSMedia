@@ -59,6 +59,9 @@
     MJVideoManager * manager = [MJVideoManager sharedMediaManager];
     manager.MJVideoView.fatherView = view;
     manager.MJVideoView.delegate = manager;
+    
+    //发广播
+    [[NSNotificationCenter defaultCenter]postNotificationName:@"SZRMVideoWillPlay" object:nil];
 
     //如果是老url
     if ([videoURL isEqualToString:manager.MJVideoView.playerModel.videoURL] && manager.MJVideoView.isLoaded)

@@ -13,7 +13,8 @@
 #import "StatusModel.h"
 #import "VideoRelateModel.h"
 #import "SZGlobalInfo.h"
-
+#import "SZEventTracker.h"
+#import "StatusModel.h"
 
 @implementation SZData
 
@@ -26,7 +27,7 @@
         {
             manager = [[SZData alloc]init];
             
-            [manager bindingData];
+            [manager addDataBinding];
         }
         });
     return manager;
@@ -36,7 +37,7 @@
 
 
 #pragma mark - Binding
--(void)bindingData
+-(void)addDataBinding
 {
     //绑定数据
     [self bindModel:self];
@@ -142,6 +143,7 @@
     NSMutableDictionary * param=[NSMutableDictionary dictionary];
     [param setValue:self.currentContentId forKey:@"contentId"];
     [param setValue:@"short_video" forKey:@"type"];
+    
     __weak typeof (self) weakSelf = self;
     [model PostRequestInView:nil WithUrl:APPEND_SUBURL(BASE_URL, API_URL_FAVOR) Params:param Success:^(id responseObject) {
         [weakSelf requestCollectDone:model];
@@ -163,6 +165,7 @@
     [param setValue:@"100" forKey:@"pageSize"];
     [param setValue:@"1" forKey:@"pageIndex"];
     [param setValue:@"1" forKey:@"current"];
+    
     __weak typeof (self) weakSelf = self;
     [model PostRequestInView:nil WithUrl:APPEND_SUBURL(BASE_URL, API_URL_RELATED_CONTENT) Params:param Success:^(id responseObject) {
             [weakSelf requestVideoRelateContentDone:model];
@@ -173,6 +176,44 @@
         }];
     
 }
+
+-(void)requestFollowUser:(NSString*)userId
+{
+    StatusModel * model = [StatusModel model];
+    NSMutableDictionary * param=[NSMutableDictionary dictionary];
+    [param setValue:userId forKey:@"targetUserId"];
+    
+    NSString * url = APPEND_SUBURL(BASE_URL, API_URL_FOLLOW_USER);
+    url = APPEND_SUBURL(url, userId);
+    __weak typeof (self) weakSelf = self;
+    [model PostRequestInView:nil WithUrl:url Params:param Success:^(id responseObject) {
+        [weakSelf requestFollowCreatorDone:YES];
+        } Error:^(id responseObject) {
+            
+        } Fail:^(NSError *error) {
+            
+        }];
+}
+
+
+-(void)requestUnFollowUser:(NSString*)userId
+{
+    StatusModel * model = [StatusModel model];
+    NSMutableDictionary * param=[NSMutableDictionary dictionary];
+    [param setValue:userId forKey:@"targetUserId"];
+    
+    NSString * url = APPEND_SUBURL(BASE_URL, API_URL_UNFOLLOW_USER);
+    url = APPEND_SUBURL(url, userId);
+    __weak typeof (self) weakSelf = self;
+    [model PostRequestInView:nil WithUrl:url Params:param Success:^(id responseObject) {
+        [weakSelf requestFollowCreatorDone:NO];
+        } Error:^(id responseObject) {
+            
+        } Fail:^(NSError *error) {
+            
+        }];
+}
+
 
 #pragma mark - Request Done
 -(void)requestContentStateDone:(ContentStateModel*)model
@@ -204,9 +245,27 @@
     //修改值
     stateM.whetherFavor = model.data.boolValue;
     
+    if (model.data.boolValue)
+    {
+        NSInteger k = stateM.favorCountShow;
+        k++;
+        stateM.favorCountShow = k;
+    }
+    else
+    {
+        NSInteger k = stateM.favorCountShow;
+        k--;
+        stateM.favorCountShow = k;
+    }
+    
     //更新time
     NSNumber * currrentTime = [NSNumber numberWithInteger:[[NSDate date]timeIntervalSince1970]];
     self.contentCollectTime = currrentTime;
+    
+    
+    //tracking
+    ContentModel * contentM = [self.contentDic valueForKey:self.currentContentId];
+    [SZEventTracker trackingCommonEvent:contentM eventParam:nil eventName:@"content_favorite"];
 }
 
 -(void)requestZanDone:(StatusModel*)model
@@ -234,6 +293,12 @@
     //更新time
     NSNumber * currrentTime = [NSNumber numberWithInteger:[[NSDate date]timeIntervalSince1970]];
     self.contentZanTime = currrentTime;
+    
+    
+    
+    //tracking
+    ContentModel * contentM = [self.contentDic valueForKey:self.currentContentId];
+    [SZEventTracker trackingCommonEvent:contentM eventParam:nil eventName:@"content_like"];
 }
 
 -(void)requestVideoRelateContentDone:(VideoRelateModel*)model
@@ -246,7 +311,18 @@
     self.contentRelateUpdateTime = currrentTime;
 }
 
-
+-(void)requestFollowCreatorDone:(BOOL)isFollow
+{
+    //取model
+    ContentStateModel * stateM = [self.contentStateDic valueForKey:self.currentContentId];
+    
+    //修改值
+    stateM.whetherFollow = isFollow;
+    
+    //更新time
+    NSNumber * currrentTime = [NSNumber numberWithInteger:[[NSDate date]timeIntervalSince1970]];
+    self.contentCreateFollowTime = currrentTime;
+}
 
 
 #pragma mark - Lazy

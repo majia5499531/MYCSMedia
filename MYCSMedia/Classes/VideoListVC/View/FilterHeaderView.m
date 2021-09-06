@@ -49,7 +49,7 @@
         btn.mj_font=FONT(13);
         btn.mj_textColor=HW_GRAY_WORD_1;
         btn.mj_textColor_sel=HW_BLACK;
-        btn.mj_bgColor=HW_GRAY_BG_5;
+        btn.mj_bgColor=HW_GRAY_BG_White;
         [scrollBG addSubview:btn];
         [btn sizeToFit];
         [btn setWidth:btn.width+26];

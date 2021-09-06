@@ -28,7 +28,7 @@
     if (self)
     {
      
-        self.backgroundColor=HW_GRAY_BG_5;
+        self.backgroundColor=HW_GRAY_BG_White;
         
 //        //cover
 //        cover = [[UIImageView alloc]init];

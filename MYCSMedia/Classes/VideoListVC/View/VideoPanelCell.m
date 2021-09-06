@@ -5,6 +5,7 @@
 //  Created by 马佳 on 2021/6/25.
 //
 
+
 #import "VideoPanelCell.h"
 #import "ContentModel.h"
 #import "SZDefines.h"
@@ -16,17 +17,19 @@
 {
     ContentModel * dataModel;
     
-    //ui
+    //UI
     UIImageView * cover;
     UILabel * titleLabel;
     
 }
-- (instancetype)initWithFrame:(CGRect)frame
+
+
+-(instancetype)initWithFrame:(CGRect)frame
 {
     self = [super initWithFrame:frame];
     if (self)
     {
-        self.backgroundColor=HW_GRAY_BG_5;
+        self.backgroundColor=HW_GRAY_BG_White;
         
         self.contentView.backgroundColor=[UIColor yellowColor];
         [self.contentView mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -77,6 +80,8 @@
     return self;
 }
 
+
+
 -(void)setCellData:(ContentModel*)data
 {
     dataModel = data;
@@ -86,6 +91,7 @@
     titleLabel.text = data.title;
     
 }
+
 
 
 - (UICollectionViewLayoutAttributes *)preferredLayoutAttributesFittingAttributes:(UICollectionViewLayoutAttributes *)layoutAttributes

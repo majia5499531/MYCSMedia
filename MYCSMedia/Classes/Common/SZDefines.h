@@ -35,6 +35,7 @@
 
 
 #define BASE_URL                    [SZGlobalInfo mjgetBaseURL]
+#define BASE_H5_URL                 [SZGlobalInfo mjgetBaseH5URL]
 #define API_URL_VIDEO_LIST          @"api/cms/client/video/queryVideoPullDownList"
 #define API_URL_RANDOM_VIDEO_LIST   @"api/cms/client/video/queryRandomVideoList"
 #define API_URL_VIDEO               @"api/cms/client/video/getVideoDetails"
@@ -48,9 +49,21 @@
 #define API_URL_TOKEN_EXCHANGE      @"api/sys/login/mycs/token"
 #define API_URL_QUERYCATEGORY       @"api/cms/client/panel/queryPanelByCategory"
 #define API_URL_RELATED_CONTENT     @"api/cms/client/content/recommend"
+#define API_URL_FOLLOW_USER         @"api/sys/user/me/follow"
+#define API_URL_UNFOLLOW_USER       @"api/sys/user/me/unfollow"
+#define API_URL_TOPICS              @"api/cms/client/content/page"
+#define API_URL_VIDEO_UPLOAD        @"api/media/file/upload?isPublic=1&generateCoverImage=1"
+#define API_URL_VIDEO_COMMIT        @"api/cms/client/content/activity/works/create"
+#define API_URL_PANEL_ACTIVITY      @"api/cms/client/panel/info"
+#define API_URL_CONTENT_TRACKING    @"api/cms/client/tracking/upload"
+
+
+
+
+
 
 //业务
-#define VIDEO_PAGE_SIZE             20
+#define VIDEO_PAGE_SIZE             15
 #define COMMENT_BAR_HEIGHT          (CGFloat)(IS_IPHONE_X?(121):(87))
 #define IMG_RADIUS                  5
 #define IMAGE_RATE_169              (9.0/16.0)
@@ -196,14 +209,18 @@
 #define HW_GRAY_BG_2                [UIColor colorWithHexString:@"222222"]
 #define HW_GRAY_BG_3                [UIColor colorWithHexString:@"333333"]
 #define HW_GRAY_BG_4                [UIColor colorWithHexString:@"444444"]
+#define HW_GRAY_BG_5                [UIColor colorWithHexString:@"555555"]
+#define HW_GRAY_BG_6                [UIColor colorWithHexString:@"666666"]
+#define HW_GRAY_BG_7                [UIColor colorWithHexString:@"777777"]
+#define HW_GRAY_BG_8                [UIColor colorWithHexString:@"888888"]
 
-#define HW_GRAY_BG_5                [UIColor colorWithHexString:@"F3F4F5"]
+#define HW_GRAY_BG_White            [UIColor colorWithHexString:@"F3F4F5"]
 #define HW_GRAY_BORDER              [UIColor colorWithHexString:@"E8E8E8"]
 #define HW_GRAY_BORDER_2            [UIColor colorWithHexString:@"A3A3A3"]
 
 #define HW_GRAY_WORD_1              [UIColor colorWithHexString:@"999999"]
 #define HW_GRAY_WORD_2              [UIColor colorWithHexString:@"D4D4D4"]
-#define HW_GRAY_WORD_3              [UIColor colorWithHexString:@"666666"]
+
 
 #define HW_RED_WORD_1               [UIColor colorWithHexString:@"FB3838"]
 

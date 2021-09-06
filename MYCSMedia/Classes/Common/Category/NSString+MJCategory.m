@@ -214,6 +214,22 @@
 }
 
 
++(NSString*)converToViewCountStr:(NSInteger)viewCount
+{
+    NSInteger views = viewCount;
+    
+    if (views<10000)
+    {
+        return [NSString stringWithFormat:@"%ld",views];
+    }
+    else
+    {
+        int k = (int)views/10000;
+        return [NSString stringWithFormat:@"%d 万",k];
+    }
+}
+
+
 #pragma mark - 带标签的标题
 -(UIImage*)imageWithUIView:(UIView*)view
 {
@@ -649,4 +665,6 @@
     return returnStr;
     
 }
+
+
 @end

@@ -7,13 +7,10 @@
 
 #import <UIKit/UIKit.h>
 
-NS_ASSUME_NONNULL_BEGIN
 
 @interface SZVideoDetailVC : UIViewController
+
 @property(strong,nonatomic)NSString * contentId;
-@property(strong,nonatomic)NSString * pannelId;
+@property(assign,nonatomic)BOOL isPreview;
+
 @end
-
-NS_ASSUME_NONNULL_END
-
-

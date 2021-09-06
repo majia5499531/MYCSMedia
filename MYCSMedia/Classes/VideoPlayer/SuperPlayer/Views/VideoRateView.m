@@ -8,6 +8,8 @@
 #import "VideoRateView.h"
 #import <Masonry/Masonry.h>
 #import "SuperPlayer.h"
+#import "SZEventTracker.h"
+#import "SZData.h"
 
 #define TAG_1_SPEED 1001
 #define TAG_2_SPEED 1002
@@ -170,10 +172,15 @@
     btn.selected=YES;
     
     
-    CGFloat flt = [btn.titleLabel.text floatValue];
-    self.playerConfig.playRate = flt;
+    CGFloat rateValue = [btn.titleLabel.text floatValue];
+    self.playerConfig.playRate = rateValue;
     [self.controlView.delegate controlViewDidUpdateConfig:self.controlView withReload:NO];
     
+    
+    //tracking
+    NSString * contentid = [SZData sharedSZData].currentContentId;
+    ContentModel * model = [[SZData sharedSZData].contentDic valueForKey:contentid];
+    [SZEventTracker trackingVideoSpeedRateWithModel:model speed:[NSString stringWithFormat:@"%g",rateValue]];
     
 }
 
@@ -210,6 +217,7 @@
     if (rate == 2.0) {
         [btnArr[5] setSelected:YES];
     }
+    
 }
 
 

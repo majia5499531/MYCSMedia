@@ -15,6 +15,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 +(void)showShareView:(HUD_BLOCK)reslt;
 
++(void)showUploadingHudAt:(UIView*)view block1:(HUD_BLOCK)block1 block2:(HUD_BLOCK)block2;
+
 @end
 
 NS_ASSUME_NONNULL_END

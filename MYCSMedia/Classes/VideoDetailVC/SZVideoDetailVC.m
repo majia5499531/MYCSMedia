@@ -10,7 +10,7 @@
 #import "UIColor+MJCategory.h"
 #import "CustomFooter.h"
 #import "CustomAnimatedHeader.h"
-#import "SZVideoCell.h"
+#import "SZVideoDetailSimpleCell.h"
 #import "UIImage+MJCategory.h"
 #import "MJButton.h"
 #import "MJVideoManager.h"
@@ -21,15 +21,16 @@
 #import "SZCommentBar.h"
 #import "MJHUD.h"
 #import "BaseModel.h"
-#import "VideoListModel.h"
+#import "ContentListModel.h"
 #import "ContentModel.h"
 #import "TokenExchangeModel.h"
 #import "ConsoleVC.h"
 #import "SZData.h"
 #import "SZGlobalInfo.h"
+#import "SZVideoCell.h"
 
 
-@interface SZVideoDetailVC ()<UICollectionViewDelegate, UICollectionViewDataSource,VideoCellDelegate>
+@interface SZVideoDetailVC ()<UICollectionViewDelegate, UICollectionViewDataSource>
 @property(assign,nonatomic)BOOL MJHideStatusbar;
 @end
 
@@ -100,11 +101,7 @@
 #pragma mark - Other
 -(void)checkInputParams
 {
-    if (self.pannelId.length)
-    {
-        [self requestVideosInPannel];
-    }
-    else if(self.contentId.length)
+    if(self.contentId.length)
     {
         [self requestSingleVideo];
     }
@@ -116,6 +113,7 @@
         }];
     }
 }
+
 
 -(NSIndexPath*)getCurrentRow
 {
@@ -178,13 +176,6 @@
 
 
 #pragma mark - Setter
--(void)setPannelId:(NSString *)pannelId
-{
-    if (pannelId.length)
-    {
-        _pannelId = pannelId;
-    }
-}
 -(void)setContentId:(NSString *)contentId
 {
     if (contentId.length)
@@ -197,24 +188,24 @@
 #pragma mark - Request
 -(void)requestVideosInPannel
 {
-    NSString * pagesize = [NSString stringWithFormat:@"%d",VIDEO_PAGE_SIZE];
-    
-    NSMutableDictionary * param=[NSMutableDictionary dictionary];
-    [param setValue:self.pannelId forKey:@"panelId"];
-    [param setValue:pagesize forKey:@"pageSize"];
-    [param setValue:self.contentId forKey:@"contentId"];
-    [param setValue:@"0" forKey:@"removeFirst"];
-    
-    
-    VideoListModel * dataModel = [VideoListModel model];
-    __weak typeof (self) weakSelf = self;
-    [dataModel GETRequestInView:self.view WithUrl:APPEND_SUBURL(BASE_URL, API_URL_VIDEO_LIST) Params:param Success:^(id responseObject){
-        [weakSelf requestDone:dataModel];
-        } Error:^(id responseObject) {
-            [weakSelf requestFailed];
-        } Fail:^(NSError *error) {
-            [weakSelf requestFailed];
-        }];
+//    NSString * pagesize = [NSString stringWithFormat:@"%d",VIDEO_PAGE_SIZE];
+//
+//    NSMutableDictionary * param=[NSMutableDictionary dictionary];
+//    [param setValue:self.pannelId forKey:@"panelId"];
+//    [param setValue:pagesize forKey:@"pageSize"];
+//    [param setValue:self.contentId forKey:@"contentId"];
+//    [param setValue:@"0" forKey:@"removeFirst"];
+//
+//
+//    ContentListModel * dataModel = [ContentListModel model];
+//    __weak typeof (self) weakSelf = self;
+//    [dataModel GETRequestInView:self.view WithUrl:APPEND_SUBURL(BASE_URL, API_URL_VIDEO_LIST) Params:param Success:^(id responseObject){
+//        [weakSelf requestDone:dataModel];
+//        } Error:^(id responseObject) {
+//            [weakSelf requestFailed];
+//        } Fail:^(NSError *error) {
+//            [weakSelf requestFailed];
+//        }];
 }
 
 -(void)requestSingleVideo
@@ -226,7 +217,7 @@
     __weak typeof (self) weakSelf = self;
     [model GETRequestInView:self.view WithUrl:url Params:nil Success:^(id responseObject) {
         
-        VideoListModel * list = [VideoListModel model];
+        ContentListModel * list = [ContentListModel model];
         [list.dataArr addObject:model];
         [weakSelf requestDone:list];
         
@@ -242,69 +233,69 @@
 
 -(void)requestRandomVideos
 {
-    NSString * pagesize = [NSString stringWithFormat:@"%d",VIDEO_PAGE_SIZE];
-    
-    NSMutableDictionary * param=[NSMutableDictionary dictionary];
-    [param setValue:pagesize forKey:@"pageSize"];
-    
-    VideoListModel * dataModel = [VideoListModel model];
-    __weak typeof (self) weakSelf = self;
-    [dataModel GETRequestInView:self.view WithUrl:APPEND_SUBURL(BASE_URL, API_URL_RANDOM_VIDEO_LIST) Params:param Success:^(id responseObject){
-        [weakSelf requestDone:dataModel];
-        } Error:^(id responseObject) {
-            [weakSelf requestFailed];
-        } Fail:^(NSError *error) {
-            [weakSelf requestFailed];
-        }];
+//    NSString * pagesize = [NSString stringWithFormat:@"%d",VIDEO_PAGE_SIZE];
+//
+//    NSMutableDictionary * param=[NSMutableDictionary dictionary];
+//    [param setValue:pagesize forKey:@"pageSize"];
+//
+//    ContentListModel * dataModel = [ContentListModel model];
+//    __weak typeof (self) weakSelf = self;
+//    [dataModel GETRequestInView:self.view WithUrl:APPEND_SUBURL(BASE_URL, API_URL_RANDOM_VIDEO_LIST) Params:param Success:^(id responseObject){
+//        [weakSelf requestDone:dataModel];
+//        } Error:^(id responseObject) {
+//            [weakSelf requestFailed];
+//        } Fail:^(NSError *error) {
+//            [weakSelf requestFailed];
+//        }];
 }
 
 -(void)requestMoreRandomVideos
 {
-    NSString * pagesize = [NSString stringWithFormat:@"%d",VIDEO_PAGE_SIZE];
-    
-    NSMutableDictionary * param=[NSMutableDictionary dictionary];
-    [param setValue:pagesize forKey:@"pageSize"];
-    
-    VideoListModel * dataModel = [VideoListModel model];
-    dataModel.hideLoading=YES;
-    __weak typeof (self) weakSelf = self;
-    [dataModel GETRequestInView:self.view WithUrl:APPEND_SUBURL(BASE_URL, API_URL_RANDOM_VIDEO_LIST) Params:param Success:^(id responseObject){
-        [weakSelf requestMoreVideoDone:dataModel];
-        } Error:^(id responseObject) {
-            [weakSelf requestFailed];
-        } Fail:^(NSError *error) {
-            [weakSelf requestFailed];
-        }];
+//    NSString * pagesize = [NSString stringWithFormat:@"%d",VIDEO_PAGE_SIZE];
+//
+//    NSMutableDictionary * param=[NSMutableDictionary dictionary];
+//    [param setValue:pagesize forKey:@"pageSize"];
+//
+//    ContentListModel * dataModel = [ContentListModel model];
+//    dataModel.hideLoading=YES;
+//    __weak typeof (self) weakSelf = self;
+//    [dataModel GETRequestInView:self.view WithUrl:APPEND_SUBURL(BASE_URL, API_URL_RANDOM_VIDEO_LIST) Params:param Success:^(id responseObject){
+//        [weakSelf requestMoreVideoDone:dataModel];
+//        } Error:^(id responseObject) {
+//            [weakSelf requestFailed];
+//        } Fail:^(NSError *error) {
+//            [weakSelf requestFailed];
+//        }];
 }
 
 -(void)requestMoreVideosInPannel
 {
-    //获取最后一条视频的ID
-    ContentModel * lastModel = dataArr.lastObject;
-    NSString * lastContentId =  lastModel.id;
-    NSString * pagesize = [NSString stringWithFormat:@"%d",VIDEO_PAGE_SIZE];
-    
-    NSMutableDictionary * param=[NSMutableDictionary dictionary];
-    [param setValue:self.pannelId forKey:@"panelId"];
-    [param setValue:lastContentId forKey:@"contentId"];
-    [param setValue:pagesize forKey:@"pageSize"];
-    [param setValue:@"1" forKey:@"removeFirst"];
-    
-    VideoListModel * model = [VideoListModel model];
-    model.hideLoading=YES;
-    __weak typeof (self) weakSelf = self;
-    [model GETRequestInView:self.view WithUrl:APPEND_SUBURL(BASE_URL, API_URL_VIDEO_LIST) Params:param Success:^(id responseObject){
-        [weakSelf requestMoreVideoDone:model];
-        } Error:^(id responseObject) {
-            [weakSelf requestFailed];
-        } Fail:^(NSError *error) {
-            [weakSelf requestFailed];
-        }];
+//    //获取最后一条视频的ID
+//    ContentModel * lastModel = dataArr.lastObject;
+//    NSString * lastContentId =  lastModel.id;
+//    NSString * pagesize = [NSString stringWithFormat:@"%d",VIDEO_PAGE_SIZE];
+//
+//    NSMutableDictionary * param=[NSMutableDictionary dictionary];
+//    [param setValue:self.pannelId forKey:@"panelId"];
+//    [param setValue:lastContentId forKey:@"contentId"];
+//    [param setValue:pagesize forKey:@"pageSize"];
+//    [param setValue:@"1" forKey:@"removeFirst"];
+//
+//    ContentListModel * model = [ContentListModel model];
+//    model.hideLoading=YES;
+//    __weak typeof (self) weakSelf = self;
+//    [model GETRequestInView:self.view WithUrl:APPEND_SUBURL(BASE_URL, API_URL_VIDEO_LIST) Params:param Success:^(id responseObject){
+//        [weakSelf requestMoreVideoDone:model];
+//        } Error:^(id responseObject) {
+//            [weakSelf requestFailed];
+//        } Fail:^(NSError *error) {
+//            [weakSelf requestFailed];
+//        }];
 }
 
 
 #pragma mark - Request Done
--(void)requestDone:(VideoListModel*)model
+-(void)requestDone:(ContentListModel*)model
 {
     [collectionView.mj_footer endRefreshing];
     [collectionView.mj_header endRefreshing];
@@ -321,7 +312,7 @@
 }
 
 
--(void)requestMoreVideoDone:(VideoListModel*)model
+-(void)requestMoreVideoDone:(ContentListModel*)model
 {
     [collectionView.mj_footer endRefreshing];
     [collectionView.mj_header endRefreshing];
@@ -385,9 +376,10 @@
     }
     collectionView.showsHorizontalScrollIndicator = NO;
     collectionView.backgroundColor=HW_BLACK;
-    [collectionView registerClass:[SZVideoCell class] forCellWithReuseIdentifier:@"shortSZVideoCell"];
-    collectionView.mj_header = [CustomAnimatedHeader headerWithRefreshingTarget:self refreshingAction:@selector(pulldownRefreshAction:)];
-    collectionView.mj_footer = [CustomFooter footerWithRefreshingTarget:self refreshingAction:@selector(pullupLoadAction:)];
+    [collectionView registerClass:[SZVideoDetailSimpleCell class] forCellWithReuseIdentifier:@"simpleVideoCell"];
+    [collectionView registerClass:[SZVideoCell class] forCellWithReuseIdentifier:@"fullVideoCell"];
+//    collectionView.mj_header = [CustomAnimatedHeader headerWithRefreshingTarget:self refreshingAction:@selector(pulldownRefreshAction:)];
+//    collectionView.mj_footer = [CustomFooter footerWithRefreshingTarget:self refreshingAction:@selector(pullupLoadAction:)];
     collectionView.delegate = self;
     collectionView.dataSource = self;
     collectionView.pagingEnabled=YES;
@@ -410,9 +402,16 @@
     [consoleBtn addGestureRecognizer:gest];
     [self.view addSubview:consoleBtn];
     
-    //commentview
-    commentBar = [[SZCommentBar alloc]init];
-    [self.view addSubview:commentBar];
+    
+    
+    if (!_isPreview)
+    {
+        //commentview
+        commentBar = [[SZCommentBar alloc]init];
+        [commentBar setCommentBarStyle:0 type:1];
+        [self.view addSubview:commentBar];
+    }
+    
 }
 
 
@@ -420,10 +419,10 @@
 {
     dataArr = [NSMutableArray array];
     
-    if (self.pannelId.length==0)
-    {
+//    if (self.pannelId.length==0)
+//    {
         isRandomMode = YES;
-    }
+//    }
 }
 
 
@@ -469,13 +468,6 @@
 }
 
 
-#pragma mark - Cell Delegate
--(void)didSelectVideo:(ContentModel*)model
-{
-    NSString * contentid = model.id;
-    [SZData sharedSZData].currentContentId = contentid;
-}
-
 
 #pragma mark - 更新currentId
 -(void)updateCurrentContentId:(BOOL)force
@@ -504,11 +496,19 @@
 #pragma mark - CollectionView Datasource & Delegate
 -(UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
+    if (self.isPreview)
+    {
+        SZVideoDetailSimpleCell * cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"simpleVideoCell" forIndexPath:indexPath];
+        [cell setCellData:dataArr[indexPath.row] enableFollow:NO];
+        return  cell;
+    }
+    else
+    {
+        SZVideoCell * cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"fullVideoCell" forIndexPath:indexPath];
+        [cell setCellData:dataArr[indexPath.row] enableFollow:NO];
+        return  cell;
+    }
     
-    SZVideoCell * cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"shortSZVideoCell" forIndexPath:indexPath];
-    cell.delegate=self;
-    [cell setCellData:dataArr[indexPath.row]];
-    return  cell;
 }
 - (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath
 {

@@ -11,7 +11,7 @@
 #import "SZManager.h"
 #import "SZDefines.h"
 #import "UIView+MJCategory.h"
-#import "ColumnBar.h"
+#import "SZColumnBar.h"
 #import "PannelListView.h"
 #import "CategoryModel.h"
 #import "MJProvider.h"
@@ -87,8 +87,8 @@
 //创建二级类目view
 -(void)createSubcategoryView:(PanelModel*)CatePanelModel
 {
-    //columnBar
-    ColumnBar * cateBar = [[ColumnBar alloc]initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH, 44)];
+    //SZColumnBar
+    SZColumnBar * cateBar = [[SZColumnBar alloc]initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH, 44)];
     cateBar.columnDelegate=self;
     [self addSubview:cateBar];
     

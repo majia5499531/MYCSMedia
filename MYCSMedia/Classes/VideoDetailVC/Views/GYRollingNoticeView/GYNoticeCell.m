@@ -74,7 +74,8 @@
         //bgview
         bgview = [[UIView alloc]init];
         bgview.layer.cornerRadius = 8;
-        bgview.backgroundColor = HW_GRAY_BG_3;
+        bgview.backgroundColor = HW_BLACK;
+        bgview.alpha=0.4;
         [self insertSubview:bgview belowSubview:icon];
         [bgview mas_makeConstraints:^(MASConstraintMaker *make) {
             make.left.mas_equalTo(1);
@@ -99,6 +100,7 @@
     
     [icon sd_setImageWithURL:[NSURL URLWithString:model.thumbnailUrl]];
 }
+
 
 
 -(void)closeNoticeBtnAction

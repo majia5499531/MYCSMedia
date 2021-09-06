@@ -1,7 +1,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'MYCSMedia'
-  s.version          = '1.1.6'
+  s.version          = '1.2.0'
   s.summary          = 'SZRM Media Module'
 
 
@@ -29,6 +29,7 @@ Pod::Spec.new do |s|
   s.dependency 'FSTextView', '>= 1.8'
   s.dependency 'MJRefresh', '>= 3.6.1'
   s.dependency 'YYModel'
+  s.dependency 'YYKit'
   s.static_framework = true
   
 end

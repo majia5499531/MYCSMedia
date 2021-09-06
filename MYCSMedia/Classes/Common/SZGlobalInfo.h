@@ -17,11 +17,12 @@
 @property(strong,nonatomic)NSString * SZRMToken;
 @property(strong,nonatomic)NSString * localTGT;
 @property(strong,nonatomic)NSString * loginDesc;
-
+@property(strong,nonatomic)NSString * gdyToken;
+@property(strong,nonatomic)NSString * userId;
 
 
 +(NSString*)mjgetBaseURL;           //获取BaseURL
-
++(NSString*)mjgetBaseH5URL;         //获取H5 URL
 
 +(void)checkLoginStatus;            //检查登陆信息
 +(void)mjshowLoginAlert;            //弹出登陆提示框

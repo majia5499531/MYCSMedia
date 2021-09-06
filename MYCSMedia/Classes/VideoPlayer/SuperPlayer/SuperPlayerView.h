@@ -3,6 +3,7 @@
 #import "SuperPlayerModel.h"
 #import "SuperPlayerViewConfig.h"
 #import "VideoErrorMessageView.h"
+#import "ContentModel.h"
 
 @class SuperPlayerControlView;
 @class SuperPlayerView;
@@ -31,6 +32,7 @@ typedef NS_ENUM(NSInteger, SuperPlayerState) {
     StatePlaying,    // 播放中    2
     StateStopped,    // 停止播放  3
     StatePause,      // 暂停播放  4
+    StateIntoBackground //进入后台 5
 };
 
 
@@ -48,6 +50,7 @@ typedef NS_ENUM(NSInteger, SuperPlayerState) {
 @property(strong,nonatomic)UIView * sharingView;
 @property(strong,nonatomic)VideoErrorMessageView * MJErrorMsgView;
 @property(strong,nonatomic)UIView * MJStatusView;
+@property(strong,nonatomic)UIImageView * middlePlayBtn;
 
 //状态
 @property (nonatomic, assign) SuperPlayerState playerState;          //播放状态
@@ -63,7 +66,9 @@ typedef NS_ENUM(NSInteger, SuperPlayerState) {
 @property TXImageSprite *imageSprite;                                //视频雪碧图
 @property NSArray *keyFrameDescList;                                 //关键帧信息
 @property(assign,nonatomic)BOOL ignoreWWAN;                         //允许4g播放
-
+@property(assign,nonatomic)BOOL disableInteraction;                //禁止非全屏下的手势交互
+@property(strong,nonatomic)ContentModel * externalModel;            //内容模型
+@property(assign,nonatomic)BOOL isReplay;                            //是否是重播
 
 
 //操作API

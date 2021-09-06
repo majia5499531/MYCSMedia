@@ -37,14 +37,11 @@
     CGFloat topspace;
     
     UILabel * countLabel;
-    UIView * BG;
+    UIView * BGView;
     
     UICollectionView * collectionView;
     
     MJButton * sendBtn;
-    MJButton * collectBtn;
-    MJButton * zanBtn;
-    MJButton * shareBtn;
 }
 
 
@@ -69,26 +66,29 @@
     //view
     self.backgroundColor=HW_CLEAR;
     
-    
-    //手势
+    //关闭手势
     UIView * gestview =[[UIView alloc]initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH, topspace)];
     [self addSubview:gestview];
     UITapGestureRecognizer * tap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(listViewBGTapAction)];
     [gestview addGestureRecognizer:tap];
     
     //BG
-    BG = [[UIView alloc]init];
-    [BG setFrame:CGRectMake(0, SCREEN_HEIGHT, SCREEN_WIDTH, SCREEN_HEIGHT-self->topspace)];
-    BG.backgroundColor=HW_WHITE;
-    [self addSubview:BG];
-    [BG MJSetPartRadius:8 RoundingCorners:UIRectCornerTopLeft|UIRectCornerTopRight];
+    BGView = [[UIView alloc]init];
+    [BGView setFrame:CGRectMake(0, SCREEN_HEIGHT, SCREEN_WIDTH, SCREEN_HEIGHT-self->topspace)];
+    BGView.backgroundColor=HW_WHITE;
+    [self addSubview:BGView];
+    [BGView MJSetPartRadius:8 RoundingCorners:UIRectCornerTopLeft|UIRectCornerTopRight];
+    
+    //平移手势
+    UIPanGestureRecognizer * pangest = [[UIPanGestureRecognizer alloc]initWithTarget:self action:@selector(panGestureAction:)];
+    [BGView addGestureRecognizer:pangest];
     
     //评论
     UILabel * titleLabel = [[UILabel alloc]init];
     titleLabel.text=@"最新评论";
     titleLabel.font= [UIFont systemFontOfSize:15 weight:UIFontWeightSemibold];
     titleLabel.textColor=HW_BLACK;
-    [BG addSubview:titleLabel];
+    [BGView addSubview:titleLabel];
     [titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_equalTo(22);
         make.top.mas_equalTo(13);
@@ -98,7 +98,7 @@
     countLabel = [[UILabel alloc]init];
     countLabel.font=FONT(11);
     countLabel.textColor=HW_BLACK;
-    [BG addSubview:countLabel];
+    [BGView addSubview:countLabel];
     [countLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_equalTo(titleLabel.mas_right).offset(5);
         make.bottom.mas_equalTo(titleLabel.mas_bottom);
@@ -109,7 +109,7 @@
     MJButton * closeBtn = [[MJButton alloc]init];
     closeBtn.mj_imageObjec=[UIImage getBundleImage:@"sz_close"];
     [closeBtn addTarget:self action:@selector(listViewBGTapAction) forControlEvents:UIControlEventTouchUpInside];
-    [BG addSubview:closeBtn];
+    [BGView addSubview:closeBtn];
     [closeBtn mas_makeConstraints:^(MASConstraintMaker *make) {
         make.right.mas_equalTo(-5);
         make.top.mas_equalTo(0);
@@ -119,8 +119,8 @@
     
     //line
     UIView * sepeline = [[UIView alloc]init];
-    sepeline.backgroundColor=HW_GRAY_BG_5;
-    [BG addSubview:sepeline];
+    sepeline.backgroundColor=HW_GRAY_BG_White;
+    [BGView addSubview:sepeline];
     [sepeline mas_makeConstraints:^(MASConstraintMaker *make) {
         make.height.mas_equalTo(1);
         make.width.mas_equalTo(SCREEN_WIDTH);
@@ -136,66 +136,24 @@
     sendBtn.mj_text=@"写评论...";
     sendBtn.mj_font=FONT(13);
     sendBtn.mj_textColor=HW_BLACK;
-    sendBtn.backgroundColor=HW_GRAY_BG_5;
+    sendBtn.backgroundColor=HW_GRAY_BG_White;
     sendBtn.layer.cornerRadius=16;
     [sendBtn addTarget:self action:@selector(sendCommentAction) forControlEvents:UIControlEventTouchUpInside];
-    [BG addSubview:sendBtn];
+    [BGView addSubview:sendBtn];
     [sendBtn mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_equalTo(20);
         make.top.mas_equalTo(sepeline.mas_bottom).offset(5);
         make.height.mas_equalTo(32);
-        make.right.mas_equalTo(BG).offset(-145);
+        make.right.mas_equalTo(BGView).offset(-20);
     }];
 
-    //收藏
-    collectBtn = [[MJButton alloc]init];
-    collectBtn.mj_imageObjec = [UIImage getBundleImage:@"sz_collect_black"];
-    collectBtn.mj_imageObject_sel = [UIImage getBundleImage:@"sz_collect_sel"];
-    [collectBtn addTarget:self action:@selector(collectBtnAction) forControlEvents:UIControlEventTouchUpInside];
-    [BG addSubview:collectBtn];
-    [collectBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.mas_equalTo(sendBtn.mas_right).offset(5);
-        make.centerY.mas_equalTo(sendBtn.mas_centerY);
-        make.width.mas_equalTo(44);
-        make.height.mas_equalTo(44);
-    }];
-
-
-    //点赞
-    zanBtn = [[MJButton alloc]init];
-    zanBtn.mj_imageObjec = [UIImage getBundleImage:@"sz_zan_black"];
-    zanBtn.mj_imageObject_sel = [UIImage getBundleImage:@"sz_zan_sel"];
-    [zanBtn addTarget:self action:@selector(zanBtnAction) forControlEvents:UIControlEventTouchUpInside];
-    [BG addSubview:zanBtn];
-    [zanBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.mas_equalTo(collectBtn.mas_right).offset(-1);
-        make.centerY.mas_equalTo(sendBtn.mas_centerY);
-        make.width.mas_equalTo(44);
-        make.height.mas_equalTo(44);
-    }];
-    
-    
-    //分享按钮
-    shareBtn = [[MJButton alloc]init];
-    shareBtn.mj_imageObjec = [UIImage getBundleImage:@"sz_share_black"];
-    [shareBtn addTarget:self action:@selector(shareBtnAction) forControlEvents:UIControlEventTouchUpInside];
-    [BG addSubview:shareBtn];
-    [shareBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.mas_equalTo(zanBtn.mas_right).offset(1);
-        make.centerY.mas_equalTo(sendBtn.mas_centerY);
-        make.width.mas_equalTo(44);
-        make.height.mas_equalTo(44);
-    }];
-    
-
-    
     //没有评论image
     UIImageView * nocommentImg = [[UIImageView alloc]init];
     nocommentImg.image = [UIImage getBundleImage:@"sz_nocomment"];
-    [BG addSubview:nocommentImg];
+    [BGView addSubview:nocommentImg];
     [nocommentImg mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.centerX.mas_equalTo(BG.mas_centerX);
-        make.centerY.mas_equalTo(BG.mas_centerY).offset(-45);
+        make.centerX.mas_equalTo(BGView.mas_centerX);
+        make.centerY.mas_equalTo(BGView.mas_centerY).offset(-45);
         make.width.mas_equalTo(111);
         make.height.mas_equalTo(68);
     }];
@@ -207,9 +165,9 @@
     nocommentLabel.textColor=HW_GRAY_WORD_1;
     nocommentLabel.font = FONT(12);
     nocommentLabel.textAlignment=NSTextAlignmentCenter;
-    [BG addSubview:nocommentLabel];
+    [BGView addSubview:nocommentLabel];
     [nocommentLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.centerX.mas_equalTo(BG.mas_centerX);
+        make.centerX.mas_equalTo(BGView.mas_centerX);
         make.top.mas_equalTo(nocommentImg.mas_bottom).offset(12);
         make.width.mas_equalTo(200);
         make.height.mas_equalTo(15);
@@ -229,7 +187,7 @@
     [collectionView registerClass:[SZCommentCell class] forCellWithReuseIdentifier:@"commentCell"];
     collectionView.delegate = self;
     collectionView.dataSource = self;
-    [BG addSubview:collectionView];
+    [BGView addSubview:collectionView];
     [collectionView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_equalTo(0);
         make.top.mas_equalTo(countLabel.mas_bottom).offset(7);
@@ -247,21 +205,52 @@
 {
     if (show)
     {
-        BG.hidden=NO;
+        BGView.hidden=NO;
         [UIView animateWithDuration:0.1 animations:^{
-            [self->BG setFrame:CGRectMake(0, self->topspace, SCREEN_WIDTH, SCREEN_HEIGHT-self->topspace)];
+            [self->BGView setFrame:CGRectMake(0, self->topspace, SCREEN_WIDTH, SCREEN_HEIGHT-self->topspace)];
         }];
     }
     else
     {
         [UIView animateWithDuration:0.1 animations:^{
-            [self->BG setFrame:CGRectMake(0, SCREEN_HEIGHT, SCREEN_WIDTH, SCREEN_HEIGHT-self->topspace)];
+            [self->BGView setFrame:CGRectMake(0, SCREEN_HEIGHT, SCREEN_WIDTH, SCREEN_HEIGHT-self->topspace)];
                 } completion:^(BOOL finished) {
-                    self->BG.hidden=YES;
+                    self->BGView.hidden=YES;
                     
                     [self removeFromSuperview];
         }];
     }
+}
+
+
+-(void)commentListBGMoved:(CGFloat)offsetY
+{
+    CGFloat newtop = BGView.top+offsetY;
+    if (newtop<topspace)
+    {
+        return;
+    }
+    else
+    {
+        [BGView setFrame:CGRectMake(BGView.left,newtop, BGView.width, BGView.height)];
+    }
+    
+    
+}
+
+-(void)commentListBGMoveDone
+{
+    if (BGView.top > SCREEN_HEIGHT*0.5)
+    {
+        [self showCommentList:NO];
+    }
+    else
+    {
+        [self showCommentList:YES];
+    }
+    
+    
+    
 }
 
 
@@ -273,12 +262,7 @@
     __weak typeof (self) weakSelf = self;
     self.observe(@"currentContentId",^(id value){
         weakSelf.contentId = value;
-    }).observe(@"contentStateUpdateTime",^(id value){
-        [weakSelf updateContentStateData];
-    }).observe(@"contentZanTime",^(id value){
-        [weakSelf updateContentStateData];
-    }).observe(@"contentCollectTime",^(id value){
-        [weakSelf updateContentStateData];
+        [weakSelf updateContentInfo];
     }).observe(@"contentCommentsUpdateTime",^(id value){
         [weakSelf updateCommentData];
     });
@@ -286,20 +270,6 @@
 
 
 #pragma mark - 数据绑定回调
--(void)updateContentStateData
-{
-    //取数据
-    ContentStateModel * stateM = [[SZData sharedSZData].contentStateDic valueForKey:self.contentId];
-    
-    //更新UI
-    collectBtn.MJSelectState = stateM.whetherFavor;
-    
-    zanBtn.MJSelectState = stateM.whetherLike;
-    
-    [zanBtn setBadgeNum:[NSString stringWithFormat:@"%ld",stateM.likeCountShow] style:2];
-    
-}
-
 -(void)updateCommentData
 {
     //取数据
@@ -321,6 +291,20 @@
     }
 }
 
+
+-(void)updateContentInfo
+{
+    ContentModel * contenM = [[SZData sharedSZData].contentDic valueForKey:self.contentId];
+    
+    if(contenM.disableComment.boolValue)
+    {
+        sendBtn.mj_text=@"该内容禁止评论";
+    }
+    else
+    {
+        sendBtn.mj_text=@"写评论...";
+    }
+}
 
 
 
@@ -396,43 +380,33 @@
     
 }
 
--(void)zanBtnAction
+-(void)panGestureAction:(UIPanGestureRecognizer*)pan
 {
-    //未登录则跳转登录
-    if (![SZGlobalInfo sharedManager].SZRMToken.length)
+    CGPoint locationPoint = [pan locationInView:BGView];
+//    CGPoint veloctyPoint = [pan velocityInView:self];
+    
+    static CGFloat originy = 0;
+    if (pan.state==UIGestureRecognizerStateBegan)
     {
-        [SZGlobalInfo mjshowLoginAlert];
-        return;
+        originy = locationPoint.y;
+        
+//        NSLog(@"pan_%g",locationPoint.y);
+    }
+    else if (pan.state==UIGestureRecognizerStateChanged)
+    {
+        CGFloat offsetY = locationPoint.y-originy;
+        NSLog(@"pan___%g_______%g________%g",originy,locationPoint.y,offsetY);
+        
+        [self commentListBGMoved:offsetY];
+    }
+    else
+    {
+        [self commentListBGMoveDone];
     }
     
-    [[SZData sharedSZData]requestZan];
-}
-
--(void)collectBtnAction
-{
-    //未登录则跳转登录
-    if (![SZGlobalInfo sharedManager].SZRMToken.length)
-    {
-        [SZGlobalInfo mjshowLoginAlert];
-        return;
-    }
     
-    [[SZData sharedSZData]requestCollect];
-}
-
--(void)shareBtnAction
-{
     
-    [MJHUD_Selection showShareView:^(id objc) {
-        
-        NSNumber * number = objc;
-        SZ_SHARE_PLATFORM plat = number.integerValue;
-        ContentModel * contentModel = [[SZData sharedSZData].contentDic valueForKey:self.contentId];
-        [SZGlobalInfo mjshareToPlatform:plat content:contentModel];
-        
-    }];
     
 }
-
 
 @end

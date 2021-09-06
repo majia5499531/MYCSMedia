@@ -200,6 +200,10 @@
         {
             self.alpha=_mj_alpha_sel;
         }
+        if (badgeLabel.text.length)
+        {
+            badgeLabel.hidden=YES;
+        }
     }
     else
     {
@@ -234,6 +238,10 @@
         if (_mj_alpha>0)
         {
             self.alpha=_mj_alpha;
+        }
+        if (badgeLabel.text.length)
+        {
+            badgeLabel.hidden=NO;
         }
     }
 }
@@ -331,6 +339,28 @@
         redDot.hidden=NO;
     }
     
+}
+
+
+-(void)setBadgeStr:(NSString*)str
+{
+    if (badgeLabel==nil)
+    {
+        badgeLabel=[[UILabel alloc]init];
+        badgeLabel.font=FONT(8);
+        badgeLabel.layer.backgroundColor=HW_RED_WORD_1.CGColor;
+        badgeLabel.layer.cornerRadius=7;
+        badgeLabel.textColor=HW_WHITE;
+        badgeLabel.textAlignment=NSTextAlignmentCenter;
+        badgeLabel.height = 14;
+        badgeLabel.width = 30;
+        [self addSubview:badgeLabel];
+        
+    }
+    badgeLabel.text = str;
+    [badgeLabel sizeToFit];
+    [badgeLabel setFrame:CGRectMake(self.width-12, 1, badgeLabel.width+6, 14)];
+        
 }
 
 @end

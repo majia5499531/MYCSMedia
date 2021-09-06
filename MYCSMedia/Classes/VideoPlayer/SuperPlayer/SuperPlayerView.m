@@ -16,7 +16,9 @@
 #import "UIImage+MJCategory.h"
 #import "SZData.h"
 #import "SZGlobalInfo.h"
-#import "ContentModel.h"
+#import "SZEventTracker.h"
+#import "SZContentTracker.h"
+
 
 
 static UISlider * _volumeSlider;
@@ -130,7 +132,9 @@ static UISlider * _volumeSlider;
     
     //添加手势监听
     [self addGestureRecognizers];
+
 }
+
 
 #pragma mark - Setter
 //设置播放的状态
@@ -138,7 +142,57 @@ static UISlider * _volumeSlider;
 {
     _playerState = playerState;
     
-    NSLog(@"playstate_%ld",playerState);
+//    NSLog(@"playstate_%@_%@",self.externalModel.title, [self playStateDesc:playerState]);
+    
+    //行为埋点
+    if (playerState==2)
+    {
+        [SZEventTracker trackingVideoDurationWithModel:self.externalModel isPlaying:YES];
+        
+    }
+    else
+    {
+        [SZEventTracker trackingVideoDurationWithModel:self.externalModel isPlaying:NO];
+    }
+    
+    
+    //内容埋点
+    if (self.isReplay)
+    {
+        if (playerState==2)
+        {
+            [SZContentTracker trackingVideoPlayingDuration_Replay:self.externalModel isPlaying:YES currentTime:self.playCurrentTime totalTime:self.vodPlayer.duration];
+        }
+        else if(playerState == 0 || playerState==3||playerState==5) //失败、停止、且后台，则记录时间
+        {
+            [SZContentTracker trackingVideoPlayingDuration_Replay:self.externalModel isPlaying:NO currentTime:self.playCurrentTime totalTime:0];
+        }
+    }
+    else
+    {
+        if (playerState==2)
+        {
+            [SZContentTracker trackingVideoPlayingDuration:self.externalModel isPlaying:YES currentTime:self.playCurrentTime totalTime:self.vodPlayer.duration];
+        }
+        else if(playerState == 0 || playerState==3||playerState==5) //失败、停止、且后台，则记录时间
+        {
+            [SZContentTracker trackingVideoPlayingDuration:self.externalModel isPlaying:NO currentTime:self.playCurrentTime totalTime:0];
+        }
+    }
+    
+    
+    
+    //重播时长
+    if (self.isReplay)
+    {
+        
+        
+        
+        
+        
+    }
+    
+    
     
     //是否在缓冲
     if (playerState == StateBuffering)
@@ -151,6 +205,8 @@ static UISlider * _volumeSlider;
     }
     
     
+    self.middlePlayBtn.hidden=YES;
+    
     //播放状态
     if (playerState == StatePlaying)
     {
@@ -161,21 +217,22 @@ static UISlider * _volumeSlider;
             }];
         }
     }
-    
-    
     else if (playerState == StateFailed)
     {
         
     }
-    
-    
     else if (playerState == StateStopped)
     {
         self.coverImageView.alpha = 1;
     }
+    
     else if (playerState == StatePause)
     {
-
+        if (!self.controlView.isFullScreen)
+        {
+            self.middlePlayBtn.hidden=NO;
+        }
+        
     }
 }
 
@@ -305,6 +362,9 @@ static UISlider * _volumeSlider;
 - (void)appDidEnterBackground:(NSNotification *)notify
 {
     self.didEnterBackground = YES;
+    
+    self.playerState = StateIntoBackground;
+    
     if (self.isLive)
     {
         return;
@@ -359,8 +419,6 @@ static UISlider * _volumeSlider;
 //屏幕方向变化
 -(void)onDeviceOrientationChange
 {
-    NSLog(@"MJ 方向变化--设备");
-    
     //全屏下，响应旋转事件
     if (self.controlView.isFullScreen)
     {
@@ -388,7 +446,17 @@ static UISlider * _volumeSlider;
         //控制层样式
         if (self.controlView.hidden)
         {
-            [[self.controlView fadeShow] fadeOut:3];
+            //非全屏，切无手势模式下，则不现实controlview
+            if (self.disableInteraction && !self.controlView.isFullScreen)
+            {
+                SPDefaultControlView * controlv = (SPDefaultControlView*)self.controlView;
+                controlv.externalSlider.hidden = !controlv.externalSlider.hidden;
+                controlv.externalFullScreenBtn.hidden = !controlv.externalFullScreenBtn.hidden;
+            }
+            else
+            {
+                [[self.controlView fadeShow] fadeOut:3];
+            }
         }
         
         else
@@ -407,8 +475,17 @@ static UISlider * _volumeSlider;
         return;
     }
     
-    // 显示控制层
-    [self.controlView fadeShow];
+    
+    //非全屏，切无手势模式下，则不现实controlview
+    if (self.disableInteraction && !self.controlView.isFullScreen)
+    {
+        
+    }
+    else
+    {
+        [self.controlView fadeShow];
+    }
+    
     
     //暂停与续播
     if (self.isPauseByUser)
@@ -437,7 +514,6 @@ static UISlider * _volumeSlider;
     {
         return;
     }
-        
     
     // 判断是垂直移动还是水平移动
     switch (pan.state)
@@ -655,7 +731,11 @@ static UISlider * _volumeSlider;
         return;
     }
     [self.fastView showImg:image withProgress:draggedValue];
+    
+    
     [self.fastView fadeShow];
+    
+    
 }
 
 
@@ -796,6 +876,7 @@ static UISlider * _volumeSlider;
     self.repeatBtn.hidden = YES;
     self.liveProgressTime = 0;
     self.maxLiveProgressTime = 0;
+    self.isReplay = NO;
     
     //控制层清零
     [self.controlView setProgressTime:0 totalTime:0 progressValue:0 playableValue:0];
@@ -807,7 +888,7 @@ static UISlider * _volumeSlider;
     
     AFNetworkReachabilityStatus st = [AFNetworkReachabilityManager sharedManager].networkReachabilityStatus;
     
-    //URL为空则报错
+    //检查URL是否为空
     if (playerModel.playingDefinitionUrl.length==0)
     {
         self.MJStatusView.hidden=YES;
@@ -818,7 +899,7 @@ static UISlider * _volumeSlider;
         return;
     }
     
-    //移动网络状态则弹窗
+    //检查是否为移动网络
     else if (st == AFNetworkReachabilityStatusReachableViaWWAN && self.ignoreWWAN==NO)
     {
         self.MJStatusView.hidden=NO;
@@ -834,6 +915,7 @@ static UISlider * _volumeSlider;
 
     //调用内核
     [self launchTXPlayer];
+    
 }
 
 
@@ -1090,6 +1172,7 @@ static UISlider * _volumeSlider;
     }
 }
 
+
 //移除渲染层
 -(void)removeRenderView
 {
@@ -1132,7 +1215,7 @@ static UISlider * _volumeSlider;
     //全屏
     if (toKeywindow)
     {
-        NSLog(@"---切换到KeyWindow---");
+//        NSLog(@"---切换到KeyWindow---");
         
         //隐藏状态栏
         [self setNeedChangeStatusBarHidden:YES];
@@ -1159,7 +1242,7 @@ static UISlider * _volumeSlider;
     }
     else
     {
-        NSLog(@"---切换到窗口---");
+//        NSLog(@"---切换到窗口---");
         
         //改变状态栏
         [self setNeedChangeStatusBarHidden:NO];
@@ -1187,7 +1270,7 @@ static UISlider * _volumeSlider;
     //刷新布局
     [self refreshLayersLayouts:orientation];
     
-    NSLog(@"---执行旋转动画---");
+//    NSLog(@"---执行旋转动画---");
     
     self.transform = [self getRotationAngle:orientation];
     [UIView commitAnimations];
@@ -1314,15 +1397,16 @@ static UISlider * _volumeSlider;
         
         [[UIApplication sharedApplication].keyWindow  layoutIfNeeded];
     }
-    
-
 }
 
 
 
 #pragma mark - 控制层代理
-- (void)controlViewDidClickShareBtn
+-(void)controlViewDidClickShareBtn
 {
+    //tracking
+    [SZEventTracker trackingCommonEvent:self.externalModel eventParam:[NSDictionary dictionaryWithObject:@"视频全屏" forKey:@"module_title"] eventName:@"content_transmit"];
+    
     self.sharingView.hidden = NO;
 }
 
@@ -1495,6 +1579,25 @@ static UISlider * _volumeSlider;
         //渲染第一帧
         if (EvtID == PLAY_EVT_RCV_FIRST_I_FRAME)
         {
+            NSLog(@"firstFrame_%@",self.externalModel.title);
+            
+            
+            if (self.isReplay)
+            {
+                //tracking
+                [SZEventTracker trackingVideoPlayWithContentModel: self.externalModel source:@"" isReplay:YES];
+                
+                
+                //tracking
+                [SZContentTracker trackContentEvent:@"cms_video_play" contentId:self.externalModel.id];
+            }
+            else
+            {
+                //tracking
+                [SZContentTracker trackContentEvent:@"cms_video_play_auto" contentId:self.externalModel.id];
+            }
+            
+            
             self.isLoaded = YES;
             
             [self setNeedsLayout];
@@ -1565,6 +1668,7 @@ static UISlider * _volumeSlider;
         else if (EvtID == PLAY_EVT_PLAY_END)
         {
             [self.controlView setProgressTime:[self playDuration] totalTime:[self playDuration] progressValue:1.f playableValue:1.f];
+            
             [self moviePlayDidEnd];
         }
         
@@ -1763,6 +1867,9 @@ static UISlider * _volumeSlider;
     {
         [self.delegate superPlayerDidFinishPlay:self];
     }
+    
+    //tracking
+    [SZEventTracker trackingVideoEndWithContentModel:self.externalModel totalTime:@""];
 }
 
 
@@ -1853,6 +1960,7 @@ static UISlider * _volumeSlider;
     {
         self.controlView = [[SPDefaultControlView alloc] initWithFrame:CGRectZero];
     }
+    
     return _controlView;
 }
 
@@ -2038,12 +2146,66 @@ static UISlider * _volumeSlider;
     return _MJStatusView;
 }
 
+//中间的播放按钮
+-(UIImageView *)middlePlayBtn
+{
+    if (_middlePlayBtn==nil)
+    {
+        _middlePlayBtn = [[UIImageView alloc]init];
+        _middlePlayBtn.image = [UIImage getBundleImage:@"sz_middle_play"];
+        _middlePlayBtn.hidden=YES;
+        _middlePlayBtn.userInteractionEnabled=YES;
+        UITapGestureRecognizer * tap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(resume)];
+        [_middlePlayBtn addGestureRecognizer:tap];
+        [self addSubview:_middlePlayBtn];
+        [_middlePlayBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.centerX.mas_equalTo(self);
+            make.centerY.mas_equalTo(self);
+            make.width.mas_equalTo(44);
+            make.height.mas_equalTo(54);
+        }];
+    }
+    return _middlePlayBtn;;
+}
+
+-(NSString*)playStateDesc:(NSInteger)state
+{
+    if (state==0)
+    {
+        return @"加载失败";
+    }
+    else if (state==1)
+    {
+        return @"加载中";
+    }
+    else if (state==2)
+    {
+        return @"播放中";
+    }
+    else if (state==3)
+    {
+        return @"停止";
+    }
+    else if (state==4)
+    {
+        return @"暂停";
+    }
+    else if (state ==5)
+    {
+        return @"进后台";
+    }
+    
+    return @"unknow";
+}
 
 #pragma mark - Btn Actions
 //重播按钮
 -(void)repeatBtnClick:(UIButton *)sender
 {
+    self.isReplay = YES;
+    
     [self launchTXPlayer];
+    
 }
 
 //弹窗
@@ -2062,7 +2224,7 @@ static UISlider * _volumeSlider;
             [self launchTXPlayer];
         }
             break;
-        case ActionRetry:
+        case ActionRetry:   //播放失败，如文件不存在
             [self replayCurrentVideo];
             break;
         case ActionSwitch:
@@ -2084,30 +2246,25 @@ static UISlider * _volumeSlider;
 
 -(void)wechatBtnAction
 {
-    SZData * sz = [SZData sharedSZData];
-    ContentModel * contentModel = [sz.contentDic valueForKey:sz.currentContentId];
-    [SZGlobalInfo mjshareToPlatform:WECHAT_PLATFORM content:contentModel];
+    
+    [SZGlobalInfo mjshareToPlatform:WECHAT_PLATFORM content:self.externalModel];
 }
 
 -(void)timelineBtnAction
 {
-    SZData * sz = [SZData sharedSZData];
-    ContentModel * contentModel = [sz.contentDic valueForKey:sz.currentContentId];
-    [SZGlobalInfo mjshareToPlatform:TIMELINE_PLATFORM content:contentModel];
+    [SZGlobalInfo mjshareToPlatform:TIMELINE_PLATFORM content:self.externalModel];
 }
 
 -(void)qqBtnAction
 {
-    SZData * sz = [SZData sharedSZData];
-    ContentModel * contentModel = [sz.contentDic valueForKey:sz.currentContentId];
-    [SZGlobalInfo mjshareToPlatform:QQ_PLATFORM content:contentModel];
+    [SZGlobalInfo mjshareToPlatform:QQ_PLATFORM content:self.externalModel];
 }
 
 -(void)MJNetStatusBtnAction
 {
     self.MJStatusView.hidden=YES;
     self.ignoreWWAN=YES;
-    [self launchTXPlayer];
+    [self playWithModel:self.playerModel];
 }
 
 

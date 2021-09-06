@@ -17,6 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic , assign) NSInteger              playCountShow;
 @property (nonatomic , assign) BOOL              whetherLike;
 @property (nonatomic , assign) BOOL              whetherFavor;
+@property (nonatomic , assign) BOOL              whetherFollow;
 @property (nonatomic , assign) NSInteger              likeCountShow;
 @property (nonatomic , assign) NSInteger              favorCountShow;
 @property (nonatomic , assign) NSInteger              commentCountShow;

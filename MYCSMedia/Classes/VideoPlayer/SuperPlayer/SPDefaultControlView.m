@@ -18,6 +18,7 @@
 #import "ContentModel.h"
 #import "UIImage+MJCategory.h"
 #import "SZGlobalInfo.h"
+#import "SZData.h"
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored"-Wdeprecated-declarations"
@@ -343,6 +344,11 @@
         return;
     }
     
+    if (self.playerConfig.renderMode!=1)
+    {
+        return;
+    }
+    
     //远程通知进全屏
     if (num.boolValue && self.isFullScreen==NO)
     {
@@ -557,8 +563,16 @@
     {
         [self.delegate controlViewDidClickShareBtn];
     }
+    
 }
-
+-(void)externalFullScreenBtnAction
+{
+    //修改状态
+    self.fullScreenState = YES;
+    
+    //通知代理
+    [self.delegate controlViewDidClickFullScreenBtn:self];
+}
 
 
 #pragma mark - 子控件代理
@@ -583,6 +597,36 @@
 
 
 #pragma mark - Getter
+-(MJProgressView *)externalSlider
+{
+    if (!_externalSlider)
+    {
+        _externalSlider = [[MJProgressView alloc]init];
+        _externalSlider.hidden=YES;
+        [_externalSlider.slider addTarget:self action:@selector(progressSliderTouchBegan:) forControlEvents:UIControlEventTouchDown];
+        [_externalSlider.slider addTarget:self action:@selector(progressSliderValueChanged:) forControlEvents:UIControlEventValueChanged];
+        [_externalSlider.slider addTarget:self action:@selector(progressSliderTouchEnded:) forControlEvents:UIControlEventTouchUpInside | UIControlEventTouchUpOutside];
+        
+    }
+    return _externalSlider;
+}
+
+    
+-(UIImageView *)externalFullScreenBtn
+{
+    if (_externalFullScreenBtn==nil)
+    {
+        _externalFullScreenBtn = [[UIImageView alloc]init];
+        _externalFullScreenBtn.hidden=YES;
+        _externalFullScreenBtn.userInteractionEnabled=YES;
+        _externalFullScreenBtn.image=[UIImage getBundleImage:@"sz_videoCell_full"];
+        UITapGestureRecognizer * tap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(externalFullScreenBtnAction)];
+        [_externalFullScreenBtn addGestureRecognizer:tap];
+    }
+    
+    return _externalFullScreenBtn;
+}
+
 - (UIView *)videoRateView
 {
     if (!_videoRateView)
@@ -690,11 +734,8 @@
         _videoSlider                       = [[PlayerSlider alloc] init];
         [_videoSlider setThumbImage:SuperPlayerImage(@"slider_thumb") forState:UIControlStateNormal];
         _videoSlider.minimumTrackTintColor = TintColor;
-        // slider开始滑动事件
         [_videoSlider addTarget:self action:@selector(progressSliderTouchBegan:) forControlEvents:UIControlEventTouchDown];
-        // slider滑动中事件
         [_videoSlider addTarget:self action:@selector(progressSliderValueChanged:) forControlEvents:UIControlEventValueChanged];
-        // slider结束滑动事件
         [_videoSlider addTarget:self action:@selector(progressSliderTouchEnded:) forControlEvents:UIControlEventTouchUpInside | UIControlEventTouchUpOutside];
         _videoSlider.delegate = self;
     }
@@ -892,6 +933,11 @@
     
     //缓冲时间
     [self.videoSlider.progressView setProgress:playable animated:NO];
+    
+
+    //设置外部slider
+    [self.externalSlider setCurrentTime:currentTime totalTime:totalTime progress:progress isDragging:self.isDragging];
+    
 }
 
 

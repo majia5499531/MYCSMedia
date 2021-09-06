@@ -81,6 +81,11 @@
     [hud.contentView setCenterY:hud.centerY];
 }
 
+
+
+
+
+
 + (void)showAlertViewWithTitle:(NSString *)title text:(NSString *)text cancel:(HUD_BLOCK)cancel sure:(HUD_BLOCK)sure
 {
     //Hud
@@ -157,6 +162,8 @@
     [hud.contentView setCenterY:hud.centerY];
 }
 
+
+
 +(void)showLoginAlert:(HUD_BLOCK)block
 {
     //HUD
@@ -179,7 +186,7 @@
     
     //title
     UILabel * titleLabel=[[UILabel alloc]init];
-    [titleLabel setFrame:CGRectMake(0, 20, hud.contentView.width, 20)];
+    [titleLabel setFrame:CGRectMake(0, 15, hud.contentView.width, 20)];
     titleLabel.font=BOLD_FONT(17);
     titleLabel.textAlignment=NSTextAlignmentCenter;
     titleLabel.textColor=HW_BLACK;
@@ -216,7 +223,7 @@
     //sureBtn
     MJButton * sureBtn =[[MJButton alloc]initWithFrame:CGRectMake(cancelBtn.right+1, line1.bottom, cancelBtn.width, cancelBtn.height)];
     [sureBtn addTarget:hud action:@selector(sureBtnAction) forControlEvents:UIControlEventTouchUpInside];
-    [sureBtn setTitle:@"确定" forState:UIControlStateNormal];
+    [sureBtn setTitle:@"登陆" forState:UIControlStateNormal];
     [sureBtn setTitleColor:HW_BLACK forState:UIControlStateNormal];
     sureBtn.titleLabel.font=BOLD_FONT(14);
     [hud.contentView addSubview:sureBtn];
@@ -225,6 +232,73 @@
     [hud.contentView setFrame:CGRectMake(hud.contentView.left, hud.contentView.top, hud.contentView.width, sureBtn.bottom)];
     [hud.contentView setCenterY:hud.centerY];
 }
+
+
++(void)showAppRoutingAlert:(HUD_BLOCK)block
+{
+    //HUD
+    UIView * window = [UIApplication sharedApplication].keyWindow;
+    MJHUD_Alert * hud = [[MJHUD_Alert alloc]initWithFrame:window.frame];
+    [window addSubview:hud];
+    
+    //保存block
+    hud.sureBlock = block;
+    
+    //Mask
+    [hud.maskView setFrame:hud.bounds];
+    hud.maskView.backgroundColor=[UIColor blackColor];
+    hud.maskView.alpha=0.5;
+     
+    //BG
+    hud.contentView.backgroundColor=[UIColor whiteColor];
+    hud.contentView.layer.cornerRadius=16;
+    [hud.contentView setFrame:CGRectMake(hud.centerX-140, SCREEN_HEIGHT, 280, 500)];
+    
+    //text
+    UILabel * descLabel = [[UILabel alloc]init];
+    [descLabel setFrame:CGRectMake(20, 20, hud.contentView.width-40, 64)];
+    descLabel.font=BOLD_FONT(17);
+    descLabel.numberOfLines=2;
+    descLabel.attributedText = [NSString makeTitleStr:@"同款音乐复制成功\n请前往\"剪映\"app进行编辑" lineSpacing:5 indent:0];
+    descLabel.textColor=HW_BLACK;
+    descLabel.textAlignment=NSTextAlignmentCenter;
+    [hud.contentView addSubview:descLabel];
+    
+    //lineH
+    UIView * line1 = [[UIView alloc]initWithFrame:CGRectMake(0, descLabel.bottom+15, hud.contentView.width, MINIMUM_PX)];
+    line1.backgroundColor=HW_GRAY_BORDER_2;
+    [hud.contentView addSubview:line1];
+     
+    //cancelBtn
+    MJButton * cancelBtn =[[MJButton alloc]initWithFrame:CGRectMake(0, line1.bottom, line1.width/2-0.5, 42)];
+    [cancelBtn addTarget:hud action:@selector(hidding) forControlEvents:UIControlEventTouchUpInside];
+    [cancelBtn setTitle:@"取消" forState:UIControlStateNormal];
+    [cancelBtn setTitleColor:HW_BLACK forState:UIControlStateNormal];
+    cancelBtn.titleLabel.font=BOLD_FONT(15);
+    [hud.contentView addSubview:cancelBtn];
+    
+    //line2
+    UIView * line2 = [[UIView alloc]initWithFrame:CGRectMake(line1.centerX-0.5, line1.bottom, MINIMUM_PX, cancelBtn.height)];
+    line2.backgroundColor=HW_GRAY_BORDER_2;
+    [hud.contentView addSubview:line2];
+    
+    //sureBtn
+    MJButton * sureBtn =[[MJButton alloc]initWithFrame:CGRectMake(cancelBtn.right+1, line1.bottom, cancelBtn.width, cancelBtn.height)];
+    [sureBtn addTarget:hud action:@selector(sureBtnAction) forControlEvents:UIControlEventTouchUpInside];
+    [sureBtn setTitle:@"立即前往" forState:UIControlStateNormal];
+    [sureBtn setTitleColor:[UIColor colorWithHexString:@"1C337A"] forState:UIControlStateNormal];
+    sureBtn.titleLabel.font=BOLD_FONT(15);
+    [hud.contentView addSubview:sureBtn];
+
+    //contentview frame
+    [hud.contentView setFrame:CGRectMake(hud.contentView.left, hud.contentView.top, hud.contentView.width, sureBtn.bottom)];
+    [hud.contentView setCenterY:hud.centerY];
+    
+    
+    
+}
+
+
 
 
 +(void)hideAlertView

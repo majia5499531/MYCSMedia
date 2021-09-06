@@ -79,7 +79,7 @@
         //输入框
         input = [[FSTextView alloc]initWithFrame:CGRectMake(15, 7.5, inputBG.frame.size.width-100, 35)];
         input.layer.cornerRadius=7;
-        input.layer.backgroundColor=HW_GRAY_BG_5.CGColor;
+        input.layer.backgroundColor=HW_GRAY_BG_White.CGColor;
         input.autocapitalizationType=UITextAutocapitalizationTypeNone;
         input.font=FONT(15);
         input.textColor=HW_BLACK;

@@ -26,6 +26,11 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic,copy) NSString *typeName;
 @property (nonatomic,strong) NSNumber *canLike;
 
+
+@property(strong,nonatomic)NSString * imageUrl;
+@property(strong,nonatomic)NSString * jumpUrl;
+@property(strong,nonatomic)NSString * backgroundImageUrl;
+
 @end
 
 NS_ASSUME_NONNULL_END

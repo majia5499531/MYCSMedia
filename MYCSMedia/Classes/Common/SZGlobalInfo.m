@@ -11,6 +11,7 @@
 #import "SZDefines.h"
 #import "MJHud.h"
 #import "SZManager.h"
+#import "SZEventTracker.h"
 
 @implementation SZGlobalInfo
 
@@ -22,17 +23,17 @@
         if (info == nil)
         {
             info = [[SZGlobalInfo alloc]init];
+            
+            [info mjloadLocalData];
         }
         });
     return info;
 }
 
 
-
 #pragma mark - Login
 +(void)checkLoginStatus;
 {
-    
     SZGlobalInfo * globalobjc = [SZGlobalInfo sharedManager];
     
     NSString * newTGT = [[SZManager sharedManager].delegate onGetTGT];
@@ -76,13 +77,19 @@
 }
 
 //换token成功
-+(void)loginSuccess:(NSString*)token TGT:(NSString*)tgt
++(void)loginSuccess:(TokenExchangeModel*)loginModel TGT:(NSString*)tgt
 {
     SZGlobalInfo * instance = [SZGlobalInfo sharedManager];
-    instance.SZRMToken = token;
+    instance.SZRMToken = loginModel.token;
     instance.localTGT = tgt;
-    [[NSUserDefaults standardUserDefaults]setValue:token forKey:@"SZRM_TOKEN"];
-    [[NSUserDefaults standardUserDefaults]setValue:tgt forKey:@"SZRM_TGT"];
+    instance.gdyToken = loginModel.gdyToken;
+    instance.userId = loginModel.userInfo.id;
+    
+    [[NSUserDefaults standardUserDefaults]setValue:instance.SZRMToken forKey:@"SZRM_TOKEN"];
+    [[NSUserDefaults standardUserDefaults]setValue:instance.localTGT forKey:@"SZRM_TGT"];
+    [[NSUserDefaults standardUserDefaults]setValue:instance.gdyToken forKey:@"SZRM_GDY_TOKEN"];
+    [[NSUserDefaults standardUserDefaults]setValue:instance.userId forKey:@"SZRM_USER_ID"];
+    
     [[NSNotificationCenter defaultCenter]postNotificationName:@"SZRMTokenExchangeDone" object:nil];
 }
 
@@ -109,7 +116,7 @@
 -(void)requestTokenDone:(TokenExchangeModel*)model TGT:(NSString*)tgt
 {
     NSLog(@"MJToken_数智融媒登录成功_%@",model.token);
-    [SZGlobalInfo loginSuccess:model.token TGT:tgt];
+    [SZGlobalInfo loginSuccess:model TGT:tgt];
 }
 
 
@@ -129,17 +136,45 @@
 }
 
 
+//获取H5地址
++(NSString*)mjgetBaseH5URL
+{
+    SZManager * instance = [SZManager sharedManager];
+    if (instance.enviroment==UAT_ENVIROMENT)
+    {
+        return @"https://uat-h5.zhcs.csbtv.com";
+    }
+    else
+    {
+        return @"https://h5.zhcs.csbtv.com";
+    }
+}
 
-//清除登陆相关数据
+
+
+//清除登陆数据
 +(void)mjclearLoginInfo
 {
     SZGlobalInfo * instance = [SZGlobalInfo sharedManager];
     instance.SZRMToken = nil;
     instance.localTGT = nil;
+    instance.gdyToken = nil;
+    instance.userId = nil;
+    
     [[NSUserDefaults standardUserDefaults]removeObjectForKey:@"SZRM_TGT"];
     [[NSUserDefaults standardUserDefaults]removeObjectForKey:@"SZRM_TOKEN"];
+    [[NSUserDefaults standardUserDefaults]removeObjectForKey:@"SZRM_GDY_TOKEN"];
+    [[NSUserDefaults standardUserDefaults]removeObjectForKey:@"SZRM_USER_ID"];
 }
 
+
+-(void)mjloadLocalData
+{
+    self.localTGT = [[NSUserDefaults standardUserDefaults]valueForKey:@"SZRM_TGT"];
+    self.SZRMToken = [[NSUserDefaults standardUserDefaults]valueForKey:@"SZRM_TOKEN"];
+    self.gdyToken = [[NSUserDefaults standardUserDefaults]valueForKey:@"SZRM_GDY_TOKEN"];
+    self.userId = [[NSUserDefaults standardUserDefaults]valueForKey:@"SZRM_USER_ID"];
+}
 
 +(void)mjshareToPlatform:(SZ_SHARE_PLATFORM)platform content:(ContentModel *)model
 {
@@ -147,6 +182,26 @@
     {
         [[SZManager sharedManager].delegate onShareAction:platform title:model.shareTitle image:model.shareImageUrl desc:model.shareBrief URL:model.shareUrl];
     }
+    
+    
+    //数据采集
+    NSString * str = @"";
+    if (platform==WECHAT_PLATFORM)
+    {
+        str =@"微信";
+    }
+    else if (platform==TIMELINE_PLATFORM)
+    {
+        str = @"朋友圈";
+    }
+    else
+    {
+        str = @"QQ";
+    }
+    
+    
+    [SZEventTracker trackingCommonEvent:model eventParam:[NSDictionary dictionaryWithObject:str forKey:@"forward_type"] eventName:@"content_transmit_type"];
+    
 }
 
 

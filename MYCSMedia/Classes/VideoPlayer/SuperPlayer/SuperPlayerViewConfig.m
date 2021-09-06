@@ -14,7 +14,7 @@
     self = [super init];
     self.hwAcceleration = 1;
     self.playRate = 1;
-    self.renderMode = RENDER_MODE_FILL_EDGE;
+    self.renderMode = RENDER_MODE_FILL_SCREEN;
     self.maxCacheItem = 5;
     self.playShiftDomain = @"playtimeshift.live.myqcloud.com";
     self.enableLog = NO;

@@ -14,6 +14,7 @@
 #import "MJButton.h"
 #import "UIImage+MJCategory.h"
 
+
 @implementation MJHUD_Selection
 
 +(void)showEpisodeSelectionView:(UIView*)view currenIdx:(NSInteger)idx episode:(NSInteger)count clickAction:(HUD_BLOCK)block
@@ -125,7 +126,7 @@
     hud.maskView.backgroundColor=[UIColor clearColor];
     
     //touch
-    CGFloat height = 135;
+    CGFloat height = 160+BOTTOM_SAFEAREA_HEIGHT;
     UIView * touchview = [[UIView alloc]initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH , SCREEN_HEIGHT-height)];
     touchview.backgroundColor=[UIColor clearColor];
     UITapGestureRecognizer * tap = [[UITapGestureRecognizer alloc]initWithTarget:hud action:@selector(hidding)];
@@ -134,31 +135,146 @@
     
     //contentBG
     [hud.contentView setFrame:CGRectMake(0, touchview.bottom, SCREEN_WIDTH, height)];
-    hud.contentView.backgroundColor=[UIColor blackColor];
+    hud.contentView.backgroundColor=HW_GRAY_BG_2;
     hud.alpha=1;
+    [hud.contentView MJSetPartRadius:16 RoundingCorners:UIRectCornerTopLeft|UIRectCornerTopRight];
     
-    //timeline
-    MJButton * timelineBtn = [[MJButton alloc]initWithFrame:CGRectMake(SCREEN_WIDTH/2-22.5, SCREEN_HEIGHT-90, 45, 45)];
-    [timelineBtn setImage:[UIImage getBundleImage:@"sz_wechatZone"] forState:UIControlStateNormal];
-    timelineBtn.tag=1;
-    [hud addSubview:timelineBtn];
+    //title
+    UILabel * titleLabel=[[UILabel alloc]init];
+    [titleLabel setFrame:CGRectMake(15, 15, 100, 20)];
+    titleLabel.text=@"分享到";
+    titleLabel.textColor=HW_WHITE;
+    titleLabel.alpha=0.7;
+    titleLabel.font=FONT(14);
+    [hud.contentView addSubview:titleLabel];
+    
+    //closeBtn
+    MJButton * close = [[MJButton alloc]init];
+    [close setFrame:CGRectMake(SCREEN_WIDTH-35, titleLabel.top-5, 30, 30)];
+    close.mj_imageObjec = [UIImage getBundleImage:@"notice_close"];
+    close.imageFrame=CGRectMake(9 , 7, 9, 9 );
+    [close addTarget:hud action:@selector(hidding) forControlEvents:UIControlEventTouchUpInside];
+    [hud.contentView addSubview:close];
     
     //wecaht
-    MJButton * wechatBtn = [[MJButton alloc]initWithFrame:CGRectMake(timelineBtn.left-80, timelineBtn.top, 45, 45)];
-    [wechatBtn setImage:[UIImage getBundleImage:@"sz_wechat"] forState:UIControlStateNormal];
+    MJButton * wechatBtn = [[MJButton alloc]initWithFrame:CGRectMake(0, 53, 50, 50)];
+    [wechatBtn setImage:[UIImage getBundleImage:@"sz_share_wechat"] forState:UIControlStateNormal];
     wechatBtn.tag=0;
-    [hud addSubview:wechatBtn];
+    [hud.contentView addSubview:wechatBtn];
+    [wechatBtn setCenterX:SCREEN_WIDTH/4];
+    
+    //wechatLabel
+    UILabel * wechatLabel=[[UILabel alloc]init];
+    [wechatLabel setFrame:CGRectMake(0, 0, 55, 20)];
+    wechatLabel.text=@"微信";
+    wechatLabel.textColor=HW_WHITE;
+    wechatLabel.alpha=0.7;
+    wechatLabel.font=FONT(13);
+    wechatLabel.textAlignment=NSTextAlignmentCenter;
+    [hud.contentView addSubview:wechatLabel];
+    [wechatLabel setCenterX:wechatBtn.centerX];
+    [wechatLabel setCenterY:wechatBtn.bottom+25];
+    
+    //timeline
+    MJButton * timelineBtn = [[MJButton alloc]initWithFrame:CGRectMake(0, 53, 50, 50)];
+    [timelineBtn setImage:[UIImage getBundleImage:@"sz_share_timeline"] forState:UIControlStateNormal];
+    timelineBtn.tag=1;
+    [hud.contentView addSubview:timelineBtn];
+    [timelineBtn setCenterX:SCREEN_WIDTH/2];
+    
+    //wechatLabel
+    UILabel * timeLineLabel=[[UILabel alloc]init];
+    [timeLineLabel setFrame:CGRectMake(0, 0, 55, 20)];
+    timeLineLabel.text=@"朋友圈";
+    timeLineLabel.textColor=HW_WHITE;
+    timeLineLabel.alpha=0.7;
+    timeLineLabel.font=FONT(13);
+    timeLineLabel.textAlignment=NSTextAlignmentCenter;
+    [hud.contentView addSubview:timeLineLabel];
+    [timeLineLabel setCenterX:timelineBtn.centerX];
+    [timeLineLabel setCenterY:timelineBtn.bottom+25];
     
     //qq
-    MJButton * qqBtn = [[MJButton alloc]initWithFrame:CGRectMake(timelineBtn.right+35, timelineBtn.top, 45, 45)];
-    [qqBtn setImage:[UIImage getBundleImage:@"sz_qq"] forState:UIControlStateNormal];
+    MJButton * qqBtn = [[MJButton alloc]initWithFrame:CGRectMake(0, 53, 50, 50)];
+    [qqBtn setImage:[UIImage getBundleImage:@"sz_share_qq"] forState:UIControlStateNormal];
     qqBtn.tag=2;
-    [hud addSubview:qqBtn];
+    [hud.contentView addSubview:qqBtn];
+    [qqBtn setCenterX:SCREEN_WIDTH*3/4];
+    
+    //wechatLabel
+    UILabel * qqlabel=[[UILabel alloc]init];
+    [qqlabel setFrame:CGRectMake(0, 0, 55, 20)];
+    qqlabel.text=@"QQ";
+    qqlabel.textColor=HW_WHITE;
+    qqlabel.alpha=0.7;
+    qqlabel.font=FONT(13);
+    qqlabel.textAlignment=NSTextAlignmentCenter;
+    [hud.contentView addSubview:qqlabel];
+    [qqlabel setCenterX:qqBtn.centerX];
+    [qqlabel setCenterY:qqBtn.bottom+25];
     
     [timelineBtn addTarget:hud action:@selector(shareAction:) forControlEvents:UIControlEventTouchUpInside];
     [wechatBtn addTarget:hud action:@selector(shareAction:) forControlEvents:UIControlEventTouchUpInside];
     [qqBtn addTarget:hud action:@selector(shareAction:) forControlEvents:UIControlEventTouchUpInside];
     
+}
+
+
+
+
+//上传作品
++(void)showUploadingHudAt:(UIView*)view block1:(HUD_BLOCK)block1 block2:(HUD_BLOCK)block2;
+{
+    //Hud
+    UIView * window = [UIApplication sharedApplication].keyWindow;
+    MJHUD_Selection * hud = [[MJHUD_Selection alloc]initWithFrame:window.frame];
+    [window addSubview:hud];
+    
+    hud.sureBlock = block1;
+    hud.cancelBlock = block2;
+    
+    //Mask
+    [hud.maskView setFrame:hud.bounds];
+    hud.maskView.backgroundColor=[UIColor clearColor];
+    UITapGestureRecognizer * tap = [[UITapGestureRecognizer alloc]initWithTarget:hud action:@selector(hidding)];
+    [hud.maskView addGestureRecognizer:tap];
+    
+    //bg
+    UIImageView * imageBG = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, 160, 111)];
+    imageBG.userInteractionEnabled = YES;
+    imageBG.image = [UIImage getBundleImage:@"sz_selectionBG"];
+    [hud addSubview:imageBG];
+    CGPoint point = [view convertPoint:CGPointMake(0,0) toView:view.window];
+    
+    [imageBG setOrigin:CGPointMake(point.x-117, point.y-110)];
+    
+    
+    //btn1
+    MJButton * btn1 = [[MJButton alloc]initWithFrame:CGRectMake(0, 5, imageBG.width, imageBG.height/2-13)];
+    btn1.imageFrame=CGRectMake(15, 10, 22, 22);
+    btn1.mj_imageObjec = [UIImage getBundleImage:@"sz_hud_copy"];
+    btn1.titleFrame=CGRectMake(48, 10, 100, 22);
+    btn1.mj_text=@"复制同款音乐";
+    btn1.mj_font=FONT(16);
+    btn1.mj_textColor=HW_BLACK;
+    [btn1 addTarget:hud action:@selector(copyMusicBtnAction) forControlEvents:UIControlEventTouchUpInside];
+    [imageBG addSubview:btn1];
+    
+    //分割线
+    UIView * line = [[UIView alloc]initWithFrame:CGRectMake(0, btn1.bottom+4.5, imageBG.width, MINIMUM_PX)];
+    line.backgroundColor=HW_GRAY_BORDER;
+    [imageBG addSubview:line];
+    
+    //btn2
+    MJButton * btn2 = [[MJButton alloc]initWithFrame:CGRectMake(0, line.bottom+ 5, imageBG.width, btn1.height)];
+    btn2.imageFrame=CGRectMake(15, 10, 22, 22);
+    btn2.mj_imageObjec = [UIImage getBundleImage:@"sz_hud_upload"];
+    btn2.titleFrame=CGRectMake(48, 10, 100, 22);
+    btn2.mj_text=@"上传作品";
+    btn2.mj_font=FONT(16);
+    btn2.mj_textColor=HW_BLACK;
+    [btn2 addTarget:hud action:@selector(uploadBtnAction) forControlEvents:UIControlEventTouchUpInside];
+    [imageBG addSubview:btn2];
 }
 
 
@@ -176,5 +292,25 @@
     self.sureBlock(num);
     [self hidding];
 }
+
+
+
+
+
+-(void)copyMusicBtnAction
+{
+    self.sureBlock(nil);
+    
+    [self hidding];
+}
+
+
+-(void)uploadBtnAction
+{
+    self.cancelBlock(nil);
+    
+    [self hidding];
+}
+
 
 @end

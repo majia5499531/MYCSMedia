@@ -9,8 +9,8 @@
 #import "MJVideoManager.h"
 #import "MJVideoFullScreen.h"
 #import <SDWebImage/SDWebImage.h>
-
-
+#import "SZEventTracker.h"
+#import "SZContentTracker.h"
 @interface MJVideoManager ()<SuperPlayerDelegate>
 
 //腾讯
@@ -53,12 +53,15 @@
     [controller presentViewController:fullvc animated:NO completion:nil];
 }
 
-+(void)playWindowVideoAtView:(UIView*)view url:(NSString*)videoURL coverImage:(NSString*)image silent:(BOOL)silent repeat:(BOOL)repeat controlStyle:(MJVideoControlStyle)style
++(void)playWindowVideoAtView:(UIView*)view url:(NSString*)videoURL contentModel:(ContentModel*)model renderModel:(NSInteger)type
 {
+    
     //设置播放层
     MJVideoManager * manager = [MJVideoManager sharedMediaManager];
     manager.MJVideoView.fatherView = view;
     manager.MJVideoView.delegate = manager;
+    manager.MJVideoView.disableInteraction = YES;
+    manager.MJVideoView.controlView.hidden = YES;
     
     //发广播
     [[NSNotificationCenter defaultCenter]postNotificationName:@"SZRMVideoWillPlay" object:nil];
@@ -77,19 +80,20 @@
         //正在播放
         else if (manager.MJVideoView.playerState==StatePlaying)
         {
+            [manager.MJVideoView resume];
         }
         
         //停止播放
         else if (manager.MJVideoView.playerState==StateStopped)
         {
-            [MJVideoManager playNewVideo:videoURL];
+            [MJVideoManager playNewVideo:videoURL contentModel:model renderMode:type];
         }
         
         
         //不是则播放
         else
         {
-            [MJVideoManager playNewVideo:videoURL];
+            [MJVideoManager playNewVideo:videoURL contentModel:model renderMode:type];
         }
     }
     
@@ -97,16 +101,16 @@
     //新url
     else
     {
-        [MJVideoManager playNewVideo:videoURL];
+        [MJVideoManager playNewVideo:videoURL contentModel:model renderMode:type];
     }
-
+    
 }
 
 
 
 
 //播放新视频
-+(void)playNewVideo:(NSString*)videourl
++(void)playNewVideo:(NSString*)videourl contentModel:(ContentModel*)contentModel renderMode:(NSInteger)mode
 {
     MJVideoManager * manager = [MJVideoManager sharedMediaManager];
     
@@ -117,14 +121,22 @@
     manager.MJVideoView.playerConfig.loop = NO;
     manager.MJVideoView.playerConfig.mute=NO;
     manager.MJVideoView.playerConfig.playRate = 1.0 ;
+    manager.MJVideoView.playerConfig.renderMode = mode;
+    
+    //content model
+    manager.MJVideoView.externalModel = contentModel;
     
     //NewModel
     SuperPlayerModel * playerModel = [[SuperPlayerModel alloc] init];
     playerModel.videoURL = videourl;
     [manager.MJVideoView playWithModel:playerModel];
     
+    //tracking
+    [SZEventTracker trackingVideoPlayWithContentModel:contentModel source:@"" isReplay:NO];
+    
+    //tracking
+    [SZContentTracker trackContentEvent:@"cms_client_show" contentId:contentModel.id];
 }
-
 
 
 
@@ -132,7 +144,16 @@
 +(void)pauseWindowVideo
 {
     MJVideoManager * manager = [MJVideoManager sharedMediaManager];
-    [manager.MJVideoView pause];
+    
+    if (manager.MJVideoView.isLoaded)
+    {
+        [manager.MJVideoView pause];
+    }
+    else
+    {
+        [MJVideoManager destroyVideoPlayer];
+    }
+    
 }
 
 
@@ -140,11 +161,11 @@
 +(void)destroyVideoPlayer
 {
     MJVideoManager * manager = [MJVideoManager sharedMediaManager];
-
     manager.MJVideoView.fatherView = nil;
-    
     [manager.MJVideoView destroyCorePlayer];
-    
 }
+
+
+
 
 @end

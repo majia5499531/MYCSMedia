@@ -11,7 +11,7 @@
 #import "SZGlobalInfo.h"
 #import "SZDefines.h"
 #import "UIView+MJCategory.h"
-#import "ColumnBar.h"
+#import "SZColumnBar.h"
 #import "PannelListView.h"
 #import "PanelModel.h"
 #import "PanelConfigModel.h"
@@ -24,7 +24,7 @@
 #import <MJRefresh/MJRefresh.h>
 #import "CustomFooter.h"
 #import "CustomAnimatedHeader.h"
-#import "VideoListModel.h"
+#import "ContentListModel.h"
 #import "ContentModel.h"
 
 @interface PannelListView ()<UICollectionViewDelegate,UICollectionViewDataSource>
@@ -62,7 +62,7 @@
     [collectionView setNoContentInset];
     [ContentPanelManager regeisterPanelCell:collectionView];
     collectionView.showsHorizontalScrollIndicator = NO;
-    collectionView.backgroundColor=HW_GRAY_BG_5;
+    collectionView.backgroundColor=HW_GRAY_BG_White;
     collectionView.delegate = self;
     collectionView.dataSource = self;
     collectionView.mj_header = [CustomAnimatedHeader headerWithRefreshingTarget:self refreshingAction:@selector(pulldownRefreshAction:)];
@@ -189,7 +189,7 @@
     [param setValue:@"1" forKey:@"removeFirst"];
     [param setValue:contentId forKey:@"contentId"];
     
-    VideoListModel * model = [VideoListModel model];
+    ContentListModel * model = [ContentListModel model];
     __weak typeof (self) weakSelf = self;
     [model GETRequestInView:self WithUrl:APPEND_SUBURL(BASE_URL, API_URL_VIDEO_LIST) Params:param Success:^(id responseObject){
         [weakSelf requestMoreContentDone:model];
@@ -218,7 +218,7 @@
     [collectionView.mj_footer endRefreshing];
 }
 
--(void)requestMoreContentDone:(VideoListModel*)model
+-(void)requestMoreContentDone:(ContentListModel*)model
 {
     [collectionView.mj_footer endRefreshing];
     

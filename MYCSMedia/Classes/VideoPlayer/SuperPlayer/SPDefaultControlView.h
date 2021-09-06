@@ -8,7 +8,7 @@
 #import "SuperPlayerControlView.h"
 #import "VideoRateView.h"
 #import "MJButton.h"
-
+#import "MJProgressView.h"
 @interface SPDefaultControlView : SuperPlayerControlView
 
 
@@ -56,6 +56,11 @@
 //分享按钮
 @property(strong,nonatomic)MJButton * shareBtn;
 
+//外部拖动条
+@property(strong,nonatomic)MJProgressView * externalSlider;
+
+//外部全屏按钮
+@property(strong,nonatomic)UIImageView * externalFullScreenBtn;
 
 
 /// 画面比例

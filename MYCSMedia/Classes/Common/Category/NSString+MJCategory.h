@@ -22,6 +22,7 @@
 +(NSString *)urlEncodeStr:(NSString *)input;
 +(NSString *)decoderUrlEncodeStr:(NSString *)input;
 +(NSString*)converUTCDateStr:(NSString*)utc;
++(NSString*)converToViewCountStr:(NSInteger)viewCount;
 
 +(NSMutableAttributedString*)makeTaggedTitle:(NSString*)str tag:(NSString*)tagStr textColor:(UIColor*)textColor tagTintColor:(UIColor*)bgColor tagTextColor:(UIColor*)tagTextColor type:(int)type;
 +(NSMutableAttributedString*)makeTaggedTitleAtEnd:(NSString*)str tag:(NSString*)tagStr textColor:(UIColor*)color tagColor:(UIColor*)tagColor;

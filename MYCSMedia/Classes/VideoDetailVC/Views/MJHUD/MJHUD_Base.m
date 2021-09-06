@@ -50,11 +50,4 @@
 
 
 
-#pragma mark - Dealloc
--(void)dealloc
-{
-    NSLog(@"MJHUD Dealloc");
-}
-
-
 @end

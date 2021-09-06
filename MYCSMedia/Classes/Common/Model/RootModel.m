@@ -49,7 +49,6 @@
                 } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
                     failblock(error,task);
                 }];
-        
     }
     
     
@@ -61,7 +60,6 @@
                 } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
                     failblock(error,task);
                 }];
-        
     }
     
     

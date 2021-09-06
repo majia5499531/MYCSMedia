@@ -15,7 +15,6 @@
     self = [super init];
     
     self.holder = [[UIControl alloc] initWithFrame:CGRectMake(0, 0, 30, 30)];
-    //    view.backgroundColor = [UIColor yellowColor];
     UIView *inter = [[UIView alloc] initWithFrame:CGRectMake(14, 14, 2, 2)];
     inter.backgroundColor = [UIColor whiteColor];
     [self.holder addSubview:inter];
@@ -50,13 +49,13 @@
     _progressView                   = [[UIProgressView alloc] initWithProgressViewStyle:UIProgressViewStyleDefault];
     _progressView.progressTintColor = [UIColor colorWithRed:1 green:1 blue:1 alpha:0];            //缓冲进度色
     _progressView.trackTintColor    = [UIColor clearColor];
-    
     [self addSubview:_progressView];
+    
     
     self.pointArray = [NSMutableArray new];
     self.maximumValue = 1;
     self.maximumTrackTintColor = [UIColor colorWithRed:1 green:1 blue:1 alpha:0.2];           //总进度色
-    
+    self.minimumTrackTintColor = [UIColor whiteColor];
     [_progressView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.equalTo(self);
         make.right.equalTo(self);
@@ -66,6 +65,7 @@
     _progressView.layer.masksToBounds = YES;
     _progressView.layer.cornerRadius  = 1;
 
+    
     [self sendSubviewToBack:self.progressView];
 }
 

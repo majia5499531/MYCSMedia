@@ -18,8 +18,10 @@
 @property(strong,nonatomic)NSNumber * contentZanTime;                 //点赞变化
 @property(strong,nonatomic)NSNumber * contentCollectTime;             //收藏变化
 @property(strong,nonatomic)NSNumber * contentCommentsUpdateTime;     //评论变化
+@property(strong,nonatomic)NSNumber * contentCreateFollowTime;       //关注发布者
 @property(strong,nonatomic)NSNumber * contentStateUpdateTime;        //内容状态变化
 @property(strong,nonatomic)NSNumber * contentRelateUpdateTime;       //相关推荐变化
+
 
 
 //数据
@@ -34,7 +36,8 @@
 
 -(void)requestZan;
 -(void)requestCollect;
-
+-(void)requestFollowUser:(NSString*)userId;
+-(void)requestUnFollowUser:(NSString*)userId;
 
 @end
 

@@ -58,8 +58,14 @@
 
 @property(assign,nonatomic)NSInteger badgeCount;
 
+@property(strong,nonatomic)NSString * linkUrl;
+
+
+
 -(void)setBadgeNum:(NSString*)badge style:(NSInteger)style;
 
 -(void)setRedDotStyle:(NSInteger)style frame:(CGRect)frame;
+
+-(void)setBadgeStr:(NSString*)str;
 
 @end

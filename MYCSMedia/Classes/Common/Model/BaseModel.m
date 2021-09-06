@@ -114,32 +114,29 @@
 
 
 #pragma mark - 文件上传
--(void)requestMultipartFileUpload:(NSString *)url model:(NSDictionary *)model fileDataArray:(NSArray*)array fileNameArray:(NSArray*)names success:(SuccessBlock)successblock error:(ErrorBlock)errorBLock fail:(FailBlock)failblock
+-(void)requestMultipartFileUpload:(NSString *)url model:(NSDictionary *)model fileDataArray:(NSArray*)array fileNameArray:(NSArray*)names success:(SuccessBlock)successblock error:(ErrorBlock)errorBLock fail:(FailBlock)failblock progress:(ProgressBlock)progressBlock
 {
     AFHTTPSessionManager * httpManager = [AFHTTPSessionManager manager];
     
-    //设置请求头
-    if ([SZGlobalInfo sharedManager].SZRMToken.length)
-    {
-        //超时
-        [httpManager.requestSerializer willChangeValueForKey:@"timeoutInterval"];
-        httpManager.requestSerializer.timeoutInterval = 30.f;
-        [httpManager.requestSerializer didChangeValueForKey:@"timeoutInterval"];
-        
-        //token
-        NSString * token = [NSString stringWithFormat:@"%@",[SZGlobalInfo sharedManager].SZRMToken];
-        if ([SZGlobalInfo sharedManager].SZRMToken.length)
-        {
-            [httpManager.requestSerializer setValue:token forHTTPHeaderField:@"token"];
-        }
-        
-        //ContentType
-        [httpManager.requestSerializer setValue:@"multipart/form-data; boundary=BOUNDARY" forHTTPHeaderField:@"Content-Type"];
-    }
-    
-    NSLog(@"【HTTP上传】\nURL = %@\nParam = %@",url,model);
-    
-    
+//    //设置请求头
+//    if ([SZGlobalInfo sharedManager].SZRMToken.length)
+//    {
+//        //超时
+//        [httpManager.requestSerializer willChangeValueForKey:@"timeoutInterval"];
+//        httpManager.requestSerializer.timeoutInterval = 3600.f;
+//        [httpManager.requestSerializer didChangeValueForKey:@"timeoutInterval"];
+//
+//        //token
+//        NSString * token = [NSString stringWithFormat:@"%@",[SZGlobalInfo sharedManager].SZRMToken];
+//        if ([SZGlobalInfo sharedManager].SZRMToken.length)
+//        {
+//            [httpManager.requestSerializer setValue:token forHTTPHeaderField:@"token"];
+//        }
+//
+//        //ContentType
+//        [httpManager.requestSerializer setValue:@"multipart/form-data; boundary=BOUNDARY" forHTTPHeaderField:@"Content-Type"];
+//    }
+//
     
     //使用multipart方式上传
     [httpManager POST:url parameters:nil headers:nil constructingBodyWithBlock:^(id<AFMultipartFormData>  _Nonnull formData)
@@ -150,7 +147,7 @@
             NSData * imageData = array[i];
             
             //文件名
-            NSString * fileName = @"iOSName";
+            NSString * fileName = @"iOSName.mp4";
             if (names.count)
             {
                 fileName = names[i];
@@ -159,11 +156,11 @@
             //拼数据
             if (array.count>1)
             {
-                [formData appendPartWithFileData:imageData name:@"files" fileName:fileName mimeType:@"multipart/form-data"];
+                [formData appendPartWithFileData:imageData name:@"files" fileName:fileName mimeType:@"video/mp4"];
             }
             else
             {
-                [formData appendPartWithFileData:imageData name:@"file" fileName:fileName mimeType:@"multipart/form-data"];
+                [formData appendPartWithFileData:imageData name:@"file" fileName:fileName mimeType:@"video/mp4"];
             }
         }
         
@@ -186,13 +183,18 @@
             {
                 NSData *jsonData = [NSJSONSerialization dataWithJSONObject:item options:NSJSONWritingPrettyPrinted error:nil];
                 [formData appendPartWithFormData:jsonData name:key];
-
             }
         }
         
     } progress:^(NSProgress * _Nonnull uploadProgress) {
         
-            NSLog(@"正在上传--------%@",uploadProgress);
+//            NSLog(@"正在上传--------%@",uploadProgress);
+        
+        if (progressBlock)
+        {
+            progressBlock(uploadProgress);
+        }
+        
         
     } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         
@@ -202,23 +204,9 @@
         
         NSLog(@"【上传】\nResp = %@",responseObject);
 
-        //业务成功
-        if (self.resultcode.integerValue==0)
-        {
-            successblock(responseObject);
-        }
-    
-        //token失效
-        else if (self.resultcode.integerValue==401)
-        {
-            errorBLock(responseObject);
-        }
+        [self parseData:responseObject];
+        successblock(responseObject);
 
-        //业务错误
-        else
-        {
-            errorBLock(responseObject);
-        }
         
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         
@@ -251,5 +239,7 @@
 {
     
 }
+
+
 
 @end

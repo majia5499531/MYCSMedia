@@ -10,7 +10,7 @@
 #import "TokenExchangeModel.h"
 #import "SZDefines.h"
 #import "MJHud.h"
-
+#import "SZEventTracker.h"
 @implementation SZManager
 
 +(SZManager *)sharedManager
@@ -21,6 +21,7 @@
         if (manager == nil)
         {
             manager = [[SZManager alloc]init];
+            [SZEventTracker shareTracker];
             
             [[AFNetworkReachabilityManager sharedManager]startMonitoring];
         }

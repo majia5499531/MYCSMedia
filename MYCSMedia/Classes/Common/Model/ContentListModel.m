@@ -8,7 +8,7 @@
 #import "ContentListModel.h"
 #import "NSObject+MJCategory.h"
 #import "ContentModel.h"
-#import <YYModel/YYModel.h>
+#import "NSObject+YYModel.h"
 
 @implementation ContentListModel
 -(void)parseData:(id)data
@@ -19,7 +19,7 @@
         ContentModel * model = [ContentModel  model];
         NSDictionary * dic = data[i];
         
-        [model yy_modelSetWithJSON:dic];
+        [model modelSetWithDictionary:dic];
 
         [self.dataArr addObject:model];
     }

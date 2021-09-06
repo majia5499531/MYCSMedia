@@ -7,7 +7,7 @@
 
 #import "PanelModel.h"
 #import "NSObject+MJCategory.h"
-#import <YYModel/YYModel.h>
+#import "NSObject+YYModel.h"
 #import "PanelConfigModel.h"
 #import "ContentModel.h"
 #import "CategoryModel.h"
@@ -18,7 +18,7 @@
 -(void)parseData:(id)data
 {
     //其他属性
-    [self yy_modelSetWithDictionary:data];
+    [self modelSetWithDictionary:data];
     
     //config
     PanelConfigModel * configModel = [PanelConfigModel model];
@@ -32,7 +32,7 @@
     {
         NSDictionary * contentDic = contents[i];
         ContentModel * model = [ContentModel model];
-        [model yy_modelSetWithJSON:contentDic];
+        [model modelSetWithDictionary:contentDic];
         [self.dataArr addObject:model];
     }
     
@@ -45,7 +45,7 @@
         NSDictionary * subcateDic = subarr[i];
         
         CategoryModel * submodel = [CategoryModel model];
-        [submodel yy_modelSetWithJSON:subcateDic];
+        [submodel modelSetWithDictionary:subcateDic];
         [self.subCategories addObject:submodel];
     }
 }

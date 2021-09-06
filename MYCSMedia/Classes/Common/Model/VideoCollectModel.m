@@ -6,20 +6,21 @@
 //
 
 #import "VideoCollectModel.h"
-#import <YYModel/YYModel.h>
 #import "NSObject+MJCategory.h"
+#import "NSObject+YYModel.h"
+
 
 @implementation VideoCollectModel
 -(void)parseData:(id)data
 {
-    [self yy_modelSetWithJSON:data];
+    [self modelSetWithDictionary:data];
 
     NSArray * arr = [data mj_valueForKey:@"children"];
     for (int i = 0; i<arr.count; i++)
     {
         NSDictionary * dic = arr[i];
         ContentModel * model = [ContentModel  model];
-        [model yy_modelSetWithJSON:dic];
+        [model modelSetWithDictionary:dic];
         [self.dataArr addObject:model];
     }
 }

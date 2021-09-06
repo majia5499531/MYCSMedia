@@ -265,7 +265,8 @@
 
 -(void)searchBtnAction
 {
-    [[SZManager sharedManager].delegate onOpenWebview:@"https://www.zhipin.com" param:nil];
+    NSString * h5ur = APPEND_SUBURL(BASE_H5_URL, @"fuse/news/#/searchPlus");
+    [[SZManager sharedManager].delegate onOpenWebview:h5ur param:nil];
 }
 
 #pragma mark - StatusBar

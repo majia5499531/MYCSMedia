@@ -8,11 +8,12 @@
 #import "TokenExchangeModel.h"
 #import "NSObject+YYModel.h"
 #import "UserInfoModel.h"
+#import "YYModel.h"
 
 @implementation TokenExchangeModel
 -(void)parseData:(id)data
 {
-    [self modelSetWithDictionary:data];
+    [self yy_modelSetWithDictionary:data];
     
     NSDictionary * userDic = [data valueForKey:@"loginSysUserVo"];
     UserInfoModel * userModel = [UserInfoModel model];

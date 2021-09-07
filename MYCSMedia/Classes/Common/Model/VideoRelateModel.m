@@ -6,7 +6,8 @@
 //
 
 #import "VideoRelateModel.h"
-#import "NSObject+YYModel.h"
+#import "YYText.h"
+#import "YYModel.h"
 
 @implementation VideoRelateModel
 
@@ -19,7 +20,7 @@
     {
         VideoRelateModel * model = [VideoRelateModel model];
         NSDictionary * dic = arr[i];
-        [model modelSetWithDictionary:dic];
+        [model yy_modelSetWithDictionary:dic];
         [self.dataArr addObject:model];
     }
 }

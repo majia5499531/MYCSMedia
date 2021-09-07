@@ -28,7 +28,7 @@
 #import "SZData.h"
 #import "VideoRelateModel.h"
 #import "MyLayout.h"
-#import <YYKit/YYLabel.h>
+#import "YYText.h"
 #import "NSAttributedString+YYText.h"
 #import "StrUtils.h"
 #import "MJProgressView.h"
@@ -296,27 +296,35 @@
     __weak typeof (self) weakSelf = self;
     NSMutableAttributedString *mutableString = [[NSMutableAttributedString alloc] initWithString:finalDesc];
     
-    [mutableString setTextHighlightRange:NSMakeRange(0, topicStr.length) color:[UIColor whiteColor] backgroundColor:[UIColor clearColor] tapAction:^(UIView * _Nonnull containerView, NSAttributedString * _Nonnull text, NSRange range, CGRect rect) {
+    
+    [mutableString yy_setTextHighlightRange:NSMakeRange(0, topicStr.length) color:[UIColor whiteColor] backgroundColor:[UIColor clearColor] tapAction:^(UIView * _Nonnull containerView, NSAttributedString * _Nonnull text, NSRange range, CGRect rect) {
         [weakSelf topicClickAction];
     }];
-    [mutableString setFont:[UIFont systemFontOfSize:15] range:NSMakeRange(0, topicStr.length)];
+    [mutableString yy_setFont:[UIFont systemFontOfSize:15] range:NSMakeRange(0, topicStr.length)];
     
     
-    [mutableString setTextHighlightRange:NSMakeRange(topicStr.length, finalDesc.length - topicStr.length) color:[UIColor colorWithRed:1 green:1 blue:1 alpha:0.7] backgroundColor:[UIColor clearColor] tapAction:^(UIView * _Nonnull containerView, NSAttributedString * _Nonnull text, NSRange range, CGRect rect) {
+    [mutableString yy_setTextHighlightRange:NSMakeRange(topicStr.length, finalDesc.length - topicStr.length) color:[UIColor colorWithRed:1 green:1 blue:1 alpha:0.7] backgroundColor:[UIColor clearColor] tapAction:^(UIView * _Nonnull containerView, NSAttributedString * _Nonnull text, NSRange range, CGRect rect) {
         [weakSelf descClickAction];
     }];
-    [mutableString setFont:[UIFont systemFontOfSize:13] range:NSMakeRange(topicStr.length, finalDesc.length - topicStr.length)];
-    [mutableString setLineSpacing:4 range:NSMakeRange(0,finalDesc.length)];
+    [mutableString yy_setFont:[UIFont systemFontOfSize:13] range:NSMakeRange(topicStr.length, finalDesc.length - topicStr.length)];
+    [mutableString yy_setLineSpacing:4 range:NSMakeRange(0,finalDesc.length)];
     
     descLabel.attributedText = mutableString;
     descLabel.lineBreakMode=NSLineBreakByTruncatingTail;
     
     
-    //作者名
-    authorName.text = dataModel.creatorNickname;
+    //头像、昵称 （如果来自火山引擎的推荐数据）
+    if (dataModel.issuerName.length>0 && dataModel.issuerImageUrl.length>0)
+    {
+        authorName.text = dataModel.issuerName;
+        [avatar sd_setImageWithURL:[NSURL URLWithString:dataModel.issuerImageUrl]];
+    }
+    else
+    {
+        authorName.text = dataModel.creatorNickname;
+        [avatar sd_setImageWithURL:[NSURL URLWithString:dataModel.creatorHead]];
+    }
     
-    //作者头像
-    [avatar sd_setImageWithURL:[NSURL URLWithString:dataModel.creatorHead]];
     
     //作者等级(黄V，蓝V，普通用户)
     if ([dataModel.creatorCertMark isEqualToString:@"blue-v"])

@@ -11,14 +11,14 @@
 #import "PanelConfigModel.h"
 #import "ContentModel.h"
 #import "CategoryModel.h"
-
+#import "YYModel.h"
 
 @implementation PanelModel
 
 -(void)parseData:(id)data
 {
     //其他属性
-    [self modelSetWithDictionary:data];
+    [self yy_modelSetWithDictionary:data];
     
     //config
     PanelConfigModel * configModel = [PanelConfigModel model];
@@ -32,7 +32,7 @@
     {
         NSDictionary * contentDic = contents[i];
         ContentModel * model = [ContentModel model];
-        [model modelSetWithDictionary:contentDic];
+        [model yy_modelSetWithDictionary:contentDic];
         [self.dataArr addObject:model];
     }
     
@@ -45,7 +45,7 @@
         NSDictionary * subcateDic = subarr[i];
         
         CategoryModel * submodel = [CategoryModel model];
-        [submodel modelSetWithDictionary:subcateDic];
+        [submodel yy_modelSetWithDictionary:subcateDic];
         [self.subCategories addObject:submodel];
     }
 }

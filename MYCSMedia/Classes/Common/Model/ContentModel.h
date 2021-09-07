@@ -62,6 +62,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property(strong,nonatomic) NSString               * creatorCertDomain;
 
 
+@property(strong,nonatomic) NSString               * issuerName;
+@property(strong,nonatomic) NSString               * issuerImageUrl;
+
 
 @property (nonatomic , copy) NSString              * shareImageUrl;
 @property (nonatomic , copy) NSString              * shareBrief;

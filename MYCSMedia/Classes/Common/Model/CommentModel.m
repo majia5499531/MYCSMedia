@@ -6,20 +6,21 @@
 //
 
 #import "CommentModel.h"
-#import "NSObject+YYModel.h"
+#import <YYText/YYText.h>
+#import "YYModel.h"
 #import "NSObject+MJCategory.h"
 
 @implementation CommentModel
 -(void)parseData:(id)data
 {
-    [self modelSetWithDictionary:data];
+    [self yy_modelSetWithDictionary:data];
     
     NSArray * arr = [data mj_valueForKey:@"children"];
     for (int i = 0; i<arr.count; i++)
     {
         NSDictionary * dic = arr[i];
         CommentModel * model = [CommentModel model];
-        [model modelSetWithDictionary:dic];
+        [model yy_modelSetWithDictionary:dic];
         [self.dataArr addObject:model];
     }
 }

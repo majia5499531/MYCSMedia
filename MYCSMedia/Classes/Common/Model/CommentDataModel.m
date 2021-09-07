@@ -6,15 +6,16 @@
 //
 
 #import "CommentDataModel.h"
-#import "NSObject+YYModel.h"
+#import <YYText/YYText.h>
 #import "NSObject+MJCategory.h"
 #import "CommentModel.h"
+#import "YYModel.h"
 
 @implementation CommentDataModel
 
 -(void)parseData:(id)data
 {
-    [self modelSetWithDictionary:data];
+    [self yy_modelSetWithDictionary:data];
     
     NSArray * comments = [data mj_valueForKey:@"records"];
     for (int i = 0; i<comments.count; i++)

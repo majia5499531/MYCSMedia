@@ -31,7 +31,7 @@ typedef NS_ENUM(NSUInteger, SZ_ENV)
 //分享事件
 -(void)onShareAction:(SZ_SHARE_PLATFORM)platform title:(NSString*)title image:(NSString*)imgurl desc:(NSString*)desc URL:(NSString*)url;
 
-//跳转到登陆页
+//跳转到登录页
 -(void)onLoginAction;
 
 //打开webview

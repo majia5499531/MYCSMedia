@@ -1,11 +1,11 @@
 //
-//  SZVideoRootView.m
+//  SZHomeRootView2.m
 //  MYCSMedia
 //
 //  Created by 马佳 on 2021/8/19.
 //
 
-#import "SZVideoRootView.h"
+#import "SZHomeRootView2.h"
 #import "SZDefines.h"
 #import "UIColor+MJCategory.h"
 #import "CustomFooter.h"
@@ -29,11 +29,11 @@
 #import "SZGlobalInfo.h"
 #import "UIScrollView+MJCategory.h"
 
-@interface SZVideoRootView ()<UICollectionViewDelegate, UICollectionViewDataSource>
+@interface SZHomeRootView2 ()<UICollectionViewDelegate, UICollectionViewDataSource>
 
 @end
 
-@implementation SZVideoRootView
+@implementation SZHomeRootView2
 {
     //data
     ContentListModel * dataModel;
@@ -75,7 +75,7 @@
     //如果有数据则play
     else
     {
-        [self updateCurrentContentId:NO];
+        [self needUpdateCurrentContentId_now:NO];
     }
 }
 
@@ -161,7 +161,7 @@
     [collectionView reloadData];
     
     dispatch_async(dispatch_get_main_queue(),^{
-        [self updateCurrentContentId:NO];
+        [self needUpdateCurrentContentId_now:NO];
     });
     
 }
@@ -261,7 +261,7 @@
 {
     NSIndexPath * indexpath = [self getCurrentRow];
     
-    [self updateCurrentContentId:NO];
+    [self needUpdateCurrentContentId_now:NO];
     
     //如果是倒数第二个则加载更多
     if (indexpath.row==dataModel.dataArr.count-2)
@@ -273,7 +273,7 @@
 
 
 #pragma mark - 更新currentId
--(void)updateCurrentContentId:(BOOL)force
+-(void)needUpdateCurrentContentId_now:(BOOL)force
 {
     //model
     NSIndexPath * path = [self getCurrentRow];

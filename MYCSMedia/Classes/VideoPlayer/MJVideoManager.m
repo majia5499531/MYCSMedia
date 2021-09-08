@@ -55,7 +55,6 @@
 
 +(void)playWindowVideoAtView:(UIView*)view url:(NSString*)videoURL contentModel:(ContentModel*)model renderModel:(NSInteger)type
 {
-    
     //设置播放层
     MJVideoManager * manager = [MJVideoManager sharedMediaManager];
     manager.MJVideoView.fatherView = view;
@@ -65,7 +64,7 @@
     
     //发广播
     [[NSNotificationCenter defaultCenter]postNotificationName:@"SZRMVideoWillPlay" object:nil];
-
+    
     //如果是老url
     if ([videoURL isEqualToString:manager.MJVideoView.playerModel.videoURL] && manager.MJVideoView.isLoaded)
     {

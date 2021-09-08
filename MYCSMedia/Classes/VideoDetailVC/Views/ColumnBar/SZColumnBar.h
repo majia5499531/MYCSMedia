@@ -18,9 +18,8 @@
 @property(weak,nonatomic)id <NewsColumnDelegate> columnDelegate;
 
 //先设置
--(void)setRelatedScrollView:(UIView*)scrollview;
 -(void)setCenterAlignStyle;
--(void)setTopicTitles:(NSArray *)columnArr originX:(CGFloat)oriX minWidth:(CGFloat)minWidth itemMargin:(CGFloat)interSpace;
+-(void)setTopicTitles:(NSArray *)columnArr relateScrollView:(UIScrollView*)scroll originX:(CGFloat)oriX minWidth:(CGFloat)minWidth itemMargin:(CGFloat)interSpace initialIndex:(NSInteger)idx;
 -(void)setBadgeStr:(NSString*)str atIndex:(NSInteger)idx;
 -(void)selectIndex:(NSInteger)idx;
 

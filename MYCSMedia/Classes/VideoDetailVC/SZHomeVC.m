@@ -30,9 +30,9 @@
 #import "IQDataBinding.h"
 #import "NSString+MJCategory.h"
 #import "SZGlobalInfo.h"
-#import "SZTopicVideoRootView.h"
-#import "SZVideoRootView.h"
-#import "SZLiveRootView.h"
+#import "SZHomeRootView1.h"
+#import "SZHomeRootView2.h"
+#import "SZHomeRootView3.h"
 #import "SZColumnBar.h"
 #import "SZData.h"
 
@@ -41,15 +41,17 @@
     UIScrollView * scrollBG;
     SZColumnBar * columnbar;
     
-    SZTopicVideoRootView * rootview1;
-    SZVideoRootView * rootview2;
-    SZLiveRootView * rootview3;
+    SZHomeRootView1 * rootview1;
+    SZHomeRootView2 * rootview2;
+    SZHomeRootView3 * rootview3;
     NSInteger currentSelectIdx;
 }
 @property(assign,nonatomic)BOOL MJHideStatusbar;
 @end
 
 @implementation SZHomeVC
+
+
 
 -(void)viewDidLoad
 {
@@ -77,6 +79,9 @@
     
     //检查登录状态
     [SZGlobalInfo checkLoginStatus];
+    
+    //子页
+    [self subviewWillAppear];
 }
 
 -(void)viewWillDisappear:(BOOL)animated
@@ -87,6 +92,25 @@
     
     [MJVideoManager pauseWindowVideo];
 }
+
+
+
+-(void)subviewWillAppear
+{
+    if (currentSelectIdx==0)
+    {
+        [rootview1 needUpdateCurrentContentId_now:YES];
+    }
+    else if (currentSelectIdx==1)
+    {
+        [rootview2 needUpdateCurrentContentId_now:YES];
+    }
+    else
+    {
+        
+    }
+}
+
 
 #pragma mark - 界面&布局
 -(void)MJInitSubviews
@@ -111,15 +135,15 @@
     [self.view addSubview:scrollBG];
     
     //小康生活
-    rootview1 = [[SZTopicVideoRootView alloc]initWithFrame:CGRectMake(0, 0, scrollBG.width, scrollBG.height)];
+    rootview1 = [[SZHomeRootView1 alloc]initWithFrame:CGRectMake(0, 0, scrollBG.width, scrollBG.height)];
     [scrollBG addSubview:rootview1];
     
     //视频
-    rootview2 = [[SZVideoRootView alloc]initWithFrame:CGRectMake(scrollBG.width, 0, scrollBG.width, scrollBG.height)];
+    rootview2 = [[SZHomeRootView2 alloc]initWithFrame:CGRectMake(scrollBG.width, 0, scrollBG.width, scrollBG.height)];
     [scrollBG addSubview:rootview2];
     
     //直播
-    rootview3 = [[SZLiveRootView alloc]initWithFrame:CGRectMake(scrollBG.width*2, NAVI_HEIGHT, scrollBG.width, scrollBG.height-NAVI_HEIGHT)];
+    rootview3 = [[SZHomeRootView3 alloc]initWithFrame:CGRectMake(scrollBG.width*2, NAVI_HEIGHT, scrollBG.width, scrollBG.height-NAVI_HEIGHT)];
     [scrollBG addSubview:rootview3];
     
     //SZColumnBar
@@ -127,8 +151,7 @@
     columnbar.columnDelegate=self;
     [self.view addSubview:columnbar];
     NSArray * titles = @[@"我的小康生活",@"视频",@"直播"];
-    [columnbar setRelatedScrollView:scrollBG];
-    [columnbar setTopicTitles:titles originX:10 minWidth:50 itemMargin:12];
+    [columnbar setTopicTitles:titles relateScrollView:scrollBG originX:10 minWidth:50 itemMargin:12 initialIndex:1];
     [self.view addSubview:columnbar];
     [columnbar setCenterX:self.view.width/2-20];
     [columnbar setBadgeStr:@"有活动" atIndex:0];
@@ -204,11 +227,11 @@
 {
     if (currentSelectIdx==0)
     {
-        [rootview1 updateCurrentContentId:YES];
+        [rootview1 needUpdateCurrentContentId_now:YES];
     }
     else
     {
-        [rootview2 updateCurrentContentId:YES];
+        [rootview2 needUpdateCurrentContentId_now:YES];
     }
 }
 

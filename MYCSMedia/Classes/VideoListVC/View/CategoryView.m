@@ -114,10 +114,10 @@
 
     }
     
-    //data
-    [cateBar setRelatedScrollView:scrollBG];
-    [cateBar setTopicTitles:CatePanelModel.subCategories originX:10 minWidth:44 itemMargin:12];
-    [cateBar setCenterAlignStyle];
+//    //data
+//    [cateBar setRelatedScrollView:scrollBG];
+//    [cateBar setTopicTitles:CatePanelModel.subCategories  originX:10 minWidth:44 itemMargin:12 initialIndex:0];
+//    [cateBar setCenterAlignStyle];
     
 }
 

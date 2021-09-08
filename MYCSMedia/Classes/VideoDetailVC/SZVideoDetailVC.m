@@ -32,6 +32,7 @@
 
 @interface SZVideoDetailVC ()<UICollectionViewDelegate, UICollectionViewDataSource>
 @property(assign,nonatomic)BOOL MJHideStatusbar;
+@property(strong,nonatomic)NSMutableArray * dataArr;
 @end
 
 
@@ -39,7 +40,6 @@
 @implementation SZVideoDetailVC
 {
     //data
-    NSMutableArray * dataArr;
     BOOL isRandomMode;
     
     //UI
@@ -56,9 +56,9 @@
     
     [self MJInitSubviews];
     
-    [self checkInputParams];
-    
     [self addNotifications];
+    
+    [self requestSingleVideo];
 }
 
 -(void)dealloc
@@ -98,21 +98,7 @@
 
 
 
-#pragma mark - Other
--(void)checkInputParams
-{
-    if(self.contentId.length)
-    {
-        [self requestSingleVideo];
-    }
-    else
-    {
-        [MJHUD_Alert showAlertViewWithTitle:@"Error" text:@"No contentId or panelId" sure:^(id objc) {
-            [MJHUD_Alert hideAlertView];
-            [self.navigationController popViewControllerAnimated:YES];
-        }];
-    }
-}
+
 
 
 -(NSIndexPath*)getCurrentRow
@@ -155,7 +141,7 @@
 
 -(void)SZRMTokenExchangeDone:(NSNotification*)notify
 {
-    [self updateCurrentContentId:YES];
+    [self needUpdateCurrentContentId_now:YES];
 }
 
 -(void)onDeviceOrientationChange:(NSNotification*)notify
@@ -300,13 +286,14 @@
     [collectionView.mj_footer endRefreshing];
     [collectionView.mj_header endRefreshing];
     
-    [dataArr removeAllObjects];
-    [dataArr addObjectsFromArray:model.dataArr];
+    [self.dataArr removeAllObjects];
+    [self.dataArr addObjectsFromArray:model.dataArr];
+    
     
     [collectionView reloadData];
     
     dispatch_async(dispatch_get_main_queue(),^{
-        [self updateCurrentContentId:NO];
+        [self needUpdateCurrentContentId_now:NO];
     });
     
 }
@@ -314,37 +301,37 @@
 
 -(void)requestMoreVideoDone:(ContentListModel*)model
 {
-    [collectionView.mj_footer endRefreshing];
-    [collectionView.mj_header endRefreshing];
-    
-    if (model.dataArr.count==0 && [self getCurrentRow].row==dataArr.count-1)
-    {
-        [MJHUD_Notice showNoticeView:@"没有更多视频了" inView:self.view hideAfterDelay:2];
-        return;
-    }
-    
-    
-    NSInteger startIdx = dataArr.count;
-    
-    
-    NSMutableArray * idxArr = [NSMutableArray array];
-    for (int i = 0; i<model.dataArr.count; i++)
-    {
-        NSInteger idx = startIdx++;
-        NSIndexPath * idpath = [NSIndexPath indexPathForRow:idx inSection:0];
-        [idxArr addObject:idpath];
-    }
-    
-    
-    
-    [dataArr addObjectsFromArray:model.dataArr];
-    
-    //追加collectionview数量
-    [collectionView performBatchUpdates:^{
-            [collectionView insertItemsAtIndexPaths:idxArr];
-        } completion:^(BOOL finished) {
-            
-        }];
+//    [collectionView.mj_footer endRefreshing];
+//    [collectionView.mj_header endRefreshing];
+//    
+//    if (model.dataArr.count==0 && [self getCurrentRow].row==self.dataArr.count-1)
+//    {
+//        [MJHUD_Notice showNoticeView:@"没有更多视频了" inView:self.view hideAfterDelay:2];
+//        return;
+//    }
+//    
+//    
+//    NSInteger startIdx = self.dataArr.count;
+//    
+//    
+//    NSMutableArray * idxArr = [NSMutableArray array];
+//    for (int i = 0; i<model.dataArr.count; i++)
+//    {
+//        NSInteger idx = startIdx++;
+//        NSIndexPath * idpath = [NSIndexPath indexPathForRow:idx inSection:0];
+//        [idxArr addObject:idpath];
+//    }
+//    
+//    
+//    
+//    [self.dataArr addObjectsFromArray:model.dataArr];
+//    
+//    //追加collectionview数量
+//    [collectionView performBatchUpdates:^{
+//            [collectionView insertItemsAtIndexPaths:idxArr];
+//        } completion:^(BOOL finished) {
+//            
+//        }];
     
 }
 
@@ -417,7 +404,9 @@
 
 -(void)MJInitData
 {
-    dataArr = [NSMutableArray array];
+    //清空状态
+    [SZData sharedSZData].currentContentId = @"";
+    [MJVideoManager destroyVideoPlayer];
     
 //    if (self.pannelId.length==0)
 //    {
@@ -458,10 +447,10 @@
 {
     NSIndexPath * indexpath = [self getCurrentRow];
     
-    [self updateCurrentContentId:NO];
+    [self needUpdateCurrentContentId_now:NO];
     
     //如果是倒数第二个则加载更多
-    if (indexpath.row==dataArr.count-2)
+    if (indexpath.row==self.dataArr.count-2)
     {
         [self fetchMoreVideos];
     }
@@ -470,7 +459,7 @@
 
 
 #pragma mark - 更新currentId
--(void)updateCurrentContentId:(BOOL)force
+-(void)needUpdateCurrentContentId_now:(BOOL)force
 {
     //model
     NSIndexPath * path = [self getCurrentRow];
@@ -480,7 +469,7 @@
     }
     
     //contentId
-    ContentModel * contentModel = dataArr[path.row];
+    ContentModel * contentModel = self.dataArr[path.row];
     NSString * contentid = contentModel.id;
     
     //更新数据
@@ -499,13 +488,13 @@
     if (self.isPreview)
     {
         SZVideoDetailSimpleCell * cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"simpleVideoCell" forIndexPath:indexPath];
-        [cell setCellData:dataArr[indexPath.row] enableFollow:NO];
+        [cell setCellData:self.dataArr[indexPath.row] enableFollow:NO];
         return  cell;
     }
     else
     {
         SZVideoCell * cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"fullVideoCell" forIndexPath:indexPath];
-        [cell setCellData:dataArr[indexPath.row] enableFollow:NO];
+        [cell setCellData:self.dataArr[indexPath.row] enableFollow:NO];
         return  cell;
     }
     
@@ -520,7 +509,7 @@
 }
 -(NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
 {
-    return dataArr.count;
+    return self.dataArr.count;
 }
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath
 {
@@ -560,6 +549,17 @@
         ConsoleVC * vc = [[ConsoleVC alloc]init];
         [self.navigationController pushViewController:vc animated:YES];
     }
+}
+
+
+#pragma mark - Lazy Load
+-(NSMutableArray *)dataArr
+{
+    if (_dataArr==nil)
+    {
+        _dataArr = [NSMutableArray array];
+    }
+    return _dataArr;
 }
 
 

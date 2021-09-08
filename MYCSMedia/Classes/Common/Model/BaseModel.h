@@ -17,6 +17,7 @@
 @property(strong,nonatomic)NSString * message;
 @property(strong,nonatomic)NSMutableArray * dataArr;
 @property(assign,nonatomic)NSInteger pageIndex;
+@property(assign,nonatomic)NSInteger logLevel;
 
 -(void)GETRequestInView:(UIView*)view WithUrl:(NSString *)url Params:(NSDictionary *)params Success:(SuccessBlock)successblock Error:(ErrorBlock)errorblock Fail:(FailBlock)failblock;
 -(void)PostRequestInView:(UIView*)view WithUrl:(NSString *)url Params:(NSDictionary *)params Success:(SuccessBlock)successblock Error:(ErrorBlock)errorblock Fail:(FailBlock)failblock;
@@ -27,4 +28,5 @@
 
 -(void)parseData:(id)data;
 -(void)parseDataFromDic:(NSDictionary*)dic;
+
 @end

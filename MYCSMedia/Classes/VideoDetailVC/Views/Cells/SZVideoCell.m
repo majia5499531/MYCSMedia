@@ -376,7 +376,7 @@
     //是否有用户系统
     if (enable)
     {
-        //如果当前登陆用户是自己
+        //如果当前登录用户是自己
         if ([[SZGlobalInfo sharedManager].userId isEqualToString:dataModel.createBy])
         {
             levelIcon.hidden = NO;

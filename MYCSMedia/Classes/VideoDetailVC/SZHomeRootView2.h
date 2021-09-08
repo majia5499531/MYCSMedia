@@ -1,5 +1,5 @@
 //
-//  SZVideoRootView.h
+//  SZHomeRootView2.h
 //  MYCSMedia
 //
 //  Created by 马佳 on 2021/8/19.
@@ -9,9 +9,9 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface SZVideoRootView : UIView
+@interface SZHomeRootView2 : UIView
 -(void)viewWillAppear;
--(void)updateCurrentContentId:(BOOL)force;
+-(void)needUpdateCurrentContentId_now:(BOOL)force;
 @end
 
 NS_ASSUME_NONNULL_END

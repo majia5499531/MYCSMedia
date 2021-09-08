@@ -1,11 +1,11 @@
 //
-//  SZLiveRootView.m
+//  SZHomeRootView3.m
 //  MYCSMedia
 //
 //  Created by 马佳 on 2021/8/19.
 //
 
-#import "SZLiveRootView.h"
+#import "SZHomeRootView3.h"
 #import "SZDefines.h"
 #import "ContentListModel.h"
 #import "SZGlobalInfo.h"
@@ -17,11 +17,11 @@
 #import "MJVideoManager.h"
 #import "NSString+MJCategory.h"
 
-@interface SZLiveRootView ()<UITableViewDelegate,UITableViewDataSource>
+@interface SZHomeRootView3 ()<UITableViewDelegate,UITableViewDataSource>
 
 @end
 
-@implementation SZLiveRootView
+@implementation SZHomeRootView3
 {
     NSString * panelCode;
     ContentListModel * dataModel;

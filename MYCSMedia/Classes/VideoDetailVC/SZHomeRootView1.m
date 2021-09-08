@@ -1,11 +1,11 @@
 //
-//  SZTopicVideoRootView.m
+//  SZHomeRootView1.m
 //  MYCSMedia
 //
 //  Created by 马佳 on 2021/8/19.
 //
 
-#import "SZTopicVideoRootView.h"
+#import "SZHomeRootView1.h"
 #import "SZDefines.h"
 #import "UIColor+MJCategory.h"
 #import "CustomFooter.h"
@@ -31,11 +31,11 @@
 #import "PanelModel.h"
 #import "SDWebImage.h"
 
-@interface SZTopicVideoRootView ()<UICollectionViewDelegate, UICollectionViewDataSource>
+@interface SZHomeRootView1 ()<UICollectionViewDelegate, UICollectionViewDataSource>
 
 @end
 
-@implementation SZTopicVideoRootView
+@implementation SZHomeRootView1
 {
     //data
     ContentListModel * dataModel;
@@ -77,7 +77,7 @@
     //如果有数据则play
     else
     {        
-        [self updateCurrentContentId:NO];
+        [self needUpdateCurrentContentId_now:NO];
     }
 }
 
@@ -176,7 +176,7 @@
     [collectionView reloadData];
     
     dispatch_async(dispatch_get_main_queue(),^{
-        [self updateCurrentContentId:NO];
+        [self needUpdateCurrentContentId_now:NO];
     });
     
 }
@@ -299,8 +299,6 @@
 }
 
 
-
-
 #pragma mark - 下拉/上拉
 -(void)pulldownRefreshAction:(MJRefreshHeader*)refreshHeader
 {
@@ -354,7 +352,7 @@
 {
     NSIndexPath * indexpath = [self getCurrentRow];
     
-    [self updateCurrentContentId:NO];
+    [self needUpdateCurrentContentId_now:NO];
     
     //如果是倒数第二个则加载更多
     if (indexpath.row==dataModel.dataArr.count-2)
@@ -365,7 +363,7 @@
 
 
 #pragma mark - 更新currentId
--(void)updateCurrentContentId:(BOOL)force
+-(void)needUpdateCurrentContentId_now:(BOOL)force
 {
     //model
     NSIndexPath * path = [self getCurrentRow];

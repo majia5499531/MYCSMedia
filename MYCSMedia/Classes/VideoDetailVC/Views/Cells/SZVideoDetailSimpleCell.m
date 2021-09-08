@@ -108,7 +108,7 @@
         [descLabel mas_makeConstraints:^(MASConstraintMaker *make) {
             make.left.mas_equalTo(21);
             make.width.mas_equalTo(SCREEN_WIDTH-42);
-            make.bottom.mas_equalTo(-55);
+            make.bottom.mas_equalTo(-BOTTOM_SAFEAREA_HEIGHT-10);
         }];
         
         //作者bg
@@ -117,7 +117,6 @@
         authorBG.layer.cornerRadius=14;
         [authorBG MJSetIndividualAlpha:0.3];
         [self addSubview:authorBG];
-
         
         //作者头像
         avatar = [[UIImageView alloc]init];
@@ -336,7 +335,7 @@
     //是否有用户系统
     if (enable)
     {
-        //如果当前登陆用户是自己
+        //如果当前登录用户是自己
         if ([[SZGlobalInfo sharedManager].userId isEqualToString:dataModel.createBy])
         {
             levelIcon.hidden = NO;

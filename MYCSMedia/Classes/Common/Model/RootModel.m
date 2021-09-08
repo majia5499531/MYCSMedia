@@ -11,6 +11,7 @@
 #import "SZGlobalInfo.h"
 #import "UIDevice+MJCategory.h"
 #import <objc/message.h>
+#import "NSDictionary+MJCategory.h"
 
 @implementation RootModel
 
@@ -36,10 +37,16 @@
     //配置
     [self configAFNetWorking:httpManager];
     
-    
-    
-    NSLog(@"\n【HTTP请求】 \n %@ method \n URL = %@ \r param = \r%@ \n Header = \n%@",method,url,params,httpManager.requestSerializer.HTTPRequestHeaders);
-    
+    //HTTP请求输出
+    if (DEBUG && json)
+    {
+        NSString * jsonstr = [params convertToJSON];
+        NSLog(@"\n【HTTP请求】 \n Method = %@ \n URL = %@ \r param = \r%@ \n Header = \n%@",method,url,jsonstr,httpManager.requestSerializer.HTTPRequestHeaders);
+    }
+    else
+    {
+        NSLog(@"\n【HTTP请求】 \n Method = %@ \n URL = %@ \r param = \r%@ \n Header = \n%@",method,url,params,httpManager.requestSerializer.HTTPRequestHeaders);
+    }
     
     //GET
     if ([method isEqualToString:@"GET"])

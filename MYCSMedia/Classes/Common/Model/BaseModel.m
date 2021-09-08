@@ -117,27 +117,7 @@
 -(void)requestMultipartFileUpload:(NSString *)url model:(NSDictionary *)model fileDataArray:(NSArray*)array fileNameArray:(NSArray*)names success:(SuccessBlock)successblock error:(ErrorBlock)errorBLock fail:(FailBlock)failblock progress:(ProgressBlock)progressBlock
 {
     AFHTTPSessionManager * httpManager = [AFHTTPSessionManager manager];
-    
-//    //设置请求头
-//    if ([SZGlobalInfo sharedManager].SZRMToken.length)
-//    {
-//        //超时
-//        [httpManager.requestSerializer willChangeValueForKey:@"timeoutInterval"];
-//        httpManager.requestSerializer.timeoutInterval = 3600.f;
-//        [httpManager.requestSerializer didChangeValueForKey:@"timeoutInterval"];
-//
-//        //token
-//        NSString * token = [NSString stringWithFormat:@"%@",[SZGlobalInfo sharedManager].SZRMToken];
-//        if ([SZGlobalInfo sharedManager].SZRMToken.length)
-//        {
-//            [httpManager.requestSerializer setValue:token forHTTPHeaderField:@"token"];
-//        }
-//
-//        //ContentType
-//        [httpManager.requestSerializer setValue:@"multipart/form-data; boundary=BOUNDARY" forHTTPHeaderField:@"Content-Type"];
-//    }
-//
-    
+        
     //使用multipart方式上传
     [httpManager POST:url parameters:nil headers:nil constructingBodyWithBlock:^(id<AFMultipartFormData>  _Nonnull formData)
     {

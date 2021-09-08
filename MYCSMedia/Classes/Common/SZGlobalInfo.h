@@ -24,10 +24,10 @@
 +(NSString*)mjgetBaseURL;           //获取BaseURL
 +(NSString*)mjgetBaseH5URL;         //获取H5 URL
 
-+(void)checkLoginStatus;            //检查登陆信息
-+(void)mjshowLoginAlert;            //弹出登陆提示框
-+(void)mjgoToLoginPage;             //跳登陆页
-+(void)mjclearLoginInfo;            //清除登陆状态
++(void)checkLoginStatus;            //检查登录信息
++(void)mjshowLoginAlert;            //弹出登录提示框
++(void)mjgoToLoginPage;             //跳登录页
++(void)mjclearLoginInfo;            //清除登录状态
 
 +(void)mjshareToPlatform:(SZ_SHARE_PLATFORM)platform content:(ContentModel*)model;          //分享
 

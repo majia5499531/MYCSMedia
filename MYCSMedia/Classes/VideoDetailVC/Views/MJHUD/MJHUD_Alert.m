@@ -223,7 +223,7 @@
     //sureBtn
     MJButton * sureBtn =[[MJButton alloc]initWithFrame:CGRectMake(cancelBtn.right+1, line1.bottom, cancelBtn.width, cancelBtn.height)];
     [sureBtn addTarget:hud action:@selector(sureBtnAction) forControlEvents:UIControlEventTouchUpInside];
-    [sureBtn setTitle:@"登陆" forState:UIControlStateNormal];
+    [sureBtn setTitle:@"登录" forState:UIControlStateNormal];
     [sureBtn setTitleColor:HW_BLACK forState:UIControlStateNormal];
     sureBtn.titleLabel.font=BOLD_FONT(14);
     [hud.contentView addSubview:sureBtn];

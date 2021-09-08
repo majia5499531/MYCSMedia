@@ -152,7 +152,7 @@
 
 
 
-//清除登陆数据
+//清除登录数据
 +(void)mjclearLoginInfo
 {
     SZGlobalInfo * instance = [SZGlobalInfo sharedManager];
@@ -167,7 +167,7 @@
     [[NSUserDefaults standardUserDefaults]removeObjectForKey:@"SZRM_USER_ID"];
 }
 
-
+//读取登录数据
 -(void)mjloadLocalData
 {
     self.localTGT = [[NSUserDefaults standardUserDefaults]valueForKey:@"SZRM_TGT"];
@@ -205,14 +205,14 @@
 }
 
 
-//跳转到登陆页
+//跳转到登录页
 +(void)mjgoToLoginPage
 {
     [[SZManager sharedManager].delegate onLoginAction];
 }
 
 
-//弹出登陆提示
+//弹出登录提示
 +(void)mjshowLoginAlert
 {
     [MJHUD_Alert showLoginAlert:^(id objc) {
@@ -220,6 +220,8 @@
         [SZGlobalInfo mjgoToLoginPage];
     }];
 }
+
+
 
 #pragma mark - Check
 +(BOOL)checkDelegate

@@ -67,7 +67,7 @@
 
 
 #pragma mark - Public Method
--(void)setTopicTitles:(NSArray *)columnArr originX:(CGFloat)oriX minWidth:(CGFloat)minWidth itemMargin:(CGFloat)interSpace
+-(void)setTopicTitles:(NSArray *)columnArr relateScrollView:(UIScrollView*)scrollbg originX:(CGFloat)oriX minWidth:(CGFloat)minWidth itemMargin:(CGFloat)interSpace initialIndex:(NSInteger)idx
 {
     //保存数据
     columnDataArr = columnArr;
@@ -112,6 +112,17 @@
     
     //配置Bar
     [scrollbar MJAutoSetContentSize];
+    
+    
+    //scroll初始位置
+    if (idx>0)
+    {
+        CGFloat offsetX = scrollbg.width*idx;
+        [scrollbg setContentOffset:CGPointMake(offsetX, 0) animated:NO];
+    }
+    
+    _relateScrollview = scrollbg;
+    _relateScrollview.delegate=self;
     
     //状态归零
     currentPage=99999;

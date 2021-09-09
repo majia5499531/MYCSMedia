@@ -35,6 +35,8 @@
 #import "SZHomeRootView3.h"
 #import "SZColumnBar.h"
 #import "SZData.h"
+#import "PanelModel.h"
+
 
 @interface SZHomeVC ()<UIScrollViewDelegate,NewsColumnDelegate>
 {
@@ -60,6 +62,8 @@
     [self MJInitSubviews];
     
     [self addNotifications];
+    
+    [self requestXKSH_Activity];
 }
 
 -(void)dealloc
@@ -79,9 +83,6 @@
     
     //检查登录状态
     [SZGlobalInfo checkLoginStatus];
-    
-    //子页
-    [self subviewWillAppear];
 }
 
 -(void)viewWillDisappear:(BOOL)animated
@@ -93,9 +94,14 @@
     [MJVideoManager pauseWindowVideo];
 }
 
+-(void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+    
+    [self subviewDidAppear];
+}
 
-
--(void)subviewWillAppear
+-(void)subviewDidAppear
 {
     if (currentSelectIdx==0)
     {
@@ -154,7 +160,6 @@
     [columnbar setTopicTitles:titles relateScrollView:scrollBG originX:10 minWidth:50 itemMargin:12 initialIndex:1];
     [self.view addSubview:columnbar];
     [columnbar setCenterX:self.view.width/2-20];
-    [columnbar setBadgeStr:@"有活动" atIndex:0];
     
     //backbtn
     MJButton * backBtn = [[MJButton alloc]init];
@@ -192,6 +197,42 @@
         make.height.mas_equalTo(50);
     }];
 }
+
+
+
+#pragma mark - Request
+-(void)requestXKSH_Activity
+{
+    PanelModel * model = [PanelModel model];
+    model.hideLoading=YES;
+    NSMutableDictionary * param=[NSMutableDictionary dictionary];
+    [param setValue:@"activity.xksh.link" forKey:@"panelCode"];
+    
+    __weak typeof (self) weakSelf = self;
+    [model GETRequestInView:nil WithUrl:APPEND_SUBURL(BASE_URL, API_URL_PANEL_ACTIVITY) Params:param Success:^(id responseObject) {
+        [weakSelf requestXKSH_ActivityDone:model.config];
+        } Error:^(id responseObject) {
+            
+        } Fail:^(NSError *error) {
+            
+        }];
+}
+
+
+-(void)requestXKSH_ActivityDone:(PanelConfigModel*)panelConfig
+{
+    NSString * img1 = panelConfig.imageUrl;
+    NSString * img2 = panelConfig.backgroundImageUrl;
+    NSString * linkUrl  = panelConfig.jumpUrl;
+    
+    if (linkUrl.length)
+    {
+        [columnbar setBadgeStr:@"有活动" atIndex:0];
+        [rootview1 setActivityImg:img1 simpleImg:img2 linkUrl:linkUrl];
+    }
+    
+}
+
 
 
 

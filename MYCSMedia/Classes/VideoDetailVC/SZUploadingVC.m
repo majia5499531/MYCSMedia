@@ -87,6 +87,11 @@
     UITapGestureRecognizer * tap =[[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(closeKeyboardAction)];
     [bgscroll addGestureRecognizer:tap];
     
+    //navi
+    UIView * navibg = [[UIView alloc]initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH, STATUS_BAR_HEIGHT + 44)];
+    navibg.backgroundColor=[UIColor whiteColor];
+    [self.view addSubview:navibg];
+    
     //cancel
     MJButton * cancelBtn = [[MJButton alloc]initWithFrame:CGRectMake(16, STATUS_BAR_HEIGHT+8, 55, 26)];
     cancelBtn.mj_text=@"取消";

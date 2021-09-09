@@ -34,7 +34,7 @@
 #import "MJProgressView.h"
 #import "SPDefaultControlView.h"
 #import "ContentStateModel.h"
-
+#import "UIResponder+MJCategory.h"
 
 @interface SZVideoCell ()<GYRollingNoticeViewDelegate,GYRollingNoticeViewDataSource>
 
@@ -479,7 +479,13 @@
     //如果当前ID与cell持有的内容ID相同，则表示播放该视频
     if ([dataModel.id isEqualToString:currentId])
     {
-        [self playingVideo];
+        //判断是否当前VC在顶层
+        UIViewController * vc = [self getCurrentViewController];
+        UINavigationController * nav = [self getCurrentNavigationController];
+        if ([nav.topViewController isEqual:vc])
+        {
+            [self playingVideo];
+        }
     }
 }
 

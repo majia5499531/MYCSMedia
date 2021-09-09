@@ -61,8 +61,6 @@
         panelCode = @"xksh.works";
         
         [self MJInitSubviews];
-        
-        [self requestXKSH_Activity];
     }
     return self;
 }
@@ -91,7 +89,35 @@
     return idx;
 }
 
-
+-(void)setActivityImg:(NSString *)img1 simpleImg:(NSString *)img2 linkUrl:(NSString *)url
+{
+    acitivity_link = url;
+    
+    //活动按钮
+    activityIcon_simple = [[UIImageView alloc]init];
+    [activityIcon_simple setFrame:CGRectMake(0, STATUS_BAR_HEIGHT+44+27, 31, 36)];
+    activityIcon_simple.userInteractionEnabled =YES;
+    UITapGestureRecognizer * tap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(activityUnfoldBtnAction)];
+    [activityIcon_simple addGestureRecognizer:tap];
+    [activityIcon_simple sd_setImageWithURL:[NSURL URLWithString:img2]];
+    activityIcon_simple.hidden=YES;
+    [self addSubview:activityIcon_simple];
+    
+    //活动按钮
+    activityIcon_full = [[UIImageView alloc]init];
+    [activityIcon_full setFrame:CGRectMake(0, STATUS_BAR_HEIGHT+44+27, 100, 50)];
+    activityIcon_full.userInteractionEnabled =YES;
+    [activityIcon_full sd_setImageWithURL:[NSURL URLWithString:img1]];
+    UITapGestureRecognizer * tap2 = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(activityTapAction)];
+    [activityIcon_full addGestureRecognizer:tap2];
+    [self addSubview:activityIcon_full];
+    
+    //活动按钮关闭按钮
+    MJButton * closebtn = [[MJButton alloc]initWithFrame:CGRectMake(70, 0, 30, 30)];
+    [closebtn addTarget:self action:@selector(activityCloseBtnAction) forControlEvents:UIControlEventTouchUpInside];
+    closebtn.backgroundColor=[UIColor clearColor];
+    [activityIcon_full addSubview:closebtn];
+}
 
 
 #pragma mark - Request
@@ -147,21 +173,7 @@
 }
 
 
--(void)requestXKSH_Activity
-{
-    PanelModel * model = [PanelModel model];
-    NSMutableDictionary * param=[NSMutableDictionary dictionary];
-    [param setValue:@"activity.xksh.link" forKey:@"panelCode"];
-    
-    __weak typeof (self) weakSelf = self;
-    [model GETRequestInView:nil WithUrl:APPEND_SUBURL(BASE_URL, API_URL_PANEL_ACTIVITY) Params:param Success:^(id responseObject) {
-        [weakSelf requestXKSH_ActivityDone:model.config];
-        } Error:^(id responseObject) {
-            
-        } Fail:^(NSError *error) {
-            
-        }];
-}
+
 
 
 
@@ -225,16 +237,6 @@
     [collectionView.mj_header endRefreshing];
 }
 
--(void)requestXKSH_ActivityDone:(PanelConfigModel*)panelConfig
-{
-    NSString * img1 = panelConfig.imageUrl;
-    NSString * img2 = panelConfig.backgroundImageUrl;
-    NSString * linkUrl  = panelConfig.jumpUrl;
-    
-    acitivity_link = panelConfig.jumpUrl;
-    [self createActivityIcons:img1 bgIcon:img2 linkUrl:linkUrl];
-}
-
 
 
 #pragma mark - Init
@@ -270,33 +272,6 @@
 }
 
 
--(void)createActivityIcons:(NSString*)icon1 bgIcon:(NSString*)icon2 linkUrl:(NSString*)url
-{
-    //活动按钮
-    activityIcon_simple = [[UIImageView alloc]init];
-    [activityIcon_simple setFrame:CGRectMake(0, STATUS_BAR_HEIGHT+44+27, 31, 36)];
-    activityIcon_simple.userInteractionEnabled =YES;
-    UITapGestureRecognizer * tap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(activityUnfoldBtnAction)];
-    [activityIcon_simple addGestureRecognizer:tap];
-    [activityIcon_simple sd_setImageWithURL:[NSURL URLWithString:icon2]];
-    activityIcon_simple.hidden=YES;
-    [self addSubview:activityIcon_simple];
-    
-    //活动按钮
-    activityIcon_full = [[UIImageView alloc]init];
-    [activityIcon_full setFrame:CGRectMake(0, STATUS_BAR_HEIGHT+44+27, 100, 50)];
-    activityIcon_full.userInteractionEnabled =YES;
-    [activityIcon_full sd_setImageWithURL:[NSURL URLWithString:icon1]];
-    UITapGestureRecognizer * tap2 = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(activityTapAction)];
-    [activityIcon_full addGestureRecognizer:tap2];
-    [self addSubview:activityIcon_full];
-    
-    //活动按钮关闭按钮
-    MJButton * closebtn = [[MJButton alloc]initWithFrame:CGRectMake(70, 0, 30, 30)];
-    [closebtn addTarget:self action:@selector(activityCloseBtnAction) forControlEvents:UIControlEventTouchUpInside];
-    closebtn.backgroundColor=[UIColor clearColor];
-    [activityIcon_full addSubview:closebtn];
-}
 
 
 #pragma mark - 下拉/上拉

@@ -14,6 +14,9 @@ NS_ASSUME_NONNULL_BEGIN
 -(void)viewWillAppear;
 -(void)needUpdateCurrentContentId_now:(BOOL)force;
 
+
+-(void)setActivityImg:(NSString*)img1 simpleImg:(NSString*)img2 linkUrl:(NSString*)url;
+
 @end
 
 NS_ASSUME_NONNULL_END

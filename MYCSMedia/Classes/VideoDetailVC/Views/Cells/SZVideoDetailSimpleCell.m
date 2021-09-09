@@ -6,7 +6,7 @@
 //
 
 #import "SZVideoDetailSimpleCell.h"
-
+#import "UIResponder+MJCategory.h"
 #import <Masonry/Masonry.h>
 #import "SZDefines.h"
 #import "UIColor+MJCategory.h"
@@ -413,6 +413,13 @@
     //如果当前ID与cell持有的内容ID相同，则表示播放该视频
     if ([dataModel.id isEqualToString:currentId])
     {
+        //判断是否当前VC在顶层
+        UIViewController * vc = [self getCurrentViewController];
+        UINavigationController * nav = [self getCurrentNavigationController];
+        if ([nav.topViewController isEqual:vc])
+        {
+            [self playingVideo];
+        }
         [self playingVideo];
     }
 }

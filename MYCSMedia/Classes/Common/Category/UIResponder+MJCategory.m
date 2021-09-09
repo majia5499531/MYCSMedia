@@ -11,15 +11,32 @@
 
 -(UINavigationController*)getCurrentNavigationController
 {
-    UIResponder * respder = self;
-    while (respder.nextResponder)
+    UIResponder * resp = self;
+    while (resp.nextResponder)
     {
-        respder = respder.nextResponder;
+        resp = resp.nextResponder;
         
         
-        if ([respder isKindOfClass:[UINavigationController class]])
+        if ([resp isKindOfClass:[UINavigationController class]])
         {
-            return respder;
+            return (UINavigationController*)resp;
+        }
+    }
+    
+    return nil;
+}
+
+-(UIViewController*)getCurrentViewController
+{
+    UIResponder * resp = self;
+    while (resp.nextResponder)
+    {
+        resp = resp.nextResponder;
+        
+        
+        if ([resp isKindOfClass:[UIViewController class]])
+        {
+            return (UIViewController*)resp;
         }
     }
     

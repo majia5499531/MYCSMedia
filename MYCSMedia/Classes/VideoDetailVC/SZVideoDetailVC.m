@@ -74,7 +74,6 @@
 {
     [super viewWillAppear:animated];
     
-    //隐藏导航栏
     self.navigationController.navigationBar.hidden=YES;
     
     //检查登录
@@ -85,7 +84,6 @@
 {
     [super viewWillDisappear:animated];
     
-    //显示导航栏
     self.navigationController.navigationBar.hidden=NO;
 }
 
@@ -96,7 +94,12 @@
     [MJVideoManager pauseWindowVideo];
 }
 
-
+-(void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+    
+    [self needUpdateCurrentContentId_now:YES];
+}
 
 
 
@@ -303,17 +306,17 @@
 {
 //    [collectionView.mj_footer endRefreshing];
 //    [collectionView.mj_header endRefreshing];
-//    
+//
 //    if (model.dataArr.count==0 && [self getCurrentRow].row==self.dataArr.count-1)
 //    {
 //        [MJHUD_Notice showNoticeView:@"没有更多视频了" inView:self.view hideAfterDelay:2];
 //        return;
 //    }
-//    
-//    
+//
+//
 //    NSInteger startIdx = self.dataArr.count;
-//    
-//    
+//
+//
 //    NSMutableArray * idxArr = [NSMutableArray array];
 //    for (int i = 0; i<model.dataArr.count; i++)
 //    {
@@ -321,16 +324,16 @@
 //        NSIndexPath * idpath = [NSIndexPath indexPathForRow:idx inSection:0];
 //        [idxArr addObject:idpath];
 //    }
-//    
-//    
-//    
+//
+//
+//
 //    [self.dataArr addObjectsFromArray:model.dataArr];
-//    
+//
 //    //追加collectionview数量
 //    [collectionView performBatchUpdates:^{
 //            [collectionView insertItemsAtIndexPaths:idxArr];
 //        } completion:^(BOOL finished) {
-//            
+//
 //        }];
     
 }

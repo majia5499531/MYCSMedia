@@ -13,5 +13,7 @@
 
 -(UINavigationController*)getCurrentNavigationController;
 
+-(UIViewController*)getCurrentViewController;
+
 @end
 

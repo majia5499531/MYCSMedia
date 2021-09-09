@@ -38,7 +38,7 @@
     [self configAFNetWorking:httpManager];
     
     //HTTP请求输出
-    if (DEBUG && json)
+    if (json)
     {
         NSString * jsonstr = [params convertToJSON];
         NSLog(@"\n【HTTP请求】 \n Method = %@ \n URL = %@ \r param = \r%@ \n Header = \n%@",method,url,jsonstr,httpManager.requestSerializer.HTTPRequestHeaders);

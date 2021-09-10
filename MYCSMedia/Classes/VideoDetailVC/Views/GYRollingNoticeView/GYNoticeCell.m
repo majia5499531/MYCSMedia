@@ -14,6 +14,7 @@
 #import "VideoRelateModel.h"
 #import <SDWebImage/SDWebImage.h>
 #import "SZManager.h"
+#import "GYRollingNoticeView.h"
 
 @implementation GYNoticeCell
 {
@@ -105,7 +106,8 @@
 
 -(void)closeNoticeBtnAction
 {
-    [self.superview removeFromSuperview];
+    GYRollingNoticeView * superview = self.superview;
+    [superview.delegate didClickCloseBtnAction];
 }
 
 

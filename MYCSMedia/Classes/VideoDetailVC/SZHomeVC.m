@@ -42,11 +42,11 @@
 {
     UIScrollView * scrollBG;
     SZColumnBar * columnbar;
+    NSInteger currentSelectIdx;
     
     SZHomeRootView1 * rootview1;
     SZHomeRootView2 * rootview2;
     SZHomeRootView3 * rootview3;
-    NSInteger currentSelectIdx;
 }
 @property(assign,nonatomic)BOOL MJHideStatusbar;
 @end
@@ -70,7 +70,7 @@
 {
     [self removeNotifications];
     
-    [SZData sharedSZData].currentContentId = @"";
+    [[SZData sharedSZData]setCurrentContentId:@""];
     
     [MJVideoManager destroyVideoPlayer];
 }
@@ -146,6 +146,7 @@
     
     //视频
     rootview2 = [[SZHomeRootView2 alloc]initWithFrame:CGRectMake(scrollBG.width, 0, scrollBG.width, scrollBG.height)];
+    rootview2.contentId = self.contentId;
     [scrollBG addSubview:rootview2];
     
     //直播
@@ -278,6 +279,13 @@
 
 -(void)onDeviceOrientationChange:(NSNotification*)notify
 {
+    //如果当前是topVC，并且栏目是视频或小康生活
+    if (![self.navigationController.topViewController isEqual:self] || currentSelectIdx==2)
+    {
+        return;
+    }
+    
+    
     UIDeviceOrientation orient = [UIDevice currentDevice].orientation;
     if (orient == UIDeviceOrientationLandscapeLeft || orient == UIDeviceOrientationLandscapeRight)
     {
@@ -299,16 +307,25 @@
 {
     if (index==0)
     {
+        rootview1.selected=YES;
+        rootview2.selected=NO;
+        
         [rootview1 viewWillAppear];
         currentSelectIdx = 0;
     }
     else if (index==1)
     {
+        rootview1.selected=NO;
+        rootview2.selected=YES;
+        
         [rootview2 viewWillAppear];
         currentSelectIdx = 1;
     }
     else
     {
+        rootview1.selected=NO;
+        rootview2.selected=NO;
+        
         [rootview3 viewWillAppear];
         currentSelectIdx = 2;
     }
@@ -323,6 +340,13 @@
 
 -(void)profileBtnAction
 {
+    //未登录则跳转登录
+    if (![SZGlobalInfo sharedManager].SZRMToken.length)
+    {
+        [SZGlobalInfo mjshowLoginAlert];
+        return;
+    }
+    
     NSString * h5url = APPEND_SUBURL(BASE_H5_URL, @"act/xksh/#/me");
     [[SZManager sharedManager].delegate onOpenWebview:h5url param:nil];
 }

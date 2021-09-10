@@ -28,6 +28,8 @@
 #import "SZData.h"
 #import "SZGlobalInfo.h"
 #import "UIScrollView+MJCategory.h"
+#import "UIResponder+MJCategory.h"
+#import "SZHomeVC.h"
 
 @interface SZHomeRootView2 ()<UICollectionViewDelegate, UICollectionViewDataSource>
 
@@ -36,11 +38,9 @@
 @implementation SZHomeRootView2
 {
     //data
+    ContentModel * singleVideo;
     ContentListModel * dataModel;
-    BOOL isRandomMode;
     NSString * panelCode;
-    
-    
     
     //UI
     UICollectionView * collectionView;
@@ -69,7 +69,15 @@
     //如果没有数据，则请求数据
     if (dataModel==nil)
     {
-        [self requestVideos];
+        //如果是单条视频，则先请求单条视频
+        if (self.contentId)
+        {
+            [self requestSingleVideo];
+        }
+        else
+        {
+            [self requestVideoList];
+        }
     }
     
     //如果有数据则play
@@ -94,7 +102,7 @@
 
 
 #pragma mark - Request
--(void)requestVideos
+-(void)requestVideoList
 {
     NSString * pagesize = [NSString stringWithFormat:@"%d",VIDEO_PAGE_SIZE];
     NSString * ssid = [[SZManager sharedManager].delegate onGetUserDevice];
@@ -109,16 +117,13 @@
     ContentListModel * dataModel = [ContentListModel model];
     __weak typeof (self) weakSelf = self;
     [dataModel GETRequestInView:self WithUrl:APPEND_SUBURL(BASE_URL, API_URL_VIDEO_LIST) Params:param Success:^(id responseObject){
-        [weakSelf requestDone:dataModel];
+        [weakSelf requestVideoListDone:dataModel];
         } Error:^(id responseObject) {
             [weakSelf requestFailed];
         } Fail:^(NSError *error) {
             [weakSelf requestFailed];
         }];
 }
-
-
-
 
 
 -(void)requestMoreVideos
@@ -140,7 +145,7 @@
     ContentListModel * model = [ContentListModel model];
     model.hideLoading=YES;
     __weak typeof (self) weakSelf = self;
-    [model GETRequestInView:self WithUrl:APPEND_SUBURL(BASE_URL, API_URL_VIDEO_LIST) Params:param Success:^(id responseObject){
+    [model GETRequestInView:nil WithUrl:APPEND_SUBURL(BASE_URL, API_URL_VIDEO_LIST) Params:param Success:^(id responseObject){
         [weakSelf requestMoreVideoDone:model];
         } Error:^(id responseObject) {
             [weakSelf requestFailed];
@@ -150,13 +155,37 @@
 }
 
 
+-(void)requestSingleVideo
+{
+    NSString * url = APPEND_SUBURL(BASE_URL, API_URL_VIDEO);
+    url = APPEND_SUBURL(url, self.contentId);
+    
+    ContentModel * contentM = [ContentModel model];
+    __weak typeof (self) weakSelf = self;
+    [contentM GETRequestInView:nil WithUrl:url Params:nil Success:^(id responseObject) {
+        
+        [weakSelf requestSingleVideoDone:contentM];
+        
+        } Error:^(id responseObject) {
+            [weakSelf requestFailed];
+        } Fail:^(NSError *error) {
+            [weakSelf requestFailed];
+        }];
+}
+
+
 #pragma mark - Request Done
--(void)requestDone:(ContentListModel*)model
+-(void)requestVideoListDone:(ContentListModel*)model
 {
     [collectionView.mj_footer endRefreshing];
     [collectionView.mj_header endRefreshing];
     
     dataModel = model;
+    
+    if (singleVideo)
+    {
+        [dataModel.dataArr insertObject:singleVideo atIndex:0];
+    }
     
     [collectionView reloadData];
     
@@ -164,6 +193,14 @@
         [self needUpdateCurrentContentId_now:NO];
     });
     
+}
+
+
+-(void)requestSingleVideoDone:(ContentModel*)model
+{
+    singleVideo = model;
+    
+    [self requestVideoList];
 }
 
 
@@ -243,7 +280,7 @@
 #pragma mark - 下拉/上拉
 -(void)pulldownRefreshAction:(MJRefreshHeader*)refreshHeader
 {
-    [self requestVideos];
+    [self requestVideoList];
 }
 
 -(void)pullupLoadAction:(MJRefreshFooter*)footer
@@ -282,6 +319,12 @@
         return;
     }
     
+    //如果不是当前栏目
+    if (!self.selected)
+    {
+        return;
+    }
+    
     //contentId
     ContentModel * contentModel = dataModel.dataArr[path.row];
     NSString * contentid = contentModel.id;
@@ -290,7 +333,8 @@
     if(![[SZData sharedSZData].currentContentId isEqualToString:contentid] || force)
     {
         [[SZData sharedSZData].contentDic setValue:contentModel forKey:contentid];
-        [SZData sharedSZData].currentContentId = contentid;
+        
+        [[SZData sharedSZData]setCurrentContentId:contentid];
     }
 }
 

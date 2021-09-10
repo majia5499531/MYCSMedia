@@ -236,7 +236,7 @@
         make.top.mas_equalTo(uploadBtn.mas_bottom).offset(8);
         make.width.mas_equalTo(uploadBtn.mas_width);
         make.height.mas_equalTo(4);
-        make.bottom.mas_equalTo(-40);
+        make.bottom.mas_equalTo(-155);
     }];
     
     
@@ -297,6 +297,7 @@
     {
         ContentModel * model = listModel.dataArr[i];
         MJButton * btn = [[MJButton alloc]init];
+        btn.titleLabel.numberOfLines=2;
         btn.mj_text = [NSString stringWithFormat:@"#%@",model.title];
         btn.mj_font = FONT(13);
         btn.mj_textColor=HW_BLACK;
@@ -325,8 +326,6 @@
             originX = btn.right+marginX;
             originY = btn.top;
         }
-        
-        
         
         [filterview addSubview:btn];
         [btsArr addObject:btn];

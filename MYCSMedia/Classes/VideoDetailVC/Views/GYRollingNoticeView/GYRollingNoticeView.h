@@ -19,7 +19,7 @@
 @protocol GYRollingNoticeViewDelegate <NSObject>
 @optional
 - (void)didClickRollingNoticeView:(GYRollingNoticeView *)rollingView forIndex:(NSUInteger)index;
-
+- (void)didClickCloseBtnAction;
 @end
 
 typedef NS_ENUM(NSUInteger, GYRollingNoticeViewStatus) {

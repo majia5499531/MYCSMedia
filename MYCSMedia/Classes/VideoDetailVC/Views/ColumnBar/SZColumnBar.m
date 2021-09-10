@@ -90,8 +90,7 @@
         MJButton * newsbtn=[[MJButton alloc]init];
         newsbtn.tag=i;
         newsbtn.mj_text=str;
-        newsbtn.mj_textColor=HW_WHITE;
-        newsbtn.mj_alpha = 0.5;
+        newsbtn.mj_textColor=[UIColor colorWithWhite:1 alpha:0.5];
         newsbtn.mj_alpha_sel = 1;
         newsbtn.mj_textColor_sel=HW_WHITE;
         newsbtn.mj_font=FONT(14);

@@ -46,7 +46,7 @@
     ContentModel * dataModel;
     VideoRelateModel * relateModel;
     VideoCollectModel * collectModel;
-    NSInteger renderMode;
+    NSInteger videoWHSize;                       //9:16 -- 0          16:9 -- 2        其他比例 -- 1
     
     //UI
     UIImageView * videoCoverImage;
@@ -163,6 +163,7 @@
         [authorName mas_makeConstraints:^(MASConstraintMaker *make) {
             make.left.mas_equalTo(avatar.mas_right).offset(5);
             make.centerY.mas_equalTo(authorBG);
+            make.width.mas_lessThanOrEqualTo(140);
         }];
         
         
@@ -231,10 +232,10 @@
     CGFloat WHRate = imageWidth / imageHeight;
     
     
-    //0.562左右
+    //9:16  0.562左右   撑满
     if (WHRate<0.57 && WHRate>0.55)
     {
-        renderMode = 0;
+        videoWHSize = 0;
         
         //如果是刘海屏，则平铺，裁剪
         if ([UIApplication sharedApplication].statusBarFrame.size.height>20)
@@ -258,9 +259,28 @@
         }
         
     }
+    
+    
+    
+    //16:9  1.77左右     居中
+    else if(WHRate<1.80 && WHRate >1.70)
+    {
+        videoWHSize = 1;
+        
+        CGFloat videoH = SCREEN_WIDTH / WHRate;
+        [videoCoverImage mas_remakeConstraints:^(MASConstraintMaker *make) {
+            make.left.mas_equalTo(0);
+            make.centerY.mas_equalTo(self).offset(-22);
+            make.width.mas_equalTo(SCREEN_WIDTH);
+            make.height.mas_equalTo(videoH);
+        }];
+    }
+    
+    
+    //其他
     else
     {
-        renderMode = 1;
+        videoWHSize = 2;
         
         CGFloat videoH = SCREEN_WIDTH / WHRate;
         [videoCoverImage mas_remakeConstraints:^(MASConstraintMaker *make) {
@@ -423,7 +443,6 @@
     }
     
 
-
 }
 
 
@@ -451,27 +470,41 @@
 -(void)updateVideoRelate
 {
     NSString * contentId = [SZData sharedSZData].currentContentId;
+    
+    if (noticeView.superview==nil)
+    {
+        return;
+    }
+    
     if ([dataModel.id isEqualToString:contentId])
     {
-       relateModel = [[SZData sharedSZData].contentRelateContentDic valueForKey:contentId];
+        SZData * szdata = [SZData sharedSZData];
+        
+        relateModel = [szdata.contentRelateContentDic valueForKey:contentId];
+        
+        NSString * isdislike = [szdata.contentRelateContentDislikeDic valueForKey:contentId];
+        
+        //如果不喜欢推荐
+        if (isdislike || relateModel.dataArr.count==0)
+        {
+            [noticeView stopRoll];
+            noticeView.hidden=YES;
+        }
         
         //如果有相关推荐
-        if (relateModel.dataArr.count)
+        else
         {
-            [noticeView reloadDataAndStartRoll];
             noticeView.hidden=NO;
             [authorBG mas_updateConstraints:^(MASConstraintMaker *make) {
                 make.bottom.mas_equalTo(descLabel.mas_top).offset(-58);
             }];
+            [noticeView reloadDataAndStartRoll];
             
         }
-        else
-        {
-            [noticeView reloadDataAndStartRoll];
-            noticeView.hidden=YES;
-        }
+
     }
 }
+
 
 //contentId有更新
 -(void)currentContentIdDidChange:(NSString*)currentId
@@ -520,6 +553,19 @@
 -(void)playingVideo
 {
     //播放视频
+    NSInteger renderMode = 0;
+    
+    if (videoWHSize==0)
+    {
+        //剪切
+        renderMode = 0;
+    }
+    else
+    {
+        //缩放
+        renderMode = 1;
+    }
+    
     [MJVideoManager playWindowVideoAtView:videoCoverImage url:dataModel.playUrl contentModel:dataModel renderModel:renderMode];
     
     //获取进度条
@@ -528,7 +574,7 @@
     [self insertSubview:videoSlider belowSubview:descLabel];
     
     //全屏视频
-    if (renderMode==0)
+    if (videoWHSize==0 || videoWHSize==2)
     {
         [videoSlider mas_remakeConstraints:^(MASConstraintMaker *make) {
             make.left.mas_equalTo(0);
@@ -550,7 +596,7 @@
     
     //获取全屏按钮
     [self insertSubview:controlView.externalFullScreenBtn belowSubview:descLabel];
-    if (renderMode==0)
+    if (videoWHSize==0 || videoWHSize==2)
     {
         [controlView.externalFullScreenBtn mas_remakeConstraints:^(MASConstraintMaker *make) {
             make.centerX.mas_equalTo(videoCoverImage);
@@ -711,7 +757,18 @@
     [cell setCellData:relateM];
     return cell;
 }
-
+-(void)didClickCloseBtnAction
+{
+    [noticeView stopRoll];
+    noticeView.hidden=YES;
+    
+    //保存不喜欢
+    [[SZData sharedSZData].contentRelateContentDislikeDic setValue:@"1" forKey:dataModel.id];
+    
+    [authorBG mas_updateConstraints:^(MASConstraintMaker *make) {
+        make.bottom.mas_equalTo(descLabel.mas_top).offset(-13);
+    }];
+}
 
 
 @end

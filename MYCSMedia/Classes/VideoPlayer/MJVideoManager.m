@@ -53,7 +53,7 @@
     [controller presentViewController:fullvc animated:NO completion:nil];
 }
 
-+(void)playWindowVideoAtView:(UIView*)view url:(NSString*)videoURL contentModel:(ContentModel*)model renderModel:(NSInteger)type
++(void)playWindowVideoAtView:(UIView*)view url:(NSString*)videoURL contentModel:(ContentModel*)model renderModel:(NSInteger)renderMode
 {
     //设置播放层
     MJVideoManager * manager = [MJVideoManager sharedMediaManager];
@@ -85,14 +85,14 @@
         //停止播放
         else if (manager.MJVideoView.playerState==StateStopped)
         {
-            [MJVideoManager playNewVideo:videoURL contentModel:model renderMode:type];
+            [MJVideoManager playNewVideo:videoURL contentModel:model renderMode:renderMode];
         }
         
         
         //不是则播放
         else
         {
-            [MJVideoManager playNewVideo:videoURL contentModel:model renderMode:type];
+            [MJVideoManager playNewVideo:videoURL contentModel:model renderMode:renderMode];
         }
     }
     
@@ -100,7 +100,7 @@
     //新url
     else
     {
-        [MJVideoManager playNewVideo:videoURL contentModel:model renderMode:type];
+        [MJVideoManager playNewVideo:videoURL contentModel:model renderMode:renderMode];
     }
     
 }
@@ -109,7 +109,7 @@
 
 
 //播放新视频
-+(void)playNewVideo:(NSString*)videourl contentModel:(ContentModel*)contentModel renderMode:(NSInteger)mode
++(void)playNewVideo:(NSString*)videourl contentModel:(ContentModel*)contentModel renderMode:(NSInteger)renderMode
 {
     MJVideoManager * manager = [MJVideoManager sharedMediaManager];
     
@@ -120,7 +120,7 @@
     manager.MJVideoView.playerConfig.loop = NO;
     manager.MJVideoView.playerConfig.mute=NO;
     manager.MJVideoView.playerConfig.playRate = 1.0 ;
-    manager.MJVideoView.playerConfig.renderMode = mode;
+    manager.MJVideoView.playerConfig.renderMode = renderMode;
     
     //content model
     manager.MJVideoView.externalModel = contentModel;
@@ -152,7 +152,6 @@
     {
         [MJVideoManager destroyVideoPlayer];
     }
-    
 }
 
 

@@ -325,7 +325,9 @@
 }
 
 
-#pragma mark - Lazy
+
+
+#pragma mark - Getter
 -(NSMutableDictionary *)contentStateDic
 {
     if (_contentStateDic==nil)
@@ -358,6 +360,14 @@
         _contentRelateContentDic = [NSMutableDictionary dictionary];
     }
     return _contentRelateContentDic;
+}
+-(NSMutableDictionary *)contentRelateContentDislikeDic
+{
+    if (_contentRelateContentDislikeDic==nil)
+    {
+        _contentRelateContentDislikeDic = [NSMutableDictionary dictionary];
+    }
+    return _contentRelateContentDislikeDic;
 }
 
 

@@ -241,7 +241,7 @@
         }
         if (badgeLabel.text.length)
         {
-            badgeLabel.hidden=NO;
+//            badgeLabel.hidden=NO;
         }
     }
 }

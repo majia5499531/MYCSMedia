@@ -10,6 +10,8 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface SZHomeRootView2 : UIView
+@property(strong,nonatomic)NSString * contentId;
+@property(assign,nonatomic)BOOL selected;
 -(void)viewWillAppear;
 -(void)needUpdateCurrentContentId_now:(BOOL)force;
 @end

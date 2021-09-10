@@ -65,7 +65,7 @@
 {
     [self removeNotifications];
     
-    [SZData sharedSZData].currentContentId = @"";
+    [[SZData sharedSZData]setCurrentContentId:@""];
     
     [MJVideoManager destroyVideoPlayer];
 }
@@ -408,7 +408,7 @@
 -(void)MJInitData
 {
     //清空状态
-    [SZData sharedSZData].currentContentId = @"";
+    [[SZData sharedSZData]setCurrentContentId:@""];
     [MJVideoManager destroyVideoPlayer];
     
 //    if (self.pannelId.length==0)
@@ -479,7 +479,7 @@
     if(![[SZData sharedSZData].currentContentId isEqualToString:contentid] || force)
     {
         [[SZData sharedSZData].contentDic setValue:contentModel forKey:contentid];
-        [SZData sharedSZData].currentContentId = contentid;
+        [[SZData sharedSZData]setCurrentContentId:contentid];
     }
 }
 

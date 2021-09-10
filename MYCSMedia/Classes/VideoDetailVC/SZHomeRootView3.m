@@ -16,6 +16,7 @@
 #import "SZLiveCell.h"
 #import "MJVideoManager.h"
 #import "NSString+MJCategory.h"
+#import "SZData.h"
 
 @interface SZHomeRootView3 ()<UITableViewDelegate,UITableViewDataSource>
 
@@ -46,6 +47,8 @@
 -(void)viewWillAppear
 {
     [MJVideoManager pauseWindowVideo];
+    
+    [[SZData sharedSZData]setCurrentContentId:@""];
     
     if (dataModel.dataArr.count==0)
     {

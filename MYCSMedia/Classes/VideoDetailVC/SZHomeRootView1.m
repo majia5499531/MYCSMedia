@@ -72,7 +72,6 @@
     {
         [self requestVideos];
     }
-    //如果有数据则play
     else
     {        
         [self needUpdateCurrentContentId_now:NO];
@@ -88,6 +87,7 @@
     NSIndexPath * idx = [collectionView indexPathForItemAtPoint:pt];
     return idx;
 }
+
 
 -(void)setActivityImg:(NSString *)img1 simpleImg:(NSString *)img2 linkUrl:(NSString *)url
 {
@@ -347,6 +347,12 @@
         return;
     }
     
+    //如果不是当前栏目
+    if (!self.selected)
+    {
+        return;
+    }
+    
     //contentId
     ContentModel * contentModel = dataModel.dataArr[path.row];
     NSString * contentid = contentModel.id;
@@ -355,7 +361,7 @@
     if(![[SZData sharedSZData].currentContentId isEqualToString:contentid] || force)
     {
         [[SZData sharedSZData].contentDic setValue:contentModel forKey:contentid];
-        [SZData sharedSZData].currentContentId = contentid;
+        [[SZData sharedSZData]setCurrentContentId:contentid];
     }
 }
 

@@ -1096,6 +1096,7 @@ static UISlider * _volumeSlider;
 {
     [self.controlView setPlayState:YES];
     
+    self.repeatBtn.hidden = YES;
     self.isPauseByUser = NO;
     
     if (self.isLive)

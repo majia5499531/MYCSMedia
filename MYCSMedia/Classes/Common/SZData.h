@@ -29,9 +29,9 @@
 @property(strong,nonatomic)NSMutableDictionary * contentStateDic;
 @property(strong,nonatomic)NSMutableDictionary * contentCommentDic;
 @property(strong,nonatomic)NSMutableDictionary * contentRelateContentDic;
+@property(strong,nonatomic)NSMutableDictionary * contentRelateContentDislikeDic;
 
 +(instancetype)sharedSZData;
-
 
 
 -(void)requestZan;

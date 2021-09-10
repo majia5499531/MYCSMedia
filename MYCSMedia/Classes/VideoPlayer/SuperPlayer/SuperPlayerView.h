@@ -79,8 +79,6 @@ typedef NS_ENUM(NSInteger, SuperPlayerState) {
 - (void)seekToTime:(NSInteger)dragedSeconds;            //从xx秒开始
 
 
-
-
 //补充
 -(void)switchToFullScreenMode:(BOOL)fullScreen;
 

@@ -46,7 +46,6 @@
     }
     
     
-    
     NSMutableDictionary * bizparam=[NSMutableDictionary dictionary];
     [bizparam setValue:@"click_category" forKey:@"enter_from"];
     [bizparam setValue:@"c2402539" forKey:@"category_name"];
@@ -54,10 +53,7 @@
     [bizparam setValue:@"content_manager_system" forKey:@"params_for_special"];
     [bizparam setValue:[SZContentTracker make__items:contentid] forKey:@"__items"];
     
-    
     [[SZContentTracker shareTracker]requestForUploading:bizparam eventKey:eventName];
-    
-    
 }
 
 

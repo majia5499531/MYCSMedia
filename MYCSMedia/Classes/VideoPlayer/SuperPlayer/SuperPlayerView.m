@@ -34,6 +34,7 @@ static UISlider * _volumeSlider;
 
 @implementation SuperPlayerView
 {
+    SuperPlayerState playstate_beforeIntoBackground;
     SuperPlayerControlView *_controlView;           //控制层
 }
 
@@ -163,7 +164,7 @@ static UISlider * _volumeSlider;
         {
             [SZContentTracker trackingVideoPlayingDuration_Replay:self.externalModel isPlaying:YES currentTime:self.playCurrentTime totalTime:self.vodPlayer.duration];
         }
-        else if(playerState == 0 || playerState==3||playerState==5) //失败、停止、且后台，则记录时间
+        else if(playerState == 0 || playerState==3||playerState==5) //失败、停止、切后台，则记录时间
         {
             [SZContentTracker trackingVideoPlayingDuration_Replay:self.externalModel isPlaying:NO currentTime:self.playCurrentTime totalTime:0];
         }
@@ -185,10 +186,6 @@ static UISlider * _volumeSlider;
     //重播时长
     if (self.isReplay)
     {
-        
-        
-        
-        
         
     }
     
@@ -363,6 +360,7 @@ static UISlider * _volumeSlider;
 {
     self.didEnterBackground = YES;
     
+    playstate_beforeIntoBackground = self.playerState;
     self.playerState = StateIntoBackground;
     
     if (self.isLive)
@@ -379,17 +377,30 @@ static UISlider * _volumeSlider;
 //进入前台
 - (void)appDidEnterPlayground:(NSNotification *)notify
 {
-
     self.didEnterBackground = NO;
+    
     if (self.isLive)
     {
         return;
     }
-    if (!self.isPauseByUser && (self.playerState != StateStopped && self.playerState != StateFailed))
+    else if (self.isPauseByUser)
+    {
+        return;
+    }
+    else if (playstate_beforeIntoBackground == StateStopped)
+    {
+        return;
+    }
+    else if(playstate_beforeIntoBackground == StateFailed)
+    {
+        return;
+    }
+    else
     {
         [_vodPlayer resume];
     }
 }
+
 
 //音量
 -(void)volumeChanged:(NSNotification *)notification
@@ -1581,7 +1592,6 @@ static UISlider * _volumeSlider;
         if (EvtID == PLAY_EVT_RCV_FIRST_I_FRAME)
         {
             NSLog(@"firstFrame_%@",self.externalModel.title);
-            
             
             if (self.isReplay)
             {

@@ -22,7 +22,8 @@
 - (void)didClickCloseBtnAction;
 @end
 
-typedef NS_ENUM(NSUInteger, GYRollingNoticeViewStatus) {
+typedef NS_ENUM(NSUInteger, GYRollingNoticeViewStatus)
+{
     GYRollingNoticeViewStatusIdle,
     GYRollingNoticeViewStatusWorking,
     GYRollingNoticeViewStatusPause,

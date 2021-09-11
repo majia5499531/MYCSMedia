@@ -14,7 +14,6 @@
 #define kGYNotiStrongSelf(type) __strong typeof(type) type = weak##type;
 
 @interface GYRollingNoticeView ()
-
 {
     int _cIdx;
     BOOL _needTryRoll;
@@ -32,82 +31,76 @@
 @end
 
 @implementation GYRollingNoticeView
+
 @dynamic currentIndex;
 
-- (instancetype)init
-{
-    self = [super init];
-    if (self) {
-        [self setupNoticeViews];
-    }
-    return self;
-}
+
 
 - (instancetype)initWithFrame:(CGRect)frame
 {
     self = [super initWithFrame:frame];
-    if (self) {
-        [self setupNoticeViews];
-    }
-    return self;
-}
-- (instancetype)initWithCoder:(NSCoder *)aDecoder
-{
-    self = [super initWithCoder:aDecoder];
-    if (self) {
-        [self setupNoticeViews];
+    if (self)
+    {
+        self.clipsToBounds = YES;
+        _stayInterval = 2;
+        UITapGestureRecognizer * tap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(handleCellTapAction)];
+        [self addGestureRecognizer:tap];
     }
     return self;
 }
 
-- (void)setupNoticeViews
-{
-    self.clipsToBounds = YES;
-    _stayInterval = 2;
-    [self addGestureRecognizer:[self createTapGesture]];
-}
 
 - (void)layoutSubviews
 {
     [super layoutSubviews];
-    if (_needTryRoll) {
+    
+    if (_needTryRoll)
+    {
         [self reloadDataAndStartRoll];
         _needTryRoll = NO;
     }
-    
 }
 
-
+-(void)dealloc
+{
+    NSLog(@"gyrooling dead");
+}
 
 - (void)registerClass:(nullable Class)cellClass forCellReuseIdentifier:(NSString *)identifier
 {
     [self.cellClsDict setObject:NSStringFromClass(cellClass) forKey:identifier];
 }
 
+
 - (void)registerNib:(UINib *)nib forCellReuseIdentifier:(NSString *)identifier
 {
     [self.cellClsDict setObject:nib forKey:identifier];
 }
 
+
 - (__kindof GYNoticeViewCell *)dequeueReusableCellWithIdentifier:(NSString *)identifier
 {
-    for (GYNoticeViewCell *cell in self.reuseCells) {
+    for (GYNoticeViewCell *cell in self.reuseCells)
+    {
         
-        if ([cell.reuseIdentifier isEqualToString:identifier]) {
-//            NSLog(@"finded reuse cell:  %p", cell);
+        if ([cell.reuseIdentifier isEqualToString:identifier])
+        {
             return cell;
         }
     }
     
     id cellClass = self.cellClsDict[identifier];
-    if ([cellClass isKindOfClass:[UINib class]]) {
+    
+    if ([cellClass isKindOfClass:[UINib class]])
+    {
         UINib *nib = (UINib *)cellClass;
         
         NSArray *arr = [nib instantiateWithOwner:nil options:nil];
         GYNoticeViewCell *cell = [arr firstObject];
         [cell setValue:identifier forKeyPath:@"reuseIdentifier"];
         return cell;
-    }else
+    }
+    else
     {
         Class cellCls = NSClassFromString(self.cellClsDict[identifier]);
         GYNoticeViewCell *cell = [[cellCls alloc] initWithReuseIdentifier:identifier];
@@ -121,12 +114,14 @@
 - (void)layoutCurrentCellAndWillShowCell
 {
     int count = (int)[self.dataSource numberOfRowsForRollingNoticeView:self];
-    if (_cIdx > count - 1) {
+    if (_cIdx > count - 1)
+    {
         _cIdx = 0;
     }
     
     int willShowIndex = _cIdx + 1;
-    if (willShowIndex > count - 1) {
+    if (willShowIndex > count - 1)
+    {
         willShowIndex = 0;
     }
 //    NSLog(@">>>>%d", _cIdx);
@@ -136,11 +131,13 @@
     
 //    NSLog(@"count: %d,  _cIdx:%d  willShowIndex: %d", count, _cIdx, willShowIndex);
 
-    if (!(w > 0 && h > 0)) {
+    if (!(w > 0 && h > 0))
+    {
         _needTryRoll = YES;
         return;
     }
-    if (!_currentCell) {
+    if (!_currentCell)
+    {
         // 第一次没有currentcell
         // currentcell is null at first time
         _currentCell = [self.dataSource rollingNoticeView:self cellAtIndex:_cIdx];
@@ -167,31 +164,41 @@
     
 }
 
-- (void)reloadDataAndStartRoll
+
+
+
+#pragma mark - 操作API
+-(void)reloadDataAndStartRoll
 {
     [self stopRoll];
 
     NSInteger count = [self.dataSource numberOfRowsForRollingNoticeView:self];
-    if (count < 1) {
+    
+    //没有则return
+    if (count < 1)
+    {
         return;
     }
     
+    //重新布局
     [self layoutCurrentCellAndWillShowCell];
     
-    if (count && count < 2) {
+    
+    //只有一行则不滚动
+    if (count == 1)
+    {
         return;
     }
     
-    
-    _timer = [NSTimer scheduledTimerWithTimeInterval:_stayInterval target:self selector:@selector(timerHandle) userInfo:nil repeats:YES];
-    NSRunLoop *runLoop = [NSRunLoop currentRunLoop];
-    [runLoop addTimer:_timer forMode:NSDefaultRunLoopMode];
-    [self resume];
+    //不会马上执行，而是等待timeInterval后执行
+    _timer = [NSTimer scheduledTimerWithTimeInterval:_stayInterval target:self selector:@selector(timerAction) userInfo:nil repeats:YES];
 }
+
 
 - (void)stopRoll
 {
-    if (_timer) {
+    if (_timer)
+    {
         [_timer invalidate];
         _timer = nil;
     }
@@ -206,27 +213,38 @@
     [self.reuseCells removeAllObjects];
 }
 
+
 - (void)pause
 {
-    if (_timer) {
+    if (_timer)
+    {
         [_timer setFireDate:[NSDate distantFuture]];
         _status = GYRollingNoticeViewStatusPause;
     }
 }
+
+
 - (void)resume
 {
-    if (_timer) {
+    if (_timer)
+    {
         [_timer setFireDate:[NSDate distantPast]];
         _status = GYRollingNoticeViewStatusWorking;
     }
 }
 
-- (void)timerHandle
+
+#pragma mark - Action
+-(void)timerAction
 {
-//    NSLog(@"-----------------------------------");
     
-    if (self.isAnimating) return;
+    if (self.isAnimating)
+    {
+        return;
+    }
     
+    
+    //重新布局
     [self layoutCurrentCellAndWillShowCell];
     
     
@@ -249,7 +267,8 @@
         kGYNotiStrongSelf(self);
         
         // fixed bug: reload data when animate running
-        if (self.currentCell && self.willShowCell) {
+        if (self.currentCell && self.willShowCell)
+        {
             [self.reuseCells addObject:self.currentCell];
             [self.currentCell removeFromSuperview];
             self.currentCell = self.willShowCell;
@@ -261,36 +280,33 @@
 }
 
 
-- (void)handleCellTapAction
+-(void)handleCellTapAction
 {
-    if ([self.delegate respondsToSelector:@selector(didClickRollingNoticeView:forIndex:)]) {
+    if ([self.delegate respondsToSelector:@selector(didClickRollingNoticeView:forIndex:)])
+    {
         [self.delegate didClickRollingNoticeView:self forIndex:self.currentIndex];
     }
 }
 
-- (UITapGestureRecognizer *)createTapGesture
+
+
+#pragma mark - 当前行
+- (int)currentIndex
 {
-   return [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(handleCellTapAction)];
-}
-
-- (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(nullable UIEvent *)event{}
-
-
-#pragma mark-
-
-- (int)currentIndex {
     int count = (int)[self.dataSource numberOfRowsForRollingNoticeView:self];
-    if (_cIdx > count - 1) {
+    if (_cIdx > count - 1)
+    {
         _cIdx = 0;
     }
     return _cIdx;
 }
 
 
-#pragma mark- lazy
+#pragma mark- Getter
 - (NSMutableDictionary *)cellClsDict
 {
-    if (nil == _cellClsDict) {
+    if (nil == _cellClsDict)
+    {
         _cellClsDict = [[NSMutableDictionary alloc]init];
     }
     return _cellClsDict;
@@ -298,7 +314,8 @@
 
 - (NSMutableArray *)reuseCells
 {
-    if (nil == _reuseCells) {
+    if (nil == _reuseCells)
+    {
         _reuseCells = [[NSMutableArray alloc]init];
     }
     return _reuseCells;

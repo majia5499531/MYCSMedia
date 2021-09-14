@@ -152,7 +152,15 @@
     }
     
     
-    [[SZManager sharedManager].delegate onOpenWebview:H5URL param:nil];
+    
+    NSMutableDictionary * param=[NSMutableDictionary dictionary];
+    [param setValue:model.shareImageUrl forKey:@"shareImageUrl"];
+    [param setValue:model.shareBrief forKey:@"shareBrief"];
+    [param setValue:model.shareUrl forKey:@"shareUrl"];
+    [param setValue:model.shareTitle forKey:@"shareTitle"];
+    
+    
+    [[SZManager sharedManager].delegate onOpenWebview:H5URL param:param];
 }
 
 

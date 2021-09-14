@@ -7,8 +7,6 @@
 
 #import <UIKit/UIKit.h>
 
-
-
 @interface UIResponder (MJCategory)
 
 -(UINavigationController*)getCurrentNavigationController;

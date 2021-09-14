@@ -7,7 +7,7 @@
 //
 
 #import "UIScrollView+MJCategory.h"
-#import "UIView+MJCategory.h"
+//#import "UIView+MJCategory.h"
 
 @implementation UIScrollView (MJCategory)
 
@@ -49,16 +49,16 @@
         int j = 1;
         int k = 1;
         
-        if (x>self.width)
+        if (x>self.frame.size.width)
         {
-            j = x/self.width + 1;
+            j = x/self.frame.size.width + 1;
         }
-        if(y>self.height)
+        if(y>self.frame.size.height)
         {
-            k = y/self.height + 1;
+            k = y/self.frame.size.height + 1;
         }
         
-        [self setContentSize:CGSizeMake(j*self.width, k*self.height)];
+        [self setContentSize:CGSizeMake(j*self.frame.size.width, k*self.frame.size.height)];
         
     }
     

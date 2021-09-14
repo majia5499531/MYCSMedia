@@ -10,23 +10,21 @@
 
 @interface UIColor (MJCategory)
 
-// Color space utility methods
-- (CGColorSpaceModel) colorSpaceModel;
+//Color space utility methods
+-(CGColorSpaceModel)colorSpaceModel;
 
-// RGB components
-- (BOOL) canProvideRGBComponents;
-- (CGFloat) red;
-- (CGFloat) green;
-- (CGFloat) blue;
-- (CGFloat) alpha;
-- (CGFloat) luminance;
+//获取RGB值
+-(BOOL)canProvideRGBComponents;
+-(CGFloat)red;
+-(CGFloat)green;
+-(CGFloat)blue;
+-(CGFloat)alpha;
+-(CGFloat)luminance;
 
-// String utility methods
-- (NSString *) hexString;
+//获取颜色的Hex值
+-(NSString *) hexString;
 
-// Static methods
-+ (UIColor *) colorWithHexString: (NSString *) stringToConvert;
+//Hex创建颜色
++(UIColor *)colorWithHexString:(NSString *)stringToConvert;
 
-
-- (UIImage*) createImageWithColor;
 @end

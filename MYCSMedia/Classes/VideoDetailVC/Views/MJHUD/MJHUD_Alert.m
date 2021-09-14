@@ -11,7 +11,7 @@
 #import "UIColor+MJCategory.h"
 #import "UIView+MJCategory.h"
 #import <SDWebImage/SDWebImage.h>
-#import "NSString+MJCategory.h"
+#import "NSMutableString+MJCategory.h"
 #import "MJButton.h"
 
 @implementation MJHUD_Alert
@@ -50,7 +50,7 @@
     UITextView * descLabel = [[UITextView alloc]init];
     [descLabel setFrame:CGRectMake(40, titleLabel.bottom+15, hud.contentView.width-80, 20)];
     descLabel.font=FONT(12);
-    NSMutableAttributedString * str = [NSString makeDescStyleStr:text lineSpacing:4.5 indent:0];
+    NSMutableAttributedString * str = [NSMutableString makeDescStyleStr:text lineSpacing:4.5 indent:0];
     descLabel.attributedText = str;
     descLabel.textColor=HW_BLACK;
     descLabel.textAlignment=NSTextAlignmentCenter;
@@ -122,7 +122,7 @@
     UILabel * descLabel = [[UILabel alloc]init];
     [descLabel setFrame:CGRectMake(0, 0, hud.contentView.width-80, 20)];
     descLabel.font=FONT(16);
-    NSMutableAttributedString * str = [NSString makeDescStyleStr:text lineSpacing:4.5 indent:0];
+    NSMutableAttributedString * str = [NSMutableString makeDescStyleStr:text lineSpacing:4.5 indent:0];
     descLabel.attributedText=str;
     descLabel.textColor=HW_GRAY_WORD_1;
     descLabel.textAlignment=NSTextAlignmentCenter;
@@ -259,7 +259,7 @@
     [descLabel setFrame:CGRectMake(20, 20, hud.contentView.width-40, 64)];
     descLabel.font=BOLD_FONT(17);
     descLabel.numberOfLines=2;
-    descLabel.attributedText = [NSString makeTitleStr:@"同款音乐复制成功\n请前往\"剪映\"app进行编辑" lineSpacing:5 indent:0];
+    descLabel.attributedText = [NSMutableString makeTitleStr:@"同款音乐复制成功\n请前往\"剪映\"app进行编辑" lineSpacing:5 indent:0];
     descLabel.textColor=HW_BLACK;
     descLabel.textAlignment=NSTextAlignmentCenter;
     [hud.contentView addSubview:descLabel];

@@ -8,7 +8,6 @@
 
 
 #import "UIView+MJCategory.h"
-#import <objc/runtime.h>
 
 @implementation UIView (MJCategory)
 
@@ -200,6 +199,8 @@
     }
 }
 
+
+
 -(CGFloat)getBottomY
 {
     CGFloat bottomY = 0;
@@ -227,6 +228,8 @@
     
     return bottomY;
 }
+
+
 
 -(CGFloat)getRightX
 {
@@ -261,6 +264,7 @@
 {
     self.backgroundColor = [UIColor colorWithWhite:0.f alpha:value];
 }
+
 
 -(void)MJSetPartRadius:(CGFloat)radius RoundingCorners:(UIRectCorner)corners
 {

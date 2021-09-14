@@ -10,7 +10,6 @@
 #import <CoreTelephony/CTCarrier.h>
 #import <CoreTelephony/CTTelephonyNetworkInfo.h>
 #import <AdSupport/AdSupport.h>
-#import <AFNetworking/AFNetworking.h>
 
 @implementation UIDevice (MJCategory)
 
@@ -105,22 +104,6 @@
     return systemVersion;
 }
 
-+(NSString*)getConnectType
-{
-    AFNetworkReachabilityStatus state = [AFNetworkReachabilityManager sharedManager].networkReachabilityStatus;
-    
-    if (state==AFNetworkReachabilityStatusReachableViaWiFi)
-    {
-        return @"WIFI";
-    }
-    else if (state==AFNetworkReachabilityStatusReachableViaWWAN || state==AFNetworkReachabilityStatusUnknown)
-    {
-        return @"移动网络";
-    }
-    else
-    {
-        return @"无网络";
-    }
-}
+
 
 @end

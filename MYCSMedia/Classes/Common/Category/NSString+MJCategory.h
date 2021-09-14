@@ -13,29 +13,22 @@
 
 -(NSString*)SHA256;
 -(NSString*)encryptWithMD5;
--(NSString*)converToTimeString;
-+(NSString *)randomStringWithLength:(NSInteger)len;
+
++(NSString *)generateRandomStringWithLength:(NSInteger)len;
 +(NSDictionary *)dictionaryWithJsonString:(NSString *)jsonString;
 -(double)convertHexStingToDouble;
--(NSMutableAttributedString*)underLineString;
-+(NSString*)convertToTimeString:(NSInteger)timeInterval;
+
+
 +(NSString *)urlEncodeStr:(NSString *)input;
 +(NSString *)decoderUrlEncodeStr:(NSString *)input;
+
+
++(NSString*)convertToTimeString:(NSInteger)timeInterval;
 +(NSString*)converUTCDateStr:(NSString*)utc;
 +(NSString*)converToViewCountStr:(NSInteger)viewCount;
+-(NSString*)convertTimeStingToSeconds;
 
-+(NSMutableAttributedString*)makeTaggedTitle:(NSString*)str tag:(NSString*)tagStr textColor:(UIColor*)textColor tagTintColor:(UIColor*)bgColor tagTextColor:(UIColor*)tagTextColor type:(int)type;
-+(NSMutableAttributedString*)makeTaggedTitleAtEnd:(NSString*)str tag:(NSString*)tagStr textColor:(UIColor*)color tagColor:(UIColor*)tagColor;
 
-+(NSMutableAttributedString*)makeADString:(NSString*)str tag:(NSString*)tagStr ADColor:(UIColor*)textcolor tagColor:(UIColor*)tagColor;
-+(NSMutableAttributedString*)makeADString:(NSString*)str tag:(NSString*)tagStr tagColor:(UIColor*)tagColor;
-
-+(NSMutableAttributedString*)makeDescStyleStr:(NSString*)str;
-+(NSMutableAttributedString*)makeDescStyleStrWithNoIndent:(NSString*)str ;
-+(NSMutableAttributedString*)makeDescStyleStr:(NSString*)str lineSpacing:(CGFloat)space indent:(CGFloat)indent;
-+(NSMutableAttributedString*)makeTitleStr:(NSString*)str lineSpacing:(CGFloat)space indent:(CGFloat)indent;
-
-+(NSMutableAttributedString*)makeMultiColorStr:(NSString*)str color:(UIColor*)color at:(NSInteger)index length:(NSInteger)length;
 
 -(instancetype)appenURLParam:(NSString*)key value:(NSString*)value;
 

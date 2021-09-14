@@ -8,10 +8,10 @@
 
 #import "NSString+MJCategory.h"
 #import <CommonCrypto/CommonCrypto.h>
-#import "UIColor+MJCategory.h"
-
 
 @implementation NSString (MJCategory)
+
+//MD5
 -(NSString*)encryptWithMD5
 {
     const char *original_str = [self UTF8String];
@@ -23,6 +23,7 @@
     return [hash lowercaseString];
 }
 
+//SHA
 -(NSString*)SHA256
 {
     const char *s = [self cStringUsingEncoding:NSASCIIStringEncoding];
@@ -39,7 +40,8 @@
 }
 
 
--(NSString*)converToTimeString
+//年月日 转 时间戳
+-(NSString*)convertTimeStingToSeconds
 {
     NSDateFormatter * formatter=[[NSDateFormatter alloc]init];
     [formatter setDateFormat:@"yyyy-MM-dd"];
@@ -48,7 +50,9 @@
     return [NSString stringWithFormat:@"%ld",(long)dateValue];
 }
 
-+(NSString *)randomStringWithLength:(NSInteger)len
+
+//创建随机字符串
++(NSString *)generateRandomStringWithLength:(NSInteger)len
 {
     NSString *letters = @"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
     NSMutableString *randomString = [NSMutableString stringWithCapacity: len];
@@ -59,6 +63,8 @@
     return randomString;
 }
 
+
+//JSON转字典
 + (NSDictionary *)dictionaryWithJsonString:(NSString *)jsonString
 {
     if (jsonString == nil)
@@ -79,6 +85,7 @@
 }
 
 
+//转十六进制为数字
 -(double)convertHexStingToDouble
 {
     NSString * hex = self;
@@ -91,6 +98,7 @@
     double d = [NSString getDecimalByBinary:binaStr];
     return d;
 }
+
 
 //十六进制转二进制
 +(NSString *)getBinaryByHex:(NSString *)hex
@@ -144,6 +152,7 @@
     return num;
 }
 
+
 //urlEncode编码
 +(NSString *)urlEncodeStr:(NSString *)input
 {
@@ -153,8 +162,9 @@
     return upSign;
 }
 
+
 //urlEncode解码
-+(NSString *)decoderUrlEncodeStr: (NSString *) input
++(NSString *)decoderUrlEncodeStr:(NSString *)input
 {
     NSMutableString *outputStr = [NSMutableString stringWithString:input];
     [outputStr replaceOccurrencesOfString:@"+" withString:@"" options:NSLiteralSearch range:NSMakeRange(0,[outputStr length])];
@@ -162,13 +172,7 @@
 }
 
 
--(NSMutableAttributedString*)underLineString
-{
-    NSDictionary *attribtDic = @{NSUnderlineStyleAttributeName: [NSNumber numberWithInteger:NSUnderlineStyleSingle]};
-    NSMutableAttributedString *attribtStr = [[NSMutableAttributedString alloc]initWithString:self attributes:attribtDic];
-    return attribtStr;
-}
-
+//时长秒数 转 时分秒
 +(NSString *)convertToTimeString:(NSInteger)timeInterval
 {
     NSInteger h = 0;
@@ -188,11 +192,13 @@
     //秒
     s = yu;
     
-    NSString * leftTime = [NSString stringWithFormat:@"%ld:%ld:%ld",h,m,s];
+    NSString * leftTime = [NSString stringWithFormat:@"%ld:%ld:%ld",(long)h,(long)m,(long)s];
     
     return leftTime;
 }
 
+
+//国际时间 转 当地时间
 +(NSString*)converUTCDateStr:(NSString*)utc
 {
     
@@ -214,13 +220,14 @@
 }
 
 
+//点击量
 +(NSString*)converToViewCountStr:(NSInteger)viewCount
 {
     NSInteger views = viewCount;
     
     if (views<10000)
     {
-        return [NSString stringWithFormat:@"%ld",views];
+        return [NSString stringWithFormat:@"%ld",(long)views];
     }
     else
     {
@@ -229,419 +236,6 @@
     }
 }
 
-
-#pragma mark - 带标签的标题
--(UIImage*)imageWithUIView:(UIView*)view
-{
-    UIGraphicsBeginImageContext(view.bounds.size);
-    CGContextRef ctx = UIGraphicsGetCurrentContext();
-    [view.layer renderInContext:ctx];
-    UIImage* tImage = UIGraphicsGetImageFromCurrentImageContext();
-    UIGraphicsEndImageContext();
-    return tImage;
-}
-
-+(NSMutableAttributedString*)makeTaggedTitle:(NSString*)str tag:(NSString*)tagStr textColor:(UIColor*)textColor tagTintColor:(UIColor*)bgColor tagTextColor:(UIColor*)tagTextColor type:(int)type;
-{
-    if (str==nil)
-    {
-        str = @" ";
-    }
-    
-    //标签颜色
-    UIColor * tagBGColor = bgColor;
-    NSMutableAttributedString *attStr = [[NSMutableAttributedString alloc] initWithString:str];
-    
-    
-    //实心tag样式   (新闻标题)
-    if (type==0)
-    {
-        //设置富文本
-        NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc] init];
-        paragraphStyle.lineSpacing = 5.0;
-        paragraphStyle.firstLineHeadIndent=0;
-        paragraphStyle.alignment=NSTextAlignmentNatural;
-        [attStr addAttribute:NSParagraphStyleAttributeName value:paragraphStyle range:NSMakeRange(0, str.length)];
-        [attStr addAttribute:NSForegroundColorAttributeName value:textColor range:NSMakeRange(0, str.length)];
-        [attStr addAttribute:NSFontAttributeName value:[UIFont systemFontOfSize:(17)] range:NSMakeRange(0, str.length)];
-        
-        
-        //创建标签图片并插入
-        if (tagStr.length)
-        {
-            NSInteger tagFont = 10;
-            CGFloat tagLabelW = (tagFont + 2)*tagStr.length + 2;
-            CGFloat tagLabelH = (tagFont + 7);
-            UILabel *tagLabel = [[UILabel alloc]init];
-            tagLabel.frame = CGRectMake(0, 0, tagLabelW*3, tagLabelH*3);
-            tagLabel.text = tagStr;
-            tagLabel.font = [UIFont systemFontOfSize:tagFont*3];
-            tagLabel.textColor = tagTextColor;
-            tagLabel.layer.backgroundColor=tagBGColor.CGColor;
-            tagLabel.clipsToBounds = YES;
-            tagLabel.layer.cornerRadius = 5;
-            tagLabel.textAlignment = NSTextAlignmentCenter;
-
-            UIGraphicsBeginImageContext(tagLabel.bounds.size);
-            CGContextRef ctx = UIGraphicsGetCurrentContext();
-            [tagLabel.layer renderInContext:ctx];
-            UIImage* image = UIGraphicsGetImageFromCurrentImageContext();
-            UIGraphicsEndImageContext();
-
-            NSTextAttachment *attach = [[NSTextAttachment alloc] init];
-            attach.bounds = CGRectMake(15, -2, tagLabelW, tagLabelH);
-            attach.image = image;
-            NSAttributedString * imageStr = [NSAttributedString attributedStringWithAttachment:attach];
-            [attStr insertAttributedString:imageStr atIndex:0];
-            
-            NSTextAttachment *attach2 = [[NSTextAttachment alloc] init];
-            attach2.bounds = CGRectMake(0, 0, 5, 15);
-            attach2.image = [UIImage imageNamed:@"emptyBar"];
-            NSAttributedString * imageStr2 = [NSAttributedString attributedStringWithAttachment:attach2];
-            [attStr insertAttributedString:imageStr2 atIndex:1];
-        }
-    }
-    
-    
-    
-    //镂空样式 (banner advertise)
-    else if (type==1)
-    {
-        //设置富文本
-        NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc] init];
-        paragraphStyle.lineSpacing = 2.0;
-        paragraphStyle.firstLineHeadIndent=0;
-        paragraphStyle.alignment=NSTextAlignmentNatural;
-        [attStr addAttribute:NSParagraphStyleAttributeName value:paragraphStyle range:NSMakeRange(0, str.length)];
-        [attStr addAttribute:NSForegroundColorAttributeName value:textColor range:NSMakeRange(0, str.length)];
-        [attStr addAttribute:NSFontAttributeName value:[UIFont systemFontOfSize:14] range:NSMakeRange(0, str.length)];
-        
-        //则创建图片并插入
-        if (tagStr.length)
-        {
-            NSInteger tagFont = 10;
-            CGFloat tagLabelW = (tagFont + 2)*tagStr.length + 4;
-            CGFloat tagLabelH = (tagFont + 4);
-            UILabel *tagLabel = [[UILabel alloc]init];
-            tagLabel.frame = CGRectMake(0, 0, tagLabelW*3, tagLabelH*3);
-            tagLabel.text = tagStr;
-            tagLabel.font = [UIFont systemFontOfSize:tagFont*3];
-            tagLabel.textColor = tagTextColor;
-            tagLabel.layer.backgroundColor=[UIColor clearColor].CGColor;
-            tagLabel.layer.borderColor=bgColor.CGColor;
-            tagLabel.layer.borderWidth=1;
-            tagLabel.clipsToBounds = YES;
-            tagLabel.layer.cornerRadius = 3*3;
-            tagLabel.textAlignment = NSTextAlignmentCenter;
-
-            UIGraphicsBeginImageContext(tagLabel.bounds.size);
-            CGContextRef ctx = UIGraphicsGetCurrentContext();
-            [tagLabel.layer renderInContext:ctx];
-            UIImage* image = UIGraphicsGetImageFromCurrentImageContext();
-            UIGraphicsEndImageContext();
-
-            //tag
-            NSTextAttachment *attach = [[NSTextAttachment alloc] init];
-            attach.bounds = CGRectMake(0, -2, tagLabelW, tagLabelH);
-            attach.image = image;
-            NSAttributedString * imageStr = [NSAttributedString attributedStringWithAttachment:attach];
-            [attStr insertAttributedString:imageStr atIndex:0];
-            
-            //empty
-            NSTextAttachment *attach2 = [[NSTextAttachment alloc] init];
-            attach2.bounds = CGRectMake(0, 0, 5, 15);
-            attach2.image =  [UIImage imageNamed:@"emptyBar"];
-            NSAttributedString * imageStr2 = [NSAttributedString attributedStringWithAttachment:attach2];
-            [attStr insertAttributedString:imageStr2 atIndex:1];
-        }
-    }
-    
-    
-    
-    //单行样式 (banner normal)
-    else if (type==2)
-    {
-        //设置富文本
-        NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc] init];
-        paragraphStyle.lineSpacing = 5.0;
-        paragraphStyle.firstLineHeadIndent=0;
-        paragraphStyle.alignment=NSTextAlignmentNatural;
-        [attStr addAttribute:NSParagraphStyleAttributeName value:paragraphStyle range:NSMakeRange(0, str.length)];
-        [attStr addAttribute:NSForegroundColorAttributeName value:textColor range:NSMakeRange(0, str.length)];
-        [attStr addAttribute:NSFontAttributeName value: [UIFont systemFontOfSize:17] range:NSMakeRange(0, str.length)];
-        
-        
-        //创建标签图片并插入
-        if (tagStr.length)
-        {
-            NSInteger tagFont = 10;
-            CGFloat tagLabelW = (tagFont + 2)*tagStr.length + 2;
-            CGFloat tagLabelH = (tagFont + 7);
-            UILabel *tagLabel = [[UILabel alloc]init];
-            tagLabel.frame = CGRectMake(0, 0, tagLabelW*3, tagLabelH*3);
-            tagLabel.text = tagStr;
-            tagLabel.font = [UIFont systemFontOfSize:tagFont*3];
-            tagLabel.textColor = tagTextColor;
-            tagLabel.layer.backgroundColor=tagBGColor.CGColor;
-            tagLabel.clipsToBounds = YES;
-            tagLabel.layer.cornerRadius = 3*3;
-            tagLabel.textAlignment = NSTextAlignmentCenter;
-
-            UIGraphicsBeginImageContext(tagLabel.bounds.size);
-            CGContextRef ctx = UIGraphicsGetCurrentContext();
-            [tagLabel.layer renderInContext:ctx];
-            UIImage* image = UIGraphicsGetImageFromCurrentImageContext();
-            UIGraphicsEndImageContext();
-
-            NSTextAttachment *attach = [[NSTextAttachment alloc] init];
-            attach.bounds = CGRectMake(0, -3.5, tagLabelW, tagLabelH);
-            attach.image = image;
-            NSAttributedString * imageStr = [NSAttributedString attributedStringWithAttachment:attach];
-            [attStr insertAttributedString:imageStr atIndex:0];
-            
-            NSTextAttachment *attach2 = [[NSTextAttachment alloc] init];
-            attach2.bounds = CGRectMake(0, 0, 5, 15);
-            attach2.image = [UIImage imageNamed:@"emptyBar"];
-            NSAttributedString * imageStr2 = [NSAttributedString attributedStringWithAttachment:attach2];
-            [attStr insertAttributedString:imageStr2 atIndex:1];
-        }
-    }
-    
-    
-    
-    //镂空，大字 （活动新闻、活动面板）
-    else if (type==3)
-    {
-        //设置富文本
-        NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc] init];
-        paragraphStyle.lineSpacing = 2.0;
-        paragraphStyle.firstLineHeadIndent=0;
-        paragraphStyle.alignment=NSTextAlignmentNatural;
-        [attStr addAttribute:NSParagraphStyleAttributeName value:paragraphStyle range:NSMakeRange(0, str.length)];
-        [attStr addAttribute:NSForegroundColorAttributeName value:textColor range:NSMakeRange(0, str.length)];
-        [attStr addAttribute:NSFontAttributeName value:[UIFont systemFontOfSize:17] range:NSMakeRange(0, str.length)];
-        
-        //则创建图片并插入
-        if (tagStr.length)
-        {
-            NSInteger tagFont = 10;
-            CGFloat tagLabelW = (tagFont + 2)*tagStr.length + 2;
-            CGFloat tagLabelH = (tagFont + 6);
-            UILabel *tagLabel = [[UILabel alloc]init];
-            tagLabel.frame = CGRectMake(0, 0, tagLabelW*3, tagLabelH*3);
-            tagLabel.text = tagStr;
-            tagLabel.font = [UIFont systemFontOfSize:tagFont*3];
-            tagLabel.textColor = tagTextColor;
-            tagLabel.layer.backgroundColor=[UIColor clearColor].CGColor;
-            tagLabel.layer.borderColor=bgColor.CGColor;
-            tagLabel.layer.borderWidth=1;
-            tagLabel.clipsToBounds = YES;
-            tagLabel.layer.cornerRadius = 3*3;
-            tagLabel.textAlignment = NSTextAlignmentCenter;
-
-            UIGraphicsBeginImageContext(tagLabel.bounds.size);
-            CGContextRef ctx = UIGraphicsGetCurrentContext();
-            [tagLabel.layer renderInContext:ctx];
-            UIImage* image = UIGraphicsGetImageFromCurrentImageContext();
-            UIGraphicsEndImageContext();
-
-            //tag
-            NSTextAttachment *attach = [[NSTextAttachment alloc] init];
-            attach.bounds = CGRectMake(15, -2, tagLabelW, tagLabelH);
-            attach.image = image;
-            NSAttributedString * imageStr = [NSAttributedString attributedStringWithAttachment:attach];
-            [attStr insertAttributedString:imageStr atIndex:0];
-            
-            //empty
-            NSTextAttachment *attach2 = [[NSTextAttachment alloc] init];
-            attach2.bounds = CGRectMake(0, 0, 5, 15);
-            attach2.image =  [UIImage imageNamed:@"emptyBar"];
-            NSAttributedString * imageStr2 = [NSAttributedString attributedStringWithAttachment:attach2];
-            [attStr insertAttributedString:imageStr2 atIndex:1];
-        }
-        
-        
-        
-        
-    }
-    
-    
-    return attStr;
-}
-
-
-
-+(NSMutableAttributedString*)makeTaggedTitleAtEnd:(NSString*)str tag:(NSString*)tagStr textColor:(UIColor*)color tagColor:(UIColor*)tagColor
-{
-    NSString * originstr = nil;
-    if (tagStr.length)
-    {
-        originstr = [NSString stringWithFormat:@" %@",str];
-    }
-    else
-    {
-        originstr=str;
-    }
-    
-    UIColor * tagBGColor = [UIColor colorWithRed:tagColor.red green:tagColor.green blue:tagColor.blue alpha:0.2];
-    
-    NSMutableAttributedString *attStr = [[NSMutableAttributedString alloc] initWithString:originstr];
-    NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc] init];
-    paragraphStyle.lineSpacing = 8.0;
-    paragraphStyle.firstLineHeadIndent=0;
-    [attStr addAttribute:NSParagraphStyleAttributeName value:paragraphStyle range:NSMakeRange(0, originstr.length)];
-    
-    if (tagStr.length)
-    {
-        CGFloat tagLabelW = 14*tagStr.length +6;
-        UILabel *tagLabel = [[UILabel alloc]init];
-        NSInteger tagFont = 12;
-        tagLabel.frame = CGRectMake(0, 0, tagLabelW*3, 18*3);
-        tagLabel.text = tagStr;
-        tagLabel.font = [UIFont systemFontOfSize:tagFont*3];
-        tagLabel.textColor = tagColor;
-        tagLabel.layer.backgroundColor=tagBGColor.CGColor;
-        tagLabel.layer.borderColor=tagColor.CGColor;
-        tagLabel.layer.borderWidth=1;
-        tagLabel.clipsToBounds = YES;
-        tagLabel.layer.cornerRadius = 3*3;
-        tagLabel.textAlignment = NSTextAlignmentCenter;
-        
-        UIGraphicsBeginImageContext(tagLabel.bounds.size);
-        CGContextRef ctx = UIGraphicsGetCurrentContext();
-        [tagLabel.layer renderInContext:ctx];
-        UIImage* image = UIGraphicsGetImageFromCurrentImageContext();
-        UIGraphicsEndImageContext();
-        
-        NSTextAttachment *attach = [[NSTextAttachment alloc] init];
-        attach.bounds = CGRectMake(18, -2, tagLabelW, 18);
-        attach.image = image;
-        
-        NSAttributedString * imageStr = [NSAttributedString attributedStringWithAttachment:attach];
-//        [attStr insertAttributedString:imageStr atIndex:originstr.length];
-        [attStr insertAttributedString:imageStr atIndex:0];
-        
-    }
-    
-    return attStr;
-}
-
-
-
-
-#pragma mark - 广告
-+(NSMutableAttributedString*)makeADString:(NSString*)str tag:(NSString*)tagStr tagColor:(UIColor*)tagColor
-{
-    return [NSString makeADString:str tag:tagStr ADColor:[UIColor grayColor] tagColor:tagColor];
-}
-
-+(NSMutableAttributedString*)makeADString:(NSString*)str tag:(NSString*)tagStr ADColor:(UIColor*)textcolor tagColor:(UIColor*)tagColor
-{
-    NSString * originstr = nil;
-    if (tagStr.length)
-    {
-        originstr = [NSString stringWithFormat:@"  %@",str];
-    }
-    else
-    {
-        originstr=str;
-    }
-    NSMutableAttributedString *attStr = [[NSMutableAttributedString alloc] initWithString:originstr];
-    [attStr addAttribute:NSForegroundColorAttributeName value:textcolor range:NSMakeRange(0, originstr.length)];
-    [attStr addAttribute:NSFontAttributeName value:[UIFont systemFontOfSize:14] range:NSMakeRange(0, originstr.length)];
-    
-    if (tagStr.length)
-    {
-        CGFloat tagLabelW = 12*tagStr.length + 6;
-        CGFloat tagLabelH = 14;
-        UILabel *tagLabel = [[UILabel alloc]init];
-        NSInteger tagFont = 10;
-        tagLabel.frame = CGRectMake(0, 0, tagLabelW*3, tagLabelH*3);
-        tagLabel.text = tagStr;
-        tagLabel.font = [UIFont systemFontOfSize:tagFont*3];
-        tagLabel.textColor = [UIColor blackColor];
-        tagLabel.layer.backgroundColor=[UIColor whiteColor].CGColor;
-        tagLabel.layer.borderColor=[UIColor grayColor].CGColor;
-        tagLabel.layer.borderWidth=1;
-        tagLabel.clipsToBounds = YES;
-        tagLabel.layer.cornerRadius = 3*3;
-        tagLabel.textAlignment = NSTextAlignmentCenter;
-        
-        UIGraphicsBeginImageContext(tagLabel.bounds.size);
-        CGContextRef ctx = UIGraphicsGetCurrentContext();
-        [tagLabel.layer renderInContext:ctx];
-        UIImage* image = UIGraphicsGetImageFromCurrentImageContext();
-        UIGraphicsEndImageContext();
-        
-        NSTextAttachment *attach = [[NSTextAttachment alloc] init];
-        attach.bounds = CGRectMake(0, -2.5, tagLabelW, tagLabelH);
-        attach.image = image;
-        
-        NSAttributedString * imageStr = [NSAttributedString attributedStringWithAttachment:attach];
-        [attStr insertAttributedString:imageStr atIndex:0];
-        
-    }
-    
-    return attStr;
-}
-
-
-
-#pragma mark - 文本
-+ (NSMutableAttributedString *)makeDescStyleStrWithNoIndent:(NSString *)str
-{
-    return [NSString makeDescStyleStr:str lineSpacing:8 indent:0];
-}
-
-+ (NSMutableAttributedString *)makeDescStyleStr:(NSString *)str
-{
-    return [NSString makeDescStyleStr:str lineSpacing:5 indent:30];
-}
-
-+(NSMutableAttributedString*)makeDescStyleStr:(NSString*)str lineSpacing:(CGFloat)space indent:(CGFloat)indent
-{
-    if (str.length==0)
-    {
-        str = @" ";
-    }
-    
-    NSMutableAttributedString *attributedStr = [[NSMutableAttributedString alloc] initWithString:str];
-    NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc] init];
-    paragraphStyle.lineSpacing = space;
-    paragraphStyle.firstLineHeadIndent=indent;
-    paragraphStyle.alignment = NSTextAlignmentNatural;
-    [attributedStr addAttribute:NSParagraphStyleAttributeName value:paragraphStyle range:NSMakeRange(0, attributedStr.length)];
-    
-    return attributedStr;
-}
-+(NSMutableAttributedString*)makeTitleStr:(NSString*)str lineSpacing:(CGFloat)space indent:(CGFloat)indent
-{
-    if (str.length==0)
-    {
-        str = @" ";
-    }
-    
-    NSMutableAttributedString *attributedStr = [[NSMutableAttributedString alloc] initWithString:str];
-    NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc] init];
-    paragraphStyle.lineSpacing = space;
-    paragraphStyle.firstLineHeadIndent=indent;
-    paragraphStyle.alignment = NSTextAlignmentNatural;
-    [attributedStr addAttribute:NSParagraphStyleAttributeName value:paragraphStyle range:NSMakeRange(0, attributedStr.length)];
-    
-    return attributedStr;
-}
-
-+(NSMutableAttributedString*)makeMultiColorStr:(NSString*)str color:(UIColor*)color at:(NSInteger)index length:(NSInteger)length
-{
-    if (str.length==0)
-    {
-        str = @" ";
-    }
-    
-    NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc]initWithString:str];
-    [attributedString addAttribute:NSForegroundColorAttributeName value:color range:NSMakeRange(index,length)];
-    return attributedString;
-}
 
 
 

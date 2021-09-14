@@ -23,7 +23,4 @@
 //获取系统版本
 +(NSString*)getSystemVersion;
 
-//链接类型
-+(NSString*)getConnectType;
-
 @end

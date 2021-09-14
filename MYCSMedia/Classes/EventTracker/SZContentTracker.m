@@ -16,6 +16,7 @@
 @property(strong,nonatomic)NSMutableDictionary * startTimeDic;
 @property(strong,nonatomic)NSMutableDictionary * stateDic;
 @property(strong,nonatomic)NSMutableDictionary * totalTimeDic;
+@property(strong,nonatomic)NSMutableDictionary * progressDic;
 @end
 
 @implementation SZContentTracker
@@ -38,20 +39,21 @@
 
 
 //一次性事件5个参数
-+(void)trackContentEvent:(NSString*)eventName contentId:(NSString*)contentid
++(void)trackContentEvent:(NSString*)eventName content:(ContentModel*)contentM
 {
-    if (eventName.length==0 || contentid.length==0)
-    {
-        return;
-    }
+    NSString * groupId = contentM.thirdPartyId;
     
+    if (contentM.thirdPartyId.length==0)
+    {
+        groupId = contentM.id;
+    }
     
     NSMutableDictionary * bizparam=[NSMutableDictionary dictionary];
     [bizparam setValue:@"click_category" forKey:@"enter_from"];
     [bizparam setValue:@"c2402539" forKey:@"category_name"];
-    [bizparam setValue:contentid forKey:@"group_id"];
+    [bizparam setValue:groupId forKey:@"group_id"];
     [bizparam setValue:@"content_manager_system" forKey:@"params_for_special"];
-    [bizparam setValue:[SZContentTracker make__items:contentid] forKey:@"__items"];
+    [bizparam setValue:[SZContentTracker make__items:groupId] forKey:@"__items"];
     
     [[SZContentTracker shareTracker]requestForUploading:bizparam eventKey:eventName];
 }
@@ -61,12 +63,18 @@
 +(void)trackingVideoPlayingDuration:(ContentModel*)model isPlaying:(BOOL)isplay currentTime:(CGFloat)currentTime totalTime:(CGFloat)totalTime
 {
     //内容ID
-    NSString * contentId = model.id;
+    NSString * groupId = model.thirdPartyId;
+    if (groupId.length==0)
+    {
+        groupId = model.id;
+    }
+    
+    
+    
     SZContentTracker * tracker = [SZContentTracker shareTracker];
     
-    
     //获取之前的状态
-    NSString * stateStr = [tracker.stateDic valueForKey:contentId];
+    NSString * stateStr = [tracker.stateDic valueForKey:groupId];
     
     //如果切到播放状态
     if (isplay)
@@ -79,12 +87,12 @@
         {
             //记录时间
             NSInteger timestamp = [[NSDate date]timeIntervalSince1970]*1000;
-            [tracker.startTimeDic setValue:[NSNumber numberWithInteger:timestamp] forKey:contentId];
+            [tracker.startTimeDic setValue:[NSNumber numberWithInteger:timestamp] forKey:groupId];
         }
         
-        [tracker.stateDic setValue:@"playing" forKey:contentId];
+        [tracker.stateDic setValue:@"playing" forKey:groupId];
         
-        [tracker.totalTimeDic setValue:[NSNumber numberWithFloat:totalTime] forKey:contentId];
+        [tracker.totalTimeDic setValue:[NSNumber numberWithFloat:totalTime] forKey:groupId];
     }
     
     
@@ -99,7 +107,7 @@
         {
             //获取开始时间
             NSInteger timeNow = [[NSDate date]timeIntervalSince1970]*1000;
-            NSNumber * timestampObjc = [tracker.startTimeDic valueForKey:contentId];
+            NSNumber * timestampObjc = [tracker.startTimeDic valueForKey:groupId];
             NSInteger duration = timeNow - timestampObjc.integerValue;
             
             //时长过短的过滤掉
@@ -109,42 +117,30 @@
             }
             
             
-            NSNumber * totaltimeNumber = [tracker.totalTimeDic valueForKey:contentId];
-            
-            CGFloat maxPercent = 0;
-            //如果播放时长距离最大时长小于1秒，则看作100%（内核bug）
-            if (totaltimeNumber.floatValue-currentTime<1.0)
-            {
-                //计算最大百分比
-                maxPercent = 100;
-            }
-            else
-            {
-                //计算最大百分比
-                maxPercent = currentTime/totaltimeNumber.floatValue * 100;
-            }
+            //最大进度
+            NSNumber * progressNumber = [tracker.progressDic valueForKey:groupId];
             
             
             //上报
             NSMutableDictionary * bizparam=[NSMutableDictionary dictionary];
             [bizparam setValue:@"click_category" forKey:@"enter_from"];
             [bizparam setValue:@"c2402539" forKey:@"category_name"];
-            [bizparam setValue:model.id forKey:@"group_id"];
+            [bizparam setValue:groupId forKey:@"group_id"];
             [bizparam setValue:@"content_manager_system" forKey:@"params_for_special"];
-            [bizparam setValue:[SZContentTracker make__items:model.id] forKey:@"__items"];
+            [bizparam setValue:[SZContentTracker make__items:groupId] forKey:@"__items"];
             [bizparam setValue:[NSString stringWithFormat:@"%ld",(long)duration] forKey:@"duration"];
-            [bizparam setValue:[NSString stringWithFormat:@"%g",maxPercent] forKey:@"percent"];
+            [bizparam setValue:progressNumber forKey:@"percent"];
             
             
             [tracker requestForUploading:bizparam eventKey:@"cms_video_over_auto"];
             
             
 //            NSLog(@"mjduration_%g_%g",currentTime,totaltimeNumber.floatValue);
-//            NSLog(@"mjduration_时长:%ld_新闻:%@_百分比:%g",duration,model.id,maxPercent);
+//            NSLog(@"mjduration_时长:%ld_新闻:%@_百分比:%@",duration,groupId,progressNumber);
             
         }
         
-        [tracker.stateDic setValue:@"" forKey:contentId];
+        [tracker.stateDic setValue:@"" forKey:groupId];
     }
 }
 
@@ -152,12 +148,18 @@
 +(void)trackingVideoPlayingDuration_Replay:(ContentModel*)model isPlaying:(BOOL)isplay currentTime:(CGFloat)currentTime totalTime:(CGFloat)totalTime
 {
     //内容ID
-    NSString * contentId = model.id;
+    NSString * groupId = model.thirdPartyId;
+    if (groupId.length==0)
+    {
+        groupId = model.id;
+    }
+    
+    
     SZContentTracker * tracker = [SZContentTracker shareTracker];
     
     
     //获取之前的状态
-    NSString * stateStr = [tracker.stateDic valueForKey:contentId];
+    NSString * stateStr = [tracker.stateDic valueForKey:groupId];
     
     //如果切到播放状态
     if (isplay)
@@ -170,12 +172,12 @@
         {
             //记录时间
             NSInteger timestamp = [[NSDate date]timeIntervalSince1970]*1000;
-            [tracker.startTimeDic setValue:[NSNumber numberWithInteger:timestamp] forKey:contentId];
+            [tracker.startTimeDic setValue:[NSNumber numberWithInteger:timestamp] forKey:groupId];
         }
         
-        [tracker.stateDic setValue:@"playing" forKey:contentId];
+        [tracker.stateDic setValue:@"playing" forKey:groupId];
         
-        [tracker.totalTimeDic setValue:[NSNumber numberWithFloat:totalTime] forKey:contentId];
+        [tracker.totalTimeDic setValue:[NSNumber numberWithFloat:totalTime] forKey:groupId];
     }
     
     
@@ -190,7 +192,7 @@
         {
             //获取开始时间
             NSInteger timeNow = [[NSDate date]timeIntervalSince1970]*1000;
-            NSNumber * timestampObjc = [tracker.startTimeDic valueForKey:contentId];
+            NSNumber * timestampObjc = [tracker.startTimeDic valueForKey:groupId];
             NSInteger duration = timeNow - timestampObjc.integerValue;
             
             //时长过短的过滤掉
@@ -200,32 +202,18 @@
             }
             
             
-            NSNumber * totaltimeNumber = [tracker.totalTimeDic valueForKey:contentId];
-            
-            CGFloat maxPercent = 0;
-            //如果播放时长距离最大时长小于1秒，则看作100%（内核bug）
-            if (totaltimeNumber.floatValue-currentTime<1.0)
-            {
-                //计算最大百分比
-                maxPercent = 100;
-            }
-            else
-            {
-                //计算最大百分比
-                maxPercent = currentTime/totaltimeNumber.floatValue * 100;
-            }
-            
-            
+            //最大百分比
+            NSNumber * progressNumber = [tracker.progressDic valueForKey:groupId];
             
             //上报
             NSMutableDictionary * bizparam=[NSMutableDictionary dictionary];
             [bizparam setValue:@"click_category" forKey:@"enter_from"];
             [bizparam setValue:@"c2402539" forKey:@"category_name"];
-            [bizparam setValue:model.id forKey:@"group_id"];
+            [bizparam setValue:groupId forKey:@"group_id"];
             [bizparam setValue:@"content_manager_system" forKey:@"params_for_special"];
-            [bizparam setValue:[SZContentTracker make__items:model.id] forKey:@"__items"];
+            [bizparam setValue:[SZContentTracker make__items:groupId] forKey:@"__items"];
             [bizparam setValue:[NSString stringWithFormat:@"%ld",(long)duration] forKey:@"duration"];
-            [bizparam setValue:[NSString stringWithFormat:@"%g",maxPercent] forKey:@"percent"];
+            [bizparam setValue:progressNumber forKey:@"percent"];
             
             
             [tracker requestForUploading:bizparam eventKey:@"cms_video_over"];
@@ -234,14 +222,51 @@
             
             
 //            NSLog(@"mjduration_%g_%g",currentTime,totaltimeNumber.floatValue);
-//            NSLog(@"mjduration_reload_时长:%ld_新闻:%@_百分比:%g",duration,model.id,maxPercent);
+//            NSLog(@"mjduration_reload_时长:%ld_新闻:%@_百分比:%@",duration,groupId,progressNumber);
             
         }
         
-        [tracker.stateDic setValue:@"" forKey:contentId];
+        [tracker.stateDic setValue:@"" forKey:groupId];
     }
 }
 
+
++(void)recordPlayingProgress:(CGFloat)progess content:(ContentModel*)contentM
+{
+    NSString * groupId = contentM.thirdPartyId;
+    if (groupId.length==0)
+    {
+        groupId = contentM.id;
+    }
+    
+    progess = progess * 100.00;
+    
+    SZContentTracker * tracker = [SZContentTracker shareTracker];
+    
+    NSNumber * progressNumber = [tracker.progressDic valueForKey:groupId];
+    
+    //为空则记录
+    if (progressNumber==nil)
+    {
+        progressNumber = [NSNumber numberWithFloat:progess];
+    }
+    else
+    {
+        CGFloat value = progressNumber.floatValue;
+        if (progess==0)
+        {
+            progressNumber = [NSNumber numberWithFloat:progess];
+        }
+        
+        //有更大值则记录
+        else if (progess>value)
+        {
+            progressNumber = [NSNumber numberWithFloat:progess];
+        }
+    }
+    
+    [[SZContentTracker shareTracker].progressDic setValue:progressNumber forKey:groupId];
+}
 
 
 #pragma mark - Tools
@@ -376,8 +401,6 @@
     [requestParam setValue:ids forKey:@"ids"];
     [requestParam setValue:header forKey:@"header"];
     
-    NSLog(@"%@",[requestParam convertToJSON]);
-    
     StatusModel * model = [StatusModel model];
     model.isJSON=YES;
     
@@ -422,6 +445,14 @@
         _totalTimeDic = [NSMutableDictionary dictionary];
     }
     return _totalTimeDic;
+}
+-(NSMutableDictionary *)progressDic
+{
+    if (_progressDic==nil)
+    {
+        _progressDic = [NSMutableDictionary dictionary];
+    }
+    return _progressDic;;
 }
 
 @end

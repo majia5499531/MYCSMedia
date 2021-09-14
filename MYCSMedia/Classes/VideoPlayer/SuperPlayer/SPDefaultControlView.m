@@ -19,6 +19,8 @@
 #import "UIImage+MJCategory.h"
 #import "SZGlobalInfo.h"
 #import "SZData.h"
+#import "SZContentTracker.h"
+
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored"-Wdeprecated-declarations"
@@ -934,10 +936,12 @@
     //缓冲时间
     [self.videoSlider.progressView setProgress:playable animated:NO];
     
-
     //设置外部slider
     [self.externalSlider setCurrentTime:currentTime totalTime:totalTime progress:progress isDragging:self.isDragging];
     
+    //记录百分比
+    SuperPlayerView * videoview = (SuperPlayerView*)self.delegate;
+    [SZContentTracker recordPlayingProgress:progress content:videoview.externalModel];
 }
 
 

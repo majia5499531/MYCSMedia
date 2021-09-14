@@ -892,7 +892,6 @@ static UISlider * _volumeSlider;
     //控制层清零
     [self.controlView setProgressTime:0 totalTime:0 progressValue:0 playableValue:0];
     
-    
     //保存
     _playerModel = playerModel;
     
@@ -1600,12 +1599,12 @@ static UISlider * _volumeSlider;
                 
                 
                 //tracking
-                [SZContentTracker trackContentEvent:@"cms_video_play" contentId:self.externalModel.id];
+                [SZContentTracker trackContentEvent:@"cms_video_play" content:self.externalModel];
             }
             else
             {
                 //tracking
-                [SZContentTracker trackContentEvent:@"cms_video_play_auto" contentId:self.externalModel.id];
+                [SZContentTracker trackContentEvent:@"cms_video_play_auto" content:self.externalModel];
             }
             
             

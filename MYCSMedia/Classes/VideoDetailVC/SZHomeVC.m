@@ -49,11 +49,22 @@
     SZHomeRootView3 * rootview3;
 }
 @property(assign,nonatomic)BOOL MJHideStatusbar;
+
 @end
 
 @implementation SZHomeVC
 
 
+
+-(instancetype)init
+{
+    self = [super init];
+    if (self)
+    {
+        self.initialIndex = 1;
+    }
+    return self;
+}
 
 -(void)viewDidLoad
 {
@@ -158,7 +169,7 @@
     columnbar.columnDelegate=self;
     [self.view addSubview:columnbar];
     NSArray * titles = @[@"我的小康生活",@"视频",@"直播"];
-    [columnbar setTopicTitles:titles relateScrollView:scrollBG originX:10 minWidth:50 itemMargin:12 initialIndex:1];
+    [columnbar setTopicTitles:titles relateScrollView:scrollBG originX:10 minWidth:50 itemMargin:12 initialIndex:self.initialIndex];
     [self.view addSubview:columnbar];
     [columnbar setCenterX:self.view.width/2-20];
     
@@ -332,6 +343,9 @@
 }
 
 
+
+
+
 #pragma mark - Btn Action
 -(void)backBtnAction
 {
@@ -356,6 +370,9 @@
     NSString * h5ur = APPEND_SUBURL(BASE_H5_URL, @"fuse/news/#/searchPlus");
     [[SZManager sharedManager].delegate onOpenWebview:h5ur param:nil];
 }
+
+
+
 
 #pragma mark - StatusBar
 -(UIStatusBarStyle)preferredStatusBarStyle

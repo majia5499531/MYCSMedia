@@ -12,6 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface SZHomeVC : UIViewController
 
 @property(strong,nonatomic)NSString * contentId;
+@property(assign,nonatomic)NSInteger initialIndex;
 
 @end
 

@@ -46,7 +46,7 @@
 
 -(void)viewWillAppear
 {
-    [MJVideoManager pauseWindowVideo];
+    [MJVideoManager destroyVideoPlayer];
     
     [[SZData sharedSZData]setCurrentContentId:@""];
     

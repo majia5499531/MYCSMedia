@@ -134,7 +134,9 @@
     [SZEventTracker trackingVideoPlayWithContentModel:contentModel source:@"" isReplay:NO];
     
     //tracking
-    [SZContentTracker trackContentEvent:@"cms_client_show" contentId:contentModel.id];
+    [SZContentTracker trackContentEvent:@"cms_client_show" content:contentModel];
+    
+    NSLog(@"Tracking_____cms_client_show");
 }
 
 

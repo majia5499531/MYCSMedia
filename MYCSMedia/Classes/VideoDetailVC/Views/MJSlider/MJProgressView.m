@@ -97,8 +97,6 @@
     {
         _slider.value = progress;
     }
-    
-    
 }
 
 

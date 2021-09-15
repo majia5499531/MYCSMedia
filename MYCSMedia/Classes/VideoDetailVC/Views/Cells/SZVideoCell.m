@@ -226,6 +226,12 @@
     //model
     dataModel = objc;
     
+    //火山视频，则不允许关注和点击
+    if ([dataModel.thirdPartyCode isEqualToString:@"volcengine"])
+    {
+        enable = NO;
+    }
+    
     //视频宽高比
     CGFloat imageWidth = objc.width.floatValue > 0 ? objc.width.floatValue : 1920;
     CGFloat imageHeight = objc.height.floatValue > 0 ? objc.height.floatValue : 1080;
@@ -667,11 +673,6 @@
 
 -(void)authorDetailBtnAction
 {
-    if ([dataModel.thirdPartyCode isEqualToString:@"volcengine"])
-    {
-        return;
-    }
-    
     NSString * url = APPEND_SUBURL(BASE_H5_URL, @"act/xksh/#/others");
     url = [url appenURLParam:@"id" value:dataModel.createBy];
     

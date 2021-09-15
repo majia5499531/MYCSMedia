@@ -121,6 +121,7 @@
     [self setTitleColor:mj_textColor forState:UIControlStateNormal];
 }
 
+//bgcolor
 -(void)setMj_bgColor:(UIColor *)mj_bgColor
 {
     _mj_bgColor = mj_bgColor;

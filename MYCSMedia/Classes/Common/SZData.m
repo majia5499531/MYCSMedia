@@ -35,7 +35,6 @@
                   
 
 
-
 #pragma mark - Binding
 -(void)addDataBinding
 {
@@ -55,6 +54,7 @@
         
     });
 }
+
 
 
 #pragma mark - Request

@@ -23,6 +23,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic , copy) NSString              * id;
 @property (nonatomic , copy) NSString              * thirdPartyId;
+@property (nonatomic , copy) NSString               * thirdPartyCode;
 @property (nonatomic , copy) NSString              * source;
 @property (nonatomic , copy) NSString              * title;
 @property (nonatomic , copy) NSString              * brief;

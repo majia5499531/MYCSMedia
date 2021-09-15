@@ -6,10 +6,10 @@
 //
 
 #import "MJHUD_Loading.h"
+#import "SZDefines.h"
 #import <SDWebImage/SDWebImage.h>
 #import <UIView+MJCategory.h>
 #import "UIImage+MJCategory.h"
-#import "SZDefines.h"
 #import "UIColor+MJCategory.h"
 
 #define kDISPATCH_MAIN_THREAD(mainQueueBlock)       dispatch_async(dispatch_get_main_queue(),mainQueueBlock);

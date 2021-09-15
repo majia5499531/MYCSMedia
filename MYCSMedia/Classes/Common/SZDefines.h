@@ -128,11 +128,9 @@
 
 //NSLog和MJLog
 #ifdef DEBUG
-#define NSLog(...) printf("%s\n",[[NSString stringWithFormat:__VA_ARGS__]UTF8String]);
-#define MJLog(fmt, ...) NSLog((@"\n----%s [Line %d]-----\n--------------*****--------------\n" fmt), __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__);
+#define NSLog(FORMAT, ...) fprintf(stderr, "%s:%zd\t%s\n", [[[NSString stringWithUTF8String: __FILE__] lastPathComponent] UTF8String], __LINE__, [[NSString stringWithFormat: FORMAT, ## __VA_ARGS__] UTF8String]);
 #else
-#define NSLog(...)
-#define MJLog(...)
+#define NSLog(FORMAT, ...) nil
 #endif
 
 

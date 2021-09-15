@@ -123,13 +123,15 @@
 #pragma mark - Request
 -(void)requestVideos
 {
+    NSString * ssid = [[SZManager sharedManager].delegate onGetUserDevice];
     NSString * pagesize = [NSString stringWithFormat:@"%d",VIDEO_PAGE_SIZE];
     
     NSMutableDictionary * param=[NSMutableDictionary dictionary];
     [param setValue:panelCode forKey:@"panelCode"];
     [param setValue:pagesize forKey:@"pageSize"];
     [param setValue:@"0" forKey:@"removeFirst"];
-
+    [param setValue:ssid forKey:@"ssid"];
+    [param setValue:@"refresh" forKey:@"refreshType"];
     
     ContentListModel * dataModel = [ContentListModel model];
     dataModel.hideLoading=YES;
@@ -151,14 +153,15 @@
     ContentModel * lastModel = dataModel.dataArr.lastObject;
     NSString * lastContentId =  lastModel.id;
     NSString * pagesize = [NSString stringWithFormat:@"%d",VIDEO_PAGE_SIZE];
+    NSString * ssid = [[SZManager sharedManager].delegate onGetUserDevice];
     
     NSMutableDictionary * param=[NSMutableDictionary dictionary];
     [param setValue:panelCode forKey:@"panelCode"];
     [param setValue:lastContentId forKey:@"contentId"];
     [param setValue:pagesize forKey:@"pageSize"];
     [param setValue:@"1" forKey:@"removeFirst"];
-    
-    
+    [param setValue:ssid forKey:@"ssid"];
+    [param setValue:@"loadmore" forKey:@"refreshType"];
     
     ContentListModel * model = [ContentListModel model];
     model.hideLoading=YES;

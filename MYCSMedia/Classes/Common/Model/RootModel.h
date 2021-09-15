@@ -9,7 +9,7 @@
 
 #import <Foundation/Foundation.h>
 #import "AFNetworking.h"
-#import "AFURLRequestSerialization.h"
+
 
 typedef void (^MJHTTPSuccessBlock)(id responseObject , NSURLSessionDataTask * task);
 typedef void (^MJHTTPErrorBlock)(id responseObject , NSURLSessionDataTask * task);

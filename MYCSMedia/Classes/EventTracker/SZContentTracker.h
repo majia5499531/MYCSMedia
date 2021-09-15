@@ -12,12 +12,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface SZContentTracker : NSObject
 
-
 +(void)trackContentEvent:(NSString*)eventName content:(ContentModel*)contentM;
 
-
 +(void)trackingVideoPlayingDuration:(ContentModel*)content isPlaying:(BOOL)isplay currentTime:(CGFloat)currentTime totalTime:(CGFloat)totalTime;
-
 
 +(void)trackingVideoPlayingDuration_Replay:(ContentModel*)content isPlaying:(BOOL)isplay currentTime:(CGFloat)currentTime totalTime:(CGFloat)totalTime;
 

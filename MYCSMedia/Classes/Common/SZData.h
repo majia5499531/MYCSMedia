@@ -23,13 +23,13 @@
 @property(strong,nonatomic)NSNumber * contentRelateUpdateTime;       //相关推荐变化
 
 
-
 //数据
 @property(strong,nonatomic)NSMutableDictionary * contentDic;
 @property(strong,nonatomic)NSMutableDictionary * contentStateDic;
 @property(strong,nonatomic)NSMutableDictionary * contentCommentDic;
 @property(strong,nonatomic)NSMutableDictionary * contentRelateContentDic;
 @property(strong,nonatomic)NSMutableDictionary * contentRelateContentDislikeDic;
+
 
 +(instancetype)sharedSZData;
 
@@ -40,4 +40,5 @@
 -(void)requestUnFollowUser:(NSString*)userId;
 
 @end
+
 

@@ -667,6 +667,11 @@
 
 -(void)authorDetailBtnAction
 {
+    if ([dataModel.thirdPartyCode isEqualToString:@"volcengine"])
+    {
+        return;
+    }
+    
     NSString * url = APPEND_SUBURL(BASE_H5_URL, @"act/xksh/#/others");
     url = [url appenURLParam:@"id" value:dataModel.createBy];
     

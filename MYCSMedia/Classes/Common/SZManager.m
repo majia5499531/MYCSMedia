@@ -11,7 +11,9 @@
 #import "SZDefines.h"
 #import "MJHud.h"
 #import "SZEventTracker.h"
+
 @implementation SZManager
+
 
 +(SZManager *)sharedManager
 {

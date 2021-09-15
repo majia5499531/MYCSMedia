@@ -10,7 +10,6 @@
 #import "MJHUD.h"
 #import "NSObject+MJCategory.h"
 #import "SZGlobalInfo.h"
-#import <YYText/YYText.h>
 #import "YYModel.h"
 
 @implementation BaseModel
@@ -68,7 +67,7 @@
                 [self parseData:[responseObject mj_valueForKey:@"data"]];
                 successblock(responseObject);
             }
-    
+        
             //其他业务错误
             else
             {

@@ -138,6 +138,7 @@
     ContentModel * model = dataModel.dataArr[indexPath.row];
     NSString * H5URL = model.shareUrl;
     
+    
     //附加广电云token
     if ([H5URL containsString:@"guangdianyun"])
     {
@@ -150,7 +151,6 @@
             H5URL = [H5URL appenURLParam:@"token" value:@"default"];
         }
     }
-    
     
     
     NSMutableDictionary * param=[NSMutableDictionary dictionary];

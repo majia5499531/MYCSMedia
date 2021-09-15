@@ -9,6 +9,7 @@
 #import "NSArray+MJCategory.h"
 
 @implementation NSArray (MJCategory)
+
 -(NSString *)convertToJsonSting
 {
     NSError *error = nil;
@@ -32,11 +33,14 @@
     
     // 查出最后一个,的范围
     NSRange range = [str rangeOfString:@"," options:NSBackwardsSearch];
-    if (range.length != 0) {
+    if (range.length != 0)
+    {
         // 删掉最后一个,
         [str deleteCharactersInRange:range];
     }
     
     return str;
 }
+
+
 @end

@@ -7,9 +7,7 @@
 //
 
 #import "RootModel.h"
-#import "NSObject+MJCategory.h"
 #import "SZGlobalInfo.h"
-#import "UIDevice+MJCategory.h"
 #import <objc/message.h>
 #import "NSDictionary+MJCategory.h"
 
@@ -128,11 +126,6 @@
             [storage deleteCookie:cookie];
         }
     }
-    
-    
-    //加设备号
-    NSString * deviceID = [UIDevice getIDFA];
-    [httpManager.requestSerializer setValue:deviceID forHTTPHeaderField:@"deviceId"];
     
     //AcceptType
     httpManager.responseSerializer.acceptableContentTypes = [NSSet setWithObjects:@"application/json", @"text/json", @"text/javascript",@"text/html", nil];

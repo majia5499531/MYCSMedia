@@ -31,4 +31,5 @@
 
 //去掉NSNull
 -(instancetype)trimNSNullFromArray;
+
 @end

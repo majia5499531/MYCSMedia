@@ -9,8 +9,5 @@
 #import <Foundation/Foundation.h>
 
 @interface NSDictionary (MJCategory)
-//字典转字符串
--(NSString*)converteDictionaryToJsonStr;
 -(NSString*)convertToJSON;
--(NSString*)converteDictionaryToCustomStr;
 @end

@@ -10,30 +10,7 @@
 
 @implementation NSDictionary (MJCategory)
 
-//字典转字符串
--(NSString*)converteDictionaryToJsonStr
-{    
-    NSArray * keysASC = [[self allKeys] sortedArrayUsingComparator:^NSComparisonResult(id  _Nonnull obj1, id  _Nonnull obj2) {
-        return [obj1 compare:obj2 options:NSNumericSearch];
-    }];
-    
-    NSMutableString * str=[NSMutableString string];
-    for (int i= 0; i<keysASC.count; i++)
-    {
-        NSString * key=keysASC[i];
-        NSString * value=[self objectForKey:key];
-        
-        if (i==0)
-        {
-            [str appendFormat:@"%@=%@",key,value];
-        }
-        else
-        {
-            [str appendFormat:@"&%@=%@",key,value];
-        }
-    }
-    return str;
-}
+
 
 //转JSON
 -(NSString*)convertToJSON;
@@ -70,24 +47,7 @@
     return mutStr;
 }
 
--(NSString*)converteDictionaryToCustomStr
-{
-    NSArray * keysASC = [[self allKeys] sortedArrayUsingComparator:^NSComparisonResult(id  _Nonnull obj1, id  _Nonnull obj2) {
-        return [obj1 compare:obj2 options:NSNumericSearch];
-    }];
-    
-    NSMutableString * str=[NSMutableString string];
-    for (int i= 0; i<keysASC.count; i++)
-    {
-        NSString * key=keysASC[i];
-        NSString * value=[self objectForKey:key];
-        
-        
-        [str appendFormat:@"%@-%@--",key,value];
-        
-    }
-    return str;
-}
+
 
 -(NSString *)descriptionWithLocale:(id)locale indent:(NSUInteger)level
 {

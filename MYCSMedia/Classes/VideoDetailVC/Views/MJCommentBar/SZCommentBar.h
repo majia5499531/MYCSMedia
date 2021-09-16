@@ -13,8 +13,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property(strong,nonatomic)NSString * contentId;
 
-
-
 -(void)setCommentBarStyle:(NSInteger)style type:(NSInteger)type;
 
 @end

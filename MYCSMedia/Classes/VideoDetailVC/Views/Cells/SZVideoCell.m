@@ -87,6 +87,17 @@
         }];
         
         
+        //遮罩
+        UIImageView * videoMask = [[UIImageView alloc]init];
+        videoMask.image=[UIImage getBundleImage:@"sz_video_mask1"];
+        [self.contentView addSubview:videoMask];
+        [videoMask mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.left.top.mas_equalTo(0);
+            make.width.mas_equalTo(SCREEN_WIDTH);
+            make.height.mas_equalTo(STATUS_BAR_HEIGHT+100);
+        }];
+        
+        
         //视频
         MJButton * playBtn = [[MJButton alloc]init];
         [playBtn addTarget:self action:@selector(videoBtnAction) forControlEvents:UIControlEventTouchUpInside];
@@ -242,7 +253,7 @@
     if (WHRate<0.57 && WHRate>0.55)
     {
         videoWHSize = 0;
-        
+
         //如果是刘海屏，则平铺，裁剪
         if ([UIApplication sharedApplication].statusBarFrame.size.height>20)
         {
@@ -255,7 +266,7 @@
         }
         else
         {
-            
+
             [videoCoverImage mas_remakeConstraints:^(MASConstraintMaker *make) {
                 make.left.mas_equalTo(0);
                 make.top.mas_equalTo(0);
@@ -263,7 +274,7 @@
                 make.bottom.mas_equalTo(0);
             }];
         }
-        
+
     }
     
     

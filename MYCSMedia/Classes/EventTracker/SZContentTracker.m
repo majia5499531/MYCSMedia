@@ -55,7 +55,7 @@
     [bizparam setValue:@"content_manager_system" forKey:@"params_for_special"];
     [bizparam setValue:[SZContentTracker make__items:groupId] forKey:@"__items"];
     
-    [[SZContentTracker shareTracker]requestForUploading:bizparam eventKey:eventName];
+    [[SZContentTracker shareTracker]requestForUploading:bizparam eventKey:eventName isfromVolcEngine:contentM.thirdPartyId.length];
 }
 
 
@@ -132,7 +132,7 @@
             [bizparam setValue:progressNumber forKey:@"percent"];
             
             
-            [tracker requestForUploading:bizparam eventKey:@"cms_video_over_auto"];
+            [tracker requestForUploading:bizparam eventKey:@"cms_video_over_auto" isfromVolcEngine:model.thirdPartyId.length];
             
             
 //            NSLog(@"mjduration_%g_%g",currentTime,totaltimeNumber.floatValue);
@@ -216,7 +216,7 @@
             [bizparam setValue:progressNumber forKey:@"percent"];
             
             
-            [tracker requestForUploading:bizparam eventKey:@"cms_video_over"];
+            [tracker requestForUploading:bizparam eventKey:@"cms_video_over" isfromVolcEngine:model.thirdPartyId.length];
             
             
             
@@ -384,8 +384,17 @@
 
 
 #pragma mark - Request
--(void)requestForUploading:(NSDictionary*)bizParam eventKey:(NSString*)eventName
+-(void)requestForUploading:(NSDictionary*)bizParam eventKey:(NSString*)eventName isfromVolcEngine:(BOOL)isfrom
 {
+    if (!isfrom)
+    {
+        return;
+    }
+    
+    NSString * contentId = [bizParam valueForKey:@"group_id"];
+    NSLog(@"request_%@_%@",eventName,contentId);
+    
+    
     NSArray * events = [SZContentTracker generate_EVENTS:eventName param:bizParam];
     
     NSDictionary * user = [SZContentTracker generate_User];

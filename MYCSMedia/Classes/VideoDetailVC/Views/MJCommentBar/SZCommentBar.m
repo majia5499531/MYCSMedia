@@ -383,8 +383,12 @@
 
 -(void)updateContentInfo
 {
-    ContentModel * contenM = [[SZData sharedSZData].contentDic valueForKey:self.contentId];
+    //评论数据清零
     
+    
+    
+    //判断是否禁止评论
+    ContentModel * contenM = [[SZData sharedSZData].contentDic valueForKey:self.contentId];
     if(contenM.disableComment.boolValue)
     {
         sendBtn.mj_text=@"该内容禁止评论";

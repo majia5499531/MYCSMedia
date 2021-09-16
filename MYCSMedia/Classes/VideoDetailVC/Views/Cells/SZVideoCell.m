@@ -237,8 +237,8 @@
     //model
     dataModel = objc;
     
-    //火山视频，则不允许关注和点击
-    if ([dataModel.thirdPartyCode isEqualToString:@"volcengine"])
+    //PGC视频，则不允许关注和点击
+    if (dataModel.issuerName.length)
     {
         enable = NO;
     }

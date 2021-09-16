@@ -1579,8 +1579,6 @@ static UISlider * _volumeSlider;
         //渲染第一帧
         if (EvtID == PLAY_EVT_RCV_FIRST_I_FRAME)
         {
-            NSLog(@"firstFrame_%@",self.externalModel.title);
-            
             if (self.isReplay)
             {
                 //tracking

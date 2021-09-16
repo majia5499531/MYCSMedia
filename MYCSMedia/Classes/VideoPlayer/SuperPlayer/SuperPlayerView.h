@@ -82,4 +82,5 @@ typedef NS_ENUM(NSInteger, SuperPlayerState) {
 //补充
 -(void)switchToFullScreenMode:(BOOL)fullScreen;
 
+
 @end

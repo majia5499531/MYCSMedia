@@ -39,13 +39,13 @@
 
 
 //一次性事件5个参数
-+(void)trackContentEvent:(NSString*)eventName content:(ContentModel*)contentM
++(void)trackContentEvent:(NSString*)eventName content:(ContentModel*)model
 {
-    NSString * groupId = contentM.thirdPartyId;
+    NSString * groupId = model.thirdPartyId;
     
-    if (contentM.thirdPartyId.length==0)
+    if (model.thirdPartyId.length==0)
     {
-        groupId = contentM.id;
+        groupId = model.id;
     }
     
     NSMutableDictionary * bizparam=[NSMutableDictionary dictionary];
@@ -55,11 +55,11 @@
     [bizparam setValue:@"content_manager_system" forKey:@"params_for_special"];
     [bizparam setValue:[SZContentTracker make__items:groupId] forKey:@"__items"];
     
-    [[SZContentTracker shareTracker]requestForUploading:bizparam eventKey:eventName isfromVolcEngine:contentM.thirdPartyId.length];
+    [[SZContentTracker shareTracker]requestForUploading:bizparam eventKey:eventName contentModel:model];
 }
 
 
-
+//时长
 +(void)trackingVideoPlayingDuration:(ContentModel*)model isPlaying:(BOOL)isplay currentTime:(CGFloat)currentTime totalTime:(CGFloat)totalTime
 {
     //内容ID
@@ -132,7 +132,7 @@
             [bizparam setValue:progressNumber forKey:@"percent"];
             
             
-            [tracker requestForUploading:bizparam eventKey:@"cms_video_over_auto" isfromVolcEngine:model.thirdPartyId.length];
+            [tracker requestForUploading:bizparam eventKey:@"cms_video_over_auto" contentModel:model];
             
             
 //            NSLog(@"mjduration_%g_%g",currentTime,totaltimeNumber.floatValue);
@@ -145,6 +145,7 @@
 }
 
 
+//重播时长
 +(void)trackingVideoPlayingDuration_Replay:(ContentModel*)model isPlaying:(BOOL)isplay currentTime:(CGFloat)currentTime totalTime:(CGFloat)totalTime
 {
     //内容ID
@@ -216,7 +217,7 @@
             [bizparam setValue:progressNumber forKey:@"percent"];
             
             
-            [tracker requestForUploading:bizparam eventKey:@"cms_video_over" isfromVolcEngine:model.thirdPartyId.length];
+            [tracker requestForUploading:bizparam eventKey:@"cms_video_over" contentModel:model];
             
             
             
@@ -384,15 +385,15 @@
 
 
 #pragma mark - Request
--(void)requestForUploading:(NSDictionary*)bizParam eventKey:(NSString*)eventName isfromVolcEngine:(BOOL)isfrom
+-(void)requestForUploading:(NSDictionary*)bizParam eventKey:(NSString*)eventName contentModel:(ContentModel*)content
 {
-    if (!isfrom)
+    if (content.thirdPartyId.length==0)
     {
         return;
     }
     
-    NSString * contentId = [bizParam valueForKey:@"group_id"];
-    NSLog(@"request_%@_%@",eventName,contentId);
+//    NSString * contentId = [bizParam valueForKey:@"group_id"];
+//    NSLog(@"request_%@_%@",eventName,content.brief.length>0 ? content.brief : content.title);
     
     
     NSArray * events = [SZContentTracker generate_EVENTS:eventName param:bizParam];

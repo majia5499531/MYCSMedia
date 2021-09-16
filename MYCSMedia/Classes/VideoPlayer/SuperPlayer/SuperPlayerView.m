@@ -145,17 +145,6 @@ static UISlider * _volumeSlider;
     
 //    NSLog(@"playstate_%@_%@",self.externalModel.title, [self playStateDesc:playerState]);
     
-    //行为埋点
-    if (playerState==2)
-    {
-        [SZEventTracker trackingVideoDurationWithModel:self.externalModel isPlaying:YES];
-        
-    }
-    else
-    {
-        [SZEventTracker trackingVideoDurationWithModel:self.externalModel isPlaying:NO];
-    }
-    
     
     //内容埋点
     if (self.isReplay)
@@ -1630,6 +1619,8 @@ static UISlider * _volumeSlider;
         else if (EvtID == PLAY_EVT_PLAY_BEGIN)
         {
             self.playerState = StatePlaying;
+            
+            NSLog(@"beginPlaying");
             
             [self layoutSubviews];
             

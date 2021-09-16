@@ -232,15 +232,15 @@
 
 
 #pragma mark - SetCellData
--(void)setCellData:(ContentModel*)objc enableFollow:(BOOL)enable
+-(void)setCellData:(ContentModel*)objc enableFollow:(BOOL)isUGC
 {
     //model
     dataModel = objc;
     
     //PGC视频，则不允许关注和点击
-    if (dataModel.issuerName.length)
+    if (dataModel.issuerId.length==0)
     {
-        enable = NO;
+        isUGC = NO;
     }
     
     //视频宽高比
@@ -350,20 +350,13 @@
     descLabel.lineBreakMode=NSLineBreakByTruncatingTail;
     
     
-    //头像、昵称 （如果来自火山引擎的推荐数据）
-    if (dataModel.issuerName.length>0 && dataModel.issuerImageUrl.length>0)
-    {
-        authorName.text = dataModel.issuerName;
-        [avatar sd_setImageWithURL:[NSURL URLWithString:dataModel.issuerImageUrl]];
-    }
-    else
-    {
-        authorName.text = dataModel.creatorNickname;
-        [avatar sd_setImageWithURL:[NSURL URLWithString:dataModel.creatorHead]];
-    }
+    //头像、昵称
+    authorName.text = dataModel.issuerName;
+    [avatar sd_setImageWithURL:[NSURL URLWithString:dataModel.issuerImageUrl]];
     
     
-    //作者等级(黄V，蓝V，普通用户)
+    
+    //蓝V认证
     if ([dataModel.creatorCertMark isEqualToString:@"blue-v"])
     {
         levelIcon.image = [UIImage getBundleImage:@"sz_level_blue"];
@@ -375,6 +368,8 @@
             make.width.mas_equalTo(40);
         }];
     }
+    
+    //黄V认证
     else if ([dataModel.creatorCertMark isEqualToString:@"yellow-v"])
     {
         levelIcon.image = [UIImage getBundleImage:@"sz_level_yellow"];
@@ -386,6 +381,8 @@
             make.width.mas_equalTo(40);
         }];
     }
+    
+    //普通用户
     else
     {
         levelIcon.image = nil;
@@ -410,8 +407,9 @@
     }];
     
     
-    //是否有用户系统
-    if (enable)
+    
+    //是否是UGC系统
+    if (isUGC)
     {
         //如果当前登录用户是自己
         if ([[SZGlobalInfo sharedManager].userId isEqualToString:dataModel.createBy])
@@ -443,6 +441,9 @@
             }];
         }
     }
+    
+    
+    //PGC系统
     else
     {
         levelIcon.hidden = YES;

@@ -66,6 +66,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property(strong,nonatomic) NSString               * issuerName;
 @property(strong,nonatomic) NSString               * issuerImageUrl;
+@property(strong,nonatomic) NSString               * issuerId;
 
 
 @property (nonatomic , copy) NSString              * shareImageUrl;

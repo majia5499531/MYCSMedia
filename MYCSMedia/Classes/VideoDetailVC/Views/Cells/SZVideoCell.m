@@ -36,6 +36,7 @@
 #import "ContentStateModel.h"
 #import "UIResponder+MJCategory.h"
 
+
 @interface SZVideoCell ()<GYRollingNoticeViewDelegate,GYRollingNoticeViewDataSource>
 
 @end
@@ -48,8 +49,10 @@
     VideoCollectModel * collectModel;
     NSInteger videoWHSize;                       //9:16 -- 0          16:9 -- 2        其他比例 -- 1
     
+    
     //UI
     UIImageView * videoCoverImage;
+    UIImageView * logoImage;
     YYLabel * descLabel;
     MJButton * selecBtn;
     GYRollingNoticeView * noticeView;
@@ -85,6 +88,12 @@
             make.centerY.mas_equalTo(self.mas_centerY).offset(-15);
             make.height.mas_equalTo(videoHeight);
         }];
+        
+        
+        //Logo
+        logoImage = [[UIImageView alloc]init];
+        logoImage.image = [UIImage getBundleImage:@"sz_videoCell_logo"];
+        [self.contentView addSubview:logoImage];
         
         
         //遮罩
@@ -275,6 +284,15 @@
             }];
         }
 
+        
+        
+        //logo
+        [logoImage mas_remakeConstraints:^(MASConstraintMaker *make) {
+            make.left.mas_equalTo(20);
+            make.top.mas_equalTo(STATUS_BAR_HEIGHT+44+22);
+            make.width.height.mas_equalTo(32);
+        }];
+        
     }
     
     
@@ -291,6 +309,13 @@
             make.width.mas_equalTo(SCREEN_WIDTH);
             make.height.mas_equalTo(videoH);
         }];
+        
+        //logo
+        [logoImage mas_remakeConstraints:^(MASConstraintMaker *make) {
+            make.centerX.mas_equalTo(self.contentView);
+            make.bottom.mas_equalTo(videoCoverImage.mas_top).offset(-20);
+            make.width.height.mas_equalTo(32);
+        }];
     }
     
     
@@ -305,6 +330,13 @@
             make.centerY.mas_equalTo(self).offset(-22);
             make.width.mas_equalTo(SCREEN_WIDTH);
             make.height.mas_equalTo(videoH);
+        }];
+        
+        //logo
+        [logoImage mas_remakeConstraints:^(MASConstraintMaker *make) {
+            make.left.mas_equalTo(20);
+            make.top.mas_equalTo(STATUS_BAR_HEIGHT+44+22);
+            make.width.height.mas_equalTo(32);
         }];
     }
     
@@ -483,6 +515,8 @@
         [weakSelf currentFollowStateDidChange];
     });
 }
+
+
 
 //视频相关新闻
 -(void)updateVideoRelate

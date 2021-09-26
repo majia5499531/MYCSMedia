@@ -32,5 +32,6 @@ Pod::Spec.new do |s|
   s.dependency 'YYModel'
   s.static_framework = true
   
+  
 end
 

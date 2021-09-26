@@ -207,11 +207,12 @@
     [model GETRequestInView:self.view WithUrl:url Params:nil Success:^(id responseObject) {
         
         ContentListModel * list = [ContentListModel model];
+        model.isManualPlay = YES;
         [list.dataArr addObject:model];
         [weakSelf requestDone:list];
         
         //加载更多
-        [weakSelf fetchMoreVideos];
+//        [weakSelf fetchMoreVideos];
         
         } Error:^(id responseObject) {
             [weakSelf requestFailed];

@@ -92,6 +92,8 @@
         
         [tracker.stateDic setValue:@"playing" forKey:groupId];
         
+        
+        //记录总时长
         [tracker.totalTimeDic setValue:[NSNumber numberWithFloat:totalTime] forKey:groupId];
     }
     
@@ -136,7 +138,7 @@
             
             
 //            NSLog(@"mjduration_%g_%g",currentTime,totaltimeNumber.floatValue);
-//            NSLog(@"mjduration_时长:%ld_新闻:%@_百分比:%@",duration,groupId,progressNumber);
+            NSLog(@"mjduration_时长:%@_新闻:%@_百分比:%@",[NSNumber numberWithInteger:duration],groupId,progressNumber);
             
         }
         
@@ -223,7 +225,7 @@
             
             
 //            NSLog(@"mjduration_%g_%g",currentTime,totaltimeNumber.floatValue);
-//            NSLog(@"mjduration_reload_时长:%ld_新闻:%@_百分比:%@",duration,groupId,progressNumber);
+            NSLog(@"mjduration_reload_时长:%@_新闻:%@_百分比:%@",[NSNumber numberWithInteger:duration],groupId,progressNumber);
             
         }
         

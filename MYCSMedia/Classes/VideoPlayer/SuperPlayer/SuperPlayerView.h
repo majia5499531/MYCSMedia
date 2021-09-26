@@ -69,7 +69,7 @@ typedef NS_ENUM(NSInteger, SuperPlayerState) {
 @property(assign,nonatomic)BOOL disableInteraction;                //禁止非全屏下的手势交互
 @property(strong,nonatomic)ContentModel * externalModel;            //内容模型
 @property(assign,nonatomic)BOOL isReplay;                            //是否是重播
-
+@property(assign,nonatomic)BOOL isManualPlay;                       //是否是手动播放
 
 //操作API
 - (void)playWithModel:(SuperPlayerModel *)playerModel;

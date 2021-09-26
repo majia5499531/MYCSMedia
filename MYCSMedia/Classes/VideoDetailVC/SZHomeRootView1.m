@@ -95,7 +95,7 @@
     
     //活动按钮
     activityIcon_simple = [[UIImageView alloc]init];
-    [activityIcon_simple setFrame:CGRectMake(0, STATUS_BAR_HEIGHT+44+27, 31, 36)];
+    [activityIcon_simple setFrame:CGRectMake(0, STATUS_BAR_HEIGHT+44+84, 31, 36)];
     activityIcon_simple.userInteractionEnabled =YES;
     UITapGestureRecognizer * tap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(activityUnfoldBtnAction)];
     [activityIcon_simple addGestureRecognizer:tap];
@@ -105,7 +105,7 @@
     
     //活动按钮
     activityIcon_full = [[UIImageView alloc]init];
-    [activityIcon_full setFrame:CGRectMake(0, STATUS_BAR_HEIGHT+44+27, 100, 50)];
+    [activityIcon_full setFrame:CGRectMake(0, STATUS_BAR_HEIGHT+44+84, 100, 50)];
     activityIcon_full.userInteractionEnabled =YES;
     [activityIcon_full sd_setImageWithURL:[NSURL URLWithString:img1]];
     UITapGestureRecognizer * tap2 = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(activityTapAction)];

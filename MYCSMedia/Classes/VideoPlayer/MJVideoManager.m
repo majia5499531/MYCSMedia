@@ -53,7 +53,7 @@
     [controller presentViewController:fullvc animated:NO completion:nil];
 }
 
-+(void)playWindowVideoAtView:(UIView*)view url:(NSString*)videoURL contentModel:(ContentModel*)model renderModel:(NSInteger)renderMode
++(void)playWindowVideoAtView:(UIView*)view url:(NSString*)videoURL contentModel:(ContentModel*)model renderModel:(NSInteger)type
 {
     //设置播放层
     MJVideoManager * manager = [MJVideoManager sharedMediaManager];
@@ -85,14 +85,14 @@
         //停止播放
         else if (manager.MJVideoView.playerState==StateStopped)
         {
-            [MJVideoManager playNewVideo:videoURL contentModel:model renderMode:renderMode];
+            [MJVideoManager playNewVideo:videoURL contentModel:model renderMode:type];
         }
         
         
         //不是则播放
         else
         {
-            [MJVideoManager playNewVideo:videoURL contentModel:model renderMode:renderMode];
+            [MJVideoManager playNewVideo:videoURL contentModel:model renderMode:type];
         }
     }
     
@@ -100,7 +100,7 @@
     //新url
     else
     {
-        [MJVideoManager playNewVideo:videoURL contentModel:model renderMode:renderMode];
+        [MJVideoManager playNewVideo:videoURL contentModel:model renderMode:type];
     }
     
 }
@@ -122,8 +122,12 @@
     manager.MJVideoView.playerConfig.playRate = 1.0 ;
     manager.MJVideoView.playerConfig.renderMode = renderMode;
     
+    
     //content model
     manager.MJVideoView.externalModel = contentModel;
+    
+    //是否是自动播放（手动播放会埋点不同的事件）
+    manager.MJVideoView.isManualPlay = contentModel.isManualPlay;
     
     //NewModel
     SuperPlayerModel * playerModel = [[SuperPlayerModel alloc] init];

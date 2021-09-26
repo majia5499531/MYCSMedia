@@ -20,6 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property(assign,nonatomic)BOOL whetherLike;
 @property(assign,nonatomic)BOOL whetherFavor;
 
+@property(assign,nonatomic)BOOL isManualPlay;
 
 @property (nonatomic , copy) NSString              * id;
 @property (nonatomic , copy) NSString              * thirdPartyId;

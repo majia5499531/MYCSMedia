@@ -137,17 +137,19 @@ static UISlider * _volumeSlider;
 }
 
 
+
+
 #pragma mark - Setter
 //设置播放的状态
 -(void)setPlayerState:(SuperPlayerState)playerState
 {
     _playerState = playerState;
     
-//    NSLog(@"playstate_%@_%@",self.externalModel.title, [self playStateDesc:playerState]);
+//    NSLog(@"playstate_%@_%@",[self playStateDesc:playerState] , self.externalModel.title);
     
     
     //内容埋点
-    if (self.isReplay)
+    if (self.isReplay || self.isManualPlay)
     {
         if (playerState==2)
         {
@@ -1005,7 +1007,7 @@ static UISlider * _volumeSlider;
         //内核播放器配置
         TXVodPlayConfig * vodconfig = [[TXVodPlayConfig alloc] init];
         
-        //缓存
+        //设置缓存
         if (self.playerConfig.maxCacheItem)
         {
             vodconfig.cacheFolderPath = [[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) objectAtIndex:0] stringByAppendingString:@"/CSVideoCache"];
@@ -1243,6 +1245,9 @@ static UISlider * _volumeSlider;
     else
     {
 //        NSLog(@"---切换到窗口---");
+        
+        //隐藏控制层
+        [self.controlView fadeOut:0.1];
         
         //改变状态栏
         [self setNeedChangeStatusBarHidden:NO];
@@ -1575,11 +1580,47 @@ static UISlider * _volumeSlider;
 -(void)onPlayEvent:(TXVodPlayer *)player event:(int)EvtID withParam:(NSDictionary*)param
 {
     dispatch_async(dispatch_get_main_queue(), ^{
+        
+        
+//        NSLog(@"eventId_%d",EvtID);
+        
+        
+        //已读出视频的方向
+        if (EvtID == PLAY_EVT_CHANGE_ROTATION)
+        {
+            NSLog(@"vodplayer_获取视频方向  ------------");
+        }
+        
+        
+        //已读出视频的宽高比
+        else if (EvtID == PLAY_EVT_CHANGE_RESOLUTION)
+        {
+            NSLog(@"vodplayer_获取视频宽高");
+            
+            if (player.height != 0)
+            {
+                self.videoRatio = (GLfloat)player.width / player.height;
+            }
+        }
+        
+        
+        //视频信息加载完毕
+        else if (EvtID == PLAY_EVT_VOD_PLAY_PREPARED)
+        {
+            NSLog(@"vodplayer_视频加载完毕");
+            
+            if ([self.delegate respondsToSelector:@selector(superPlayerDidStartPlay:)])
+            {
+                [self.delegate superPlayerDidStartPlay:self];
+            }
+        }
                 
         //渲染第一帧
-        if (EvtID == PLAY_EVT_RCV_FIRST_I_FRAME)
+        else if (EvtID == PLAY_EVT_RCV_FIRST_I_FRAME)
         {
-            if (self.isReplay)
+            NSLog(@"vodplayer_播放视频第一帧");
+            
+            if (self.isReplay || self.isManualPlay)
             {
                 //tracking
                 [SZEventTracker trackingVideoPlayWithContentModel: self.externalModel source:@"" isReplay:YES];
@@ -1605,20 +1646,14 @@ static UISlider * _volumeSlider;
             
             [self.vodPlayer setupVideoWidget:self insertIndex:0];
             
-            //不使用vodPlayer.autoPlay的原因是暂停的时候会黑屏，影响体验
-            if (!self.autoPlay)
-            {
-                self.autoPlay = YES; // 下次用户设置自动播放失效
-                [self pause];
-            }
         }
+        
         
         //开始播放
         else if (EvtID == PLAY_EVT_PLAY_BEGIN)
         {
+            NSLog(@"vodplayer_开始播放视频");
             self.playerState = StatePlaying;
-            
-            NSLog(@"beginPlaying");
             
             [self layoutSubviews];
             
@@ -1630,21 +1665,7 @@ static UISlider * _volumeSlider;
             }
         }
         
-        //加载完毕
-        else if (EvtID == PLAY_EVT_VOD_PLAY_PREPARED)
-        {
-            // 防止暂停导致加载进度不消失
-            if (self.isPauseByUser)
-            {
-                [self.spinner stopAnimating];
-            }
-            
-            
-            if ([self.delegate respondsToSelector:@selector(superPlayerDidStartPlay:)])
-            {
-                [self.delegate superPlayerDidStartPlay:self];
-            }
-        }
+        
         
         //播放中
         else if (EvtID == PLAY_EVT_PLAY_PROGRESS)
@@ -1657,7 +1678,6 @@ static UISlider * _volumeSlider;
             self.playCurrentTime  = player.currentPlaybackTime;
             CGFloat totalTime     = player.duration;
             CGFloat value         = player.currentPlaybackTime / player.duration;
-
             [self.controlView setProgressTime:self.playCurrentTime totalTime:totalTime progressValue:value playableValue:player.playableDuration / player.duration];
 
         }
@@ -1666,6 +1686,7 @@ static UISlider * _volumeSlider;
         //播放结束
         else if (EvtID == PLAY_EVT_PLAY_END)
         {
+            NSLog(@"vodplayer_视频播放完成");
             [self.controlView setProgressTime:[self playDuration] totalTime:[self playDuration] progressValue:1.f playableValue:1.f];
             
             [self moviePlayDidEnd];
@@ -1675,10 +1696,15 @@ static UISlider * _volumeSlider;
         //播放失败
         else if (EvtID == PLAY_ERR_NET_DISCONNECT || EvtID == PLAY_ERR_FILE_NOT_FOUND || EvtID == PLAY_ERR_HLS_KEY /*|| EvtID == PLAY_ERR_VOD_LOAD_LICENSE_FAIL*/)
         {
+            NSLog(@"vodplayer_视频播放失败");
+            
+            //网络断开问题
             if (EvtID == PLAY_ERR_NET_DISCONNECT)
             {
                 [self showMiddleBtnMsg:kStrBadNetRetry withAction:ActionContinueReplay];
             }
+            
+            //资源获取问题
             else
             {
                 [self showMiddleBtnMsg:kStrLoadFaildRetry withAction:ActionRetry];
@@ -1696,9 +1722,10 @@ static UISlider * _volumeSlider;
         }
         
         
-        //加载中
+        //缓冲中
         else if (EvtID == PLAY_EVT_PLAY_LOADING)
         {
+            NSLog(@"vodplayer_缓冲中");
             // 当缓冲是空的时候
             self.playerState = StateBuffering;
         }
@@ -1707,18 +1734,13 @@ static UISlider * _volumeSlider;
         //缓冲结束
         else if (EvtID == PLAY_EVT_VOD_LOADING_END)
         {
+            NSLog(@"vodplayer_缓冲完成");
+            
             [self.spinner stopAnimating];
         }
         
         
-        //切换渲染模式（宽高比）
-        else if (EvtID == PLAY_EVT_CHANGE_RESOLUTION)
-        {
-            if (player.height != 0)
-            {
-                self.videoRatio = (GLfloat)player.width / player.height;
-            }
-        }
+        
      });
 }
 

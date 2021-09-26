@@ -15,6 +15,8 @@
 #import "SPDefaultControlView.h"
 
 
+
+
 // player的单例
 #define SuperPlayerShared                   [SuperPlayerSharedView sharedInstance]
 // 屏幕的宽

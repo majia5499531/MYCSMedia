@@ -237,11 +237,11 @@
     NSString * img2 = panelConfig.backgroundImageUrl;
     NSString * linkUrl  = panelConfig.jumpUrl;
     
-//    if (linkUrl.length)
-//    {
+    if (linkUrl.length)
+    {
         [columnbar setBadgeStr:@"有活动" atIndex:0];
         [rootview1 setActivityImg:img1 simpleImg:img2 linkUrl:linkUrl];
-//    }
+    }
     
 }
 

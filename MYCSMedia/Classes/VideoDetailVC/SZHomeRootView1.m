@@ -134,7 +134,6 @@
     [param setValue:@"refresh" forKey:@"refreshType"];
     
     ContentListModel * dataModel = [ContentListModel model];
-    dataModel.hideLoading=YES;
     __weak typeof (self) weakSelf = self;
     [dataModel GETRequestInView:self WithUrl:APPEND_SUBURL(BASE_URL, API_URL_VIDEO_LIST) Params:param Success:^(id responseObject){
         [weakSelf requestDone:dataModel];

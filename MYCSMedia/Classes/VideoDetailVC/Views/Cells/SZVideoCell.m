@@ -90,12 +90,6 @@
         }];
         
         
-        //Logo
-        logoImage = [[UIImageView alloc]init];
-        logoImage.image = [UIImage getBundleImage:@"sz_videoCell_logo"];
-        [self.contentView addSubview:logoImage];
-        
-        
         //遮罩
         UIImageView * videoMask = [[UIImageView alloc]init];
         videoMask.image=[UIImage getBundleImage:@"sz_video_mask1"];
@@ -105,6 +99,12 @@
             make.width.mas_equalTo(SCREEN_WIDTH);
             make.height.mas_equalTo(STATUS_BAR_HEIGHT+100);
         }];
+        
+        
+        //Logo
+        logoImage = [[UIImageView alloc]init];
+        logoImage.image = [UIImage getBundleImage:@"sz_videoCell_logo"];
+        [self.contentView addSubview:logoImage];
         
         
         //视频
@@ -313,7 +313,7 @@
         //logo
         [logoImage mas_remakeConstraints:^(MASConstraintMaker *make) {
             make.centerX.mas_equalTo(self.contentView);
-            make.bottom.mas_equalTo(videoCoverImage.mas_top).offset(-20);
+            make.bottom.mas_equalTo(videoCoverImage.mas_top).offset(-23);
             make.width.height.mas_equalTo(32);
         }];
     }

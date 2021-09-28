@@ -510,7 +510,6 @@
     {
         [self requestCommitVideo:uploadModel];
     }
-    
 }
 
 -(void)closeKeyboardAction

@@ -32,7 +32,8 @@ typedef NS_ENUM(NSInteger, SuperPlayerState) {
     StatePlaying,    // 播放中    2
     StateStopped,    // 停止播放  3
     StatePause,      // 暂停播放  4
-    StateIntoBackground //进入后台 5
+    StateIntoBackground, //进入后台 5
+    StateLoading        //初次加载 6
 };
 
 

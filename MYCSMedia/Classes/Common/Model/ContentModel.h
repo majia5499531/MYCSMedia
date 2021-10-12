@@ -39,6 +39,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic , copy) NSString              * playDuration;
 @property (nonatomic , copy) NSString              * listStyle;
 @property (nonatomic , copy) NSString              * pid;
+@property (nonatomic , copy) NSString              * imagesUrl;
 
 
 @property (nonatomic , copy) NSString              * liveStartTime;

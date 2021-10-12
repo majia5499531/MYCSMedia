@@ -81,6 +81,7 @@
         videoCoverImage = [[UIImageView alloc]init];
         videoCoverImage.userInteractionEnabled=YES;
         videoCoverImage.backgroundColor=HW_BLACK;
+        videoCoverImage.contentMode=UIViewContentModeScaleAspectFill;
         [self.contentView addSubview:videoCoverImage];
         [videoCoverImage mas_makeConstraints:^(MASConstraintMaker *make) {
             make.left.mas_equalTo(0);
@@ -107,17 +108,17 @@
         [self.contentView addSubview:logoImage];
         
         
-        //视频
-        MJButton * playBtn = [[MJButton alloc]init];
-        [playBtn addTarget:self action:@selector(videoBtnAction) forControlEvents:UIControlEventTouchUpInside];
-        [playBtn setImage:[UIImage getBundleImage:@"sz_middle_play"] forState:UIControlStateNormal];
-        [videoCoverImage addSubview:playBtn];
-        [playBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.centerX.mas_equalTo(videoCoverImage.mas_centerX);
-            make.centerY.mas_equalTo(videoCoverImage.mas_centerY);
-            make.width.mas_equalTo(44);
-            make.height.mas_equalTo(44);
-        }];
+//        //视频
+//        MJButton * playBtn = [[MJButton alloc]init];
+//        [playBtn addTarget:self action:@selector(videoBtnAction) forControlEvents:UIControlEventTouchUpInside];
+//        [playBtn setImage:[UIImage getBundleImage:@"sz_middle_play"] forState:UIControlStateNormal];
+//        [videoCoverImage addSubview:playBtn];
+//        [playBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+//            make.centerX.mas_equalTo(videoCoverImage.mas_centerX);
+//            make.centerY.mas_equalTo(videoCoverImage.mas_centerY);
+//            make.width.mas_equalTo(44);
+//            make.height.mas_equalTo(44);
+//        }];
         
         
         //简述(包含话题)
@@ -228,8 +229,6 @@
         
         
         
-        
-        
         //数据监听
         [self addDataBinding];
         
@@ -259,7 +258,7 @@
     
     
     //9:16  0.562左右   撑满
-    if (WHRate<0.57 && WHRate>0.55)
+    if (WHRate<0.57)
     {
         videoWHSize = 0;
 
@@ -339,6 +338,12 @@
             make.width.height.mas_equalTo(32);
         }];
     }
+    
+    
+    
+    //封面图
+    [videoCoverImage sd_setImageWithURL:[NSURL URLWithString:dataModel.imagesUrl]];
+    videoCoverImage.layer.masksToBounds=YES;
     
     
     //观看数
@@ -606,7 +611,7 @@
 {
     //播放视频
     NSInteger renderMode = 0;
-    
+
     if (videoWHSize==0)
     {
         //剪切
@@ -617,14 +622,14 @@
         //缩放
         renderMode = 1;
     }
-    
+
     [MJVideoManager playWindowVideoAtView:videoCoverImage url:dataModel.playUrl contentModel:dataModel renderModel:renderMode];
-    
+
     //获取进度条
     SPDefaultControlView * controlView =  (SPDefaultControlView*)[MJVideoManager videoPlayer].controlView;
     videoSlider = controlView.externalSlider;
     [self insertSubview:videoSlider belowSubview:descLabel];
-    
+
     //全屏视频
     if (videoWHSize==0 || videoWHSize==2)
     {
@@ -644,8 +649,8 @@
             make.top.mas_equalTo(videoCoverImage.mas_bottom).offset(10);
         }];
     }
-    
-    
+
+
     //获取全屏按钮
     [self insertSubview:controlView.externalFullScreenBtn belowSubview:descLabel];
     if (videoWHSize==0 || videoWHSize==2)

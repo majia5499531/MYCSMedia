@@ -90,7 +90,7 @@ static UISlider * _volumeSlider;
 -(void)initializeThePlayer
 {
     //bgcolor
-    self.backgroundColor=[UIColor blackColor];
+    self.backgroundColor=[UIColor clearColor];
     
     //创建一个系统音量view，隐藏在屏幕外，是为了监听音量变化，且不再展示系统默认的音量view
     CGRect frame = CGRectMake(0, -100, 10, 0);
@@ -1046,7 +1046,7 @@ static UISlider * _volumeSlider;
     }];
     
     //开始loading
-    self.playerState = StateBuffering;
+    self.playerState = StateLoading;
     
     //还原状态
     self.isPauseByUser = NO;
@@ -2088,6 +2088,7 @@ static UISlider * _volumeSlider;
         }];
     }
     return _coverImageView;
+    return nil;
 }
 
 //错误信息提示

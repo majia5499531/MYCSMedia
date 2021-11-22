@@ -16,6 +16,7 @@
 #import "SZManager.h"
 #import "CommentModel.h"
 #import "NSString+MJCategory.h"
+#import "NSAttributedString+MJCategory.h"
 
 @implementation SZCommentCell
 {
@@ -29,6 +30,9 @@
     UIView * replyBG;
     UILabel * replyContent;
     UILabel * replyDate;
+    
+    UILabel * istopLabel;
+    UILabel * ispendingLabel;
 }
 -(instancetype)initWithFrame:(CGRect)frame
 {
@@ -57,7 +61,7 @@
         [self addSubview:name];
         [name mas_makeConstraints:^(MASConstraintMaker *make) {
             make.left.mas_equalTo(avatar.mas_right).offset(6);
-            make.top.mas_equalTo(avatar.mas_top).offset(3);
+            make.top.mas_equalTo(avatar.mas_top).offset(2);
         }];
         
         //时间
@@ -66,7 +70,7 @@
         date.font=FONT(11);
         [self addSubview:date];
         [date mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.left.mas_equalTo(name.mas_left);
+            make.left.mas_equalTo(name.mas_left).offset(0);
             make.top.mas_equalTo(name.mas_bottom).offset(3);
         }];
         
@@ -77,9 +81,37 @@
         desc.textColor=HW_BLACK;
         [self addSubview:desc];
         [desc mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.left.mas_equalTo(name.mas_left);
+            make.left.mas_equalTo(date.mas_left);
             make.top.mas_equalTo(avatar.mas_bottom).offset(14);
             make.width.mas_equalTo(SCREEN_WIDTH-100);
+        }];
+        
+        //置顶tag
+        istopLabel = [[UILabel alloc]init];
+        istopLabel.text = @"置顶";
+        istopLabel.font = [UIFont systemFontOfSize:10];
+        istopLabel.textColor = HW_RED_WORD_1;
+        istopLabel.layer.backgroundColor=[UIColor colorWithRed:0.86 green:0.0 blue:0.15 alpha:0.1].CGColor;
+        istopLabel.clipsToBounds = YES;
+        istopLabel.layer.cornerRadius = 3;
+        istopLabel.textAlignment = NSTextAlignmentCenter;
+        [self addSubview:istopLabel];
+        [istopLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.left.mas_equalTo(name.mas_right).offset(5);
+            make.centerY.mas_equalTo(name);
+            make.width.mas_equalTo(25);
+            make.height.mas_equalTo(15);
+        }];
+        
+        //审核中label
+        ispendingLabel = [[UILabel alloc]init];
+        ispendingLabel.text = @"（审核中）";
+        ispendingLabel.textColor=[UIColor colorWithHexString:@"3E85ED"];
+        ispendingLabel.font=name.font;
+        [self addSubview:ispendingLabel];
+        [ispendingLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.left.mas_equalTo(name.mas_right).offset(0);
+            make.centerY.mas_equalTo(name);
         }];
         
         //编辑回复
@@ -151,6 +183,27 @@
     
     name.text = data.nickname;
     
+    //如果是置顶
+    if (data.isTop)
+    {
+        istopLabel.hidden=NO;
+        ispendingLabel.hidden=YES;
+    }
+    
+    //未上架
+    else if (!data.onShelve)
+    {
+        istopLabel.hidden=YES;
+        ispendingLabel.hidden=NO;
+    }
+    else
+    {
+        istopLabel.hidden=YES;
+        ispendingLabel.hidden=YES;
+    }
+    
+    
+    
     date.text = [NSString converUTCDateStr:dataModel.createTime];
     
     desc.text = dataModel.content;
@@ -182,4 +235,6 @@
     
 }
 
+
 @end
+

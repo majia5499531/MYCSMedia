@@ -9,7 +9,7 @@
 #import "MJVideoManager.h"
 #import "MJVideoFullScreen.h"
 #import <SDWebImage/SDWebImage.h>
-#import "SZEventTracker.h"
+#import "SZUserTracker.h"
 #import "SZContentTracker.h"
 @interface MJVideoManager ()<SuperPlayerDelegate>
 
@@ -135,12 +135,7 @@
     [manager.MJVideoView playWithModel:playerModel];
     
     //tracking
-    [SZEventTracker trackingVideoPlayWithContentModel:contentModel source:@"" isReplay:NO];
-    
-    //tracking
     [SZContentTracker trackContentEvent:@"cms_client_show" content:contentModel];
-    
-    NSLog(@"Tracking_____cms_client_show");
 }
 
 

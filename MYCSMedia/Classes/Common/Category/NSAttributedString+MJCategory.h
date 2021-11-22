@@ -1,5 +1,5 @@
 //
-//  NSMutableString+MJCategory.h
+//  NSAttributedString+MJCategory.h
 //  MYCSMedia
 //
 //  Created by 马佳 on 2021/9/14.
@@ -9,7 +9,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface NSMutableString (MJCategory)
+@interface NSAttributedString (MJCategory)
 
 +(NSMutableAttributedString*)makeTaggedTitle:(NSString*)str tag:(NSString*)tagStr textColor:(UIColor*)textColor tagTintColor:(UIColor*)bgColor tagTextColor:(UIColor*)tagTextColor type:(int)type;
 +(NSMutableAttributedString*)makeTaggedTitleAtEnd:(NSString*)str tag:(NSString*)tagStr textColor:(UIColor*)color tagColor:(UIColor*)tagColor;

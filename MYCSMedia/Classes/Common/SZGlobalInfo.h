@@ -31,5 +31,7 @@
 
 +(void)mjshareToPlatform:(SZ_SHARE_PLATFORM)platform content:(ContentModel*)model;          //分享
 
+
+
 @end
 

@@ -11,7 +11,7 @@
 #import "SZDefines.h"
 #import "MJHud.h"
 #import "SZManager.h"
-#import "SZEventTracker.h"
+#import "SZUserTracker.h"
 
 @implementation SZGlobalInfo
 
@@ -182,25 +182,6 @@
     {
         [[SZManager sharedManager].delegate onShareAction:platform title:model.shareTitle image:model.shareImageUrl desc:model.shareBrief URL:model.shareUrl];
     }
-    
-    
-    //数据采集
-    NSString * str = @"";
-    if (platform==WECHAT_PLATFORM)
-    {
-        str =@"微信";
-    }
-    else if (platform==TIMELINE_PLATFORM)
-    {
-        str = @"朋友圈";
-    }
-    else
-    {
-        str = @"QQ";
-    }
-    
-    
-    [SZEventTracker trackingCommonEvent:model eventParam:[NSDictionary dictionaryWithObject:str forKey:@"forward_type"] eventName:@"content_transmit_type"];
     
 }
 

@@ -38,6 +38,9 @@
 -(void)requestCollect;
 -(void)requestFollowUser:(NSString*)userId;
 -(void)requestUnFollowUser:(NSString*)userId;
+-(void)requestCommentListData;
+
+
 
 @end
 

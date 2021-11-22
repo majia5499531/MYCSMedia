@@ -8,7 +8,7 @@
 #import "VideoRateView.h"
 #import <Masonry/Masonry.h>
 #import "SuperPlayer.h"
-#import "SZEventTracker.h"
+#import "SZUserTracker.h"
 #import "SZData.h"
 
 #define TAG_1_SPEED 1001
@@ -179,8 +179,7 @@
     
     //tracking
     NSString * contentid = [SZData sharedSZData].currentContentId;
-    ContentModel * model = [[SZData sharedSZData].contentDic valueForKey:contentid];
-    [SZEventTracker trackingVideoSpeedRateWithModel:model speed:[NSString stringWithFormat:@"%g",rateValue]];
+    
     
 }
 

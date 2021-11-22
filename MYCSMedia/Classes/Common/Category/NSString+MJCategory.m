@@ -201,21 +201,60 @@
 //国际时间 转 当地时间
 +(NSString*)converUTCDateStr:(NSString*)utc
 {
-    
     NSDateFormatter *format1 = [[NSDateFormatter alloc] init];
     [format1 setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"];
     NSDate *originDate = [format1 dateFromString:utc];
     
     NSTimeZone *localTimeZone = [NSTimeZone localTimeZone];
     NSInteger timeoffsets = [localTimeZone secondsFromGMT];
-    NSInteger timestamp = [originDate timeIntervalSince1970];
-    timestamp += timeoffsets;
+    NSInteger timeStamp = [originDate timeIntervalSince1970];
+    timeStamp += timeoffsets;
     
-    NSDate * newDate = [NSDate dateWithTimeIntervalSince1970:timestamp];
-    NSDateFormatter * nowFormat = [[NSDateFormatter alloc]init];
-    [nowFormat setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
-    NSString *dateString = [nowFormat stringFromDate:newDate];
-    return dateString;
+    //现在的时间戳
+    NSInteger localTime = [[NSDate date]timeIntervalSince1970];
+    
+    //本地计算的时间差
+    NSInteger timepass = localTime - timeStamp;
+        
+    //秒、时、天、年
+    NSInteger min = 60;
+    NSInteger hour = min * 60;
+    NSInteger day = 24 * hour;
+    NSInteger year = 365 * day;
+    
+    
+    if (timepass<10)
+    {
+        return @"刚刚";
+    }
+    else if (timepass<min)
+    {
+        return [NSString stringWithFormat:@"%ld秒前",(long)timepass];
+    }
+    else if (timepass<hour)
+    {
+        NSInteger minutes = timepass/60;
+        return [NSString stringWithFormat:@"%ld分钟前",(long)minutes];
+    }
+    else if (timepass<day)
+    {
+        NSInteger hours = timepass/3600;
+        return [NSString stringWithFormat:@"%ld小时前",(long)hours];
+    }
+    else if (timepass<year)
+    {
+        NSDateFormatter * format = [[NSDateFormatter alloc]init];
+        [format setDateFormat:@"MM-dd"];
+        NSString * str = [format stringFromDate:[NSDate dateWithTimeIntervalSince1970:timeStamp]];
+        return [NSString stringWithFormat:@"%@",str];
+    }
+    else
+    {
+        NSDateFormatter * format = [[NSDateFormatter alloc]init];
+        [format setDateFormat:@"yyyy-MM-dd"];
+        NSString * str = [format stringFromDate:[NSDate dateWithTimeIntervalSince1970:timeStamp]];
+        return [NSString stringWithFormat:@"%@",str];
+    }
 
 }
 

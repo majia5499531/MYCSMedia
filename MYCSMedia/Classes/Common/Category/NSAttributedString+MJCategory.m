@@ -1,13 +1,13 @@
 //
-//  NSMutableString+MJCategory.m
+//  NSAttributedString+MJCategory.m
 //  MYCSMedia
 //
 //  Created by 马佳 on 2021/9/14.
 //
 
-#import "NSMutableString+MJCategory.h"
+#import "NSAttributedString+MJCategory.h"
 
-@implementation NSMutableString (MJCategory)
+@implementation NSAttributedString (MJCategory)
 
 #pragma mark - 带标签的标题
 -(UIImage*)imageWithUIView:(UIView*)view
@@ -250,7 +250,7 @@
 
 
 
-+(NSMutableAttributedString*)makeTaggedTitleAtEnd:(NSString*)str tag:(NSString*)tagStr textColor:(UIColor*)color tagColor:(UIColor*)tagColor
++(NSMutableAttributedString*)makeTaggedTitleAtEnd:(NSString*)str tag:(NSString*)tagStr textColor:(UIColor*)textColor tagColor:(UIColor*)tagColor
 {
     NSString * originstr = nil;
     if (tagStr.length)
@@ -262,8 +262,6 @@
         originstr=str;
     }
     
-    UIColor * tagBGColor = [UIColor redColor];
-    
     NSMutableAttributedString *attStr = [[NSMutableAttributedString alloc] initWithString:originstr];
     NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc] init];
     paragraphStyle.lineSpacing = 8.0;
@@ -272,33 +270,39 @@
     
     if (tagStr.length)
     {
+        //创建占位符号
+        NSAttributedString * spaceStr = [[NSAttributedString alloc]initWithString:@"  "];
+        [attStr insertAttributedString:spaceStr atIndex:originstr.length];
+        
+        
+        
+        
+        //创建标签
         CGFloat tagLabelW = 14*tagStr.length +6;
         UILabel *tagLabel = [[UILabel alloc]init];
-        NSInteger tagFont = 12;
-        tagLabel.frame = CGRectMake(0, 0, tagLabelW*3, 18*3);
+        NSInteger tagFont = 10;
+        CGFloat tagHeight = 18;
+        tagLabel.frame = CGRectMake(0, 0, tagLabelW*3, tagHeight*3);
         tagLabel.text = tagStr;
         tagLabel.font = [UIFont systemFontOfSize:tagFont*3];
-        tagLabel.textColor = tagColor;
-        tagLabel.layer.backgroundColor=tagBGColor.CGColor;
-        tagLabel.layer.borderColor=tagColor.CGColor;
-        tagLabel.layer.borderWidth=1;
+        tagLabel.textColor = textColor;
+        tagLabel.layer.backgroundColor=tagColor.CGColor;
         tagLabel.clipsToBounds = YES;
         tagLabel.layer.cornerRadius = 3*3;
         tagLabel.textAlignment = NSTextAlignmentCenter;
         
-        UIGraphicsBeginImageContext(tagLabel.bounds.size);
+        UIGraphicsBeginImageContext(CGSizeMake(tagLabel.frame.size.width, tagLabel.frame.size.height+5));
         CGContextRef ctx = UIGraphicsGetCurrentContext();
         [tagLabel.layer renderInContext:ctx];
         UIImage* image = UIGraphicsGetImageFromCurrentImageContext();
         UIGraphicsEndImageContext();
         
         NSTextAttachment *attach = [[NSTextAttachment alloc] init];
-        attach.bounds = CGRectMake(18, -2, tagLabelW, 18);
+        attach.bounds = CGRectMake(0, -7, tagLabelW, tagHeight);
         attach.image = image;
         
         NSAttributedString * imageStr = [NSAttributedString attributedStringWithAttachment:attach];
-//        [attStr insertAttributedString:imageStr atIndex:originstr.length];
-        [attStr insertAttributedString:imageStr atIndex:0];
+        [attStr insertAttributedString:imageStr atIndex:attStr.length];
         
     }
     
@@ -319,12 +323,12 @@
 #pragma mark - 文本
 + (NSMutableAttributedString *)makeDescStyleStrWithNoIndent:(NSString *)str
 {
-    return [NSMutableString makeDescStyleStr:str lineSpacing:8 indent:0];
+    return [NSAttributedString makeDescStyleStr:str lineSpacing:8 indent:0];
 }
 
 + (NSMutableAttributedString *)makeDescStyleStr:(NSString *)str
 {
-    return [NSMutableString makeDescStyleStr:str lineSpacing:5 indent:30];
+    return [NSAttributedString makeDescStyleStr:str lineSpacing:5 indent:30];
 }
 
 

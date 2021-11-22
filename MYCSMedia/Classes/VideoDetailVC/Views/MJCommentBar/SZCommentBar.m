@@ -24,7 +24,7 @@
 #import "SZData.h"
 #import "ContentModel.h"
 #import "SZManager.h"
-#import "SZEventTracker.h"
+#import "SZUserTracker.h"
 #import "SZUploadingVC.h"
 #import "UIResponder+MJCategory.h"
 
@@ -429,6 +429,8 @@
     __weak typeof (self) weakSelf = self;
     [SZInputView callInputView:0 contentId:_contentId placeHolder:@"发表您的评论" completion:^(id responseObject) {
         [MJHUD_Notice showSuccessView:@"评论已提交，请等待审核通过！" inView:weakSelf.window hideAfterDelay:2];
+        
+        [weakSelf commentTapAction];
     }];
 }
 
@@ -469,10 +471,6 @@
         [SZGlobalInfo mjshareToPlatform:plat content:contentModel];
     }];
     
-    
-    //tracking
-    ContentModel * model = [[SZData sharedSZData].contentDic valueForKey:self.contentId];
-    [SZEventTracker trackingCommonEvent:model eventParam:[NSDictionary dictionaryWithObject:@"底部栏" forKey:@"module_title"] eventName:@"content_transmit"];
 }
 
 

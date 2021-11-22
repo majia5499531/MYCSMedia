@@ -16,7 +16,7 @@
 #import "UIImage+MJCategory.h"
 #import "SZData.h"
 #import "SZGlobalInfo.h"
-#import "SZEventTracker.h"
+#import "SZUserTracker.h"
 #import "SZContentTracker.h"
 
 
@@ -1409,9 +1409,6 @@ static UISlider * _volumeSlider;
 #pragma mark - 控制层代理
 -(void)controlViewDidClickShareBtn
 {
-    //tracking
-    [SZEventTracker trackingCommonEvent:self.externalModel eventParam:[NSDictionary dictionaryWithObject:@"视频全屏" forKey:@"module_title"] eventName:@"content_transmit"];
-    
     self.sharingView.hidden = NO;
 }
 
@@ -1622,10 +1619,6 @@ static UISlider * _volumeSlider;
             
             if (self.isReplay || self.isManualPlay)
             {
-                //tracking
-                [SZEventTracker trackingVideoPlayWithContentModel: self.externalModel source:@"" isReplay:YES];
-                
-                
                 //tracking
                 [SZContentTracker trackContentEvent:@"cms_video_play" content:self.externalModel];
             }
@@ -1874,23 +1867,15 @@ static UISlider * _volumeSlider;
     //修改播放状态
     self.playerState = StateStopped;
     self.playDidEnd = YES;
-    
-    //隐藏控制层
-    [self.controlView fadeOut:0.2];
-    [self hideFastview];
-    [self.netWatcher stopWatch];
-    
-    //显示重播按钮
-    self.repeatBtn.hidden = NO;
-    
+        
     //通知代理
     if ([self.delegate respondsToSelector:@selector(superPlayerDidFinishPlay:)])
     {
         [self.delegate superPlayerDidFinishPlay:self];
     }
     
-    //tracking
-    [SZEventTracker trackingVideoEndWithContentModel:self.externalModel totalTime:@""];
+    //自动重播
+    [self repeatBtnClick:self.repeatBtn];
 }
 
 

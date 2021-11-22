@@ -16,6 +16,7 @@
 #import "MJHud.h"
 #import "BaseModel.h"
 #import "SZGlobalInfo.h"
+#import "SZData.h"
 
 
 @interface SZInputView ()<UITextViewDelegate>
@@ -227,6 +228,9 @@
     
     //清空输入框
     input.text=@"";
+    
+    //刷新评论列表
+    [[SZData sharedSZData]requestCommentListData];
 
     //回调
     resultBlock(contentId);

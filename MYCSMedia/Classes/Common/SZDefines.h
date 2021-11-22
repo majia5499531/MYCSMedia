@@ -223,7 +223,6 @@
 #define HW_RED_WORD_1               [UIColor colorWithHexString:@"FB3838"]
 
 
-
 #define MINIMUM_PX                  (1.0/[UIScreen mainScreen].scale)
 
 

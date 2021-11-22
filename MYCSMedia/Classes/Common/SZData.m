@@ -13,7 +13,7 @@
 #import "StatusModel.h"
 #import "VideoRelateModel.h"
 #import "SZGlobalInfo.h"
-#import "SZEventTracker.h"
+#import "SZUserTracker.h"
 #import "StatusModel.h"
 
 @implementation SZData
@@ -261,11 +261,6 @@
     //更新time
     NSNumber * currrentTime = [NSNumber numberWithInteger:[[NSDate date]timeIntervalSince1970]];
     self.contentCollectTime = currrentTime;
-    
-    
-    //tracking
-    ContentModel * contentM = [self.contentDic valueForKey:self.currentContentId];
-    [SZEventTracker trackingCommonEvent:contentM eventParam:nil eventName:@"content_favorite"];
 }
 
 -(void)requestZanDone:(StatusModel*)model
@@ -294,11 +289,6 @@
     NSNumber * currrentTime = [NSNumber numberWithInteger:[[NSDate date]timeIntervalSince1970]];
     self.contentZanTime = currrentTime;
     
-    
-    
-    //tracking
-    ContentModel * contentM = [self.contentDic valueForKey:self.currentContentId];
-    [SZEventTracker trackingCommonEvent:contentM eventParam:nil eventName:@"content_like"];
 }
 
 -(void)requestVideoRelateContentDone:(VideoRelateModel*)model

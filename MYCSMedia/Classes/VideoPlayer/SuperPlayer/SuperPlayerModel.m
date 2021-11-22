@@ -28,7 +28,6 @@ NSNotificationName kSuperPlayerModelFail = @"kSuperPlayerModelFail";
 @end
 
 @implementation SuperPlayerModel {
-    
 }
 
 - (instancetype)init {

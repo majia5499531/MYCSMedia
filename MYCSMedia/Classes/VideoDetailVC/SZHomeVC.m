@@ -276,6 +276,7 @@
     
     if (linkUrl.length)
     {
+        [columnbar setBadgeStr:@"有活动" atIndex:1];
         [rootview2 setActivityImg:img1 simpleImg:img2 linkUrl:linkUrl];
     }
     

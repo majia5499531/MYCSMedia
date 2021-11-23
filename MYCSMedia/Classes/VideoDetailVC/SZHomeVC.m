@@ -36,7 +36,7 @@
 #import "SZColumnBar.h"
 #import "SZData.h"
 #import "PanelModel.h"
-
+#import "SZUserTracker.h"
 
 @interface SZHomeVC ()<UIScrollViewDelegate,NewsColumnDelegate>
 {
@@ -74,6 +74,8 @@
     [self addNotifications];
     
     [self requestXKSH_Activity];
+    
+    [self requestVideoColumnInfo];
 }
 
 -(void)dealloc
@@ -126,6 +128,9 @@
         
     }
 }
+
+
+
 
 
 #pragma mark - 界面&布局
@@ -229,7 +234,25 @@
         }];
 }
 
+-(void)requestVideoColumnInfo
+{
+    PanelModel * model = [PanelModel model];
+    model.hideLoading=YES;
+    NSMutableDictionary * param=[NSMutableDictionary dictionary];
+    [param setValue:@"activity.video.link" forKey:@"panelCode"];
+    
+    __weak typeof (self) weakSelf = self;
+    [model GETRequestInView:nil WithUrl:APPEND_SUBURL(BASE_URL, API_URL_PANEL_ACTIVITY) Params:param Success:^(id responseObject) {
+        [weakSelf requestVideoColumnInfoDone:model.config];
+        } Error:^(id responseObject) {
+            
+        } Fail:^(NSError *error) {
+            
+        }];
+}
 
+
+#pragma mark - Request Done
 -(void)requestXKSH_ActivityDone:(PanelConfigModel*)panelConfig
 {
     NSString * img1 = panelConfig.imageUrl;
@@ -245,6 +268,18 @@
 }
 
 
+-(void)requestVideoColumnInfoDone:(PanelConfigModel*)panelConfig
+{
+    NSString * img1 = panelConfig.imageUrl;
+    NSString * img2 = panelConfig.backgroundImageUrl;
+    NSString * linkUrl  = panelConfig.jumpUrl;
+    
+    if (linkUrl.length)
+    {
+        [rootview2 setActivityImg:img1 simpleImg:img2 linkUrl:linkUrl];
+    }
+    
+}
 
 
 #pragma mark - Add Notoify
@@ -322,6 +357,10 @@
         
         [rootview1 viewWillAppear];
         _currentSelectIdx = 0;
+        
+        
+        [SZUserTracker trackingVideoTab:@"我的小康生活"  moduleIndex:self.currentSelectIdx];
+        
     }
     else if (index==1)
     {
@@ -330,6 +369,8 @@
         
         [rootview2 viewWillAppear];
         _currentSelectIdx = 1;
+        
+        [SZUserTracker trackingVideoTab:@"视频"  moduleIndex:self.currentSelectIdx];
     }
     else
     {
@@ -338,6 +379,8 @@
         
         [rootview3 viewWillAppear];
         _currentSelectIdx = 2;
+        
+        [SZUserTracker trackingVideoTab:@"直播"  moduleIndex:self.currentSelectIdx];
     }
 }
 
@@ -349,10 +392,14 @@
 -(void)backBtnAction
 {
     [self.navigationController popViewControllerAnimated:YES];
+    
+    [SZUserTracker trackingButtonClick:@"返回"  moduleIndex:self.currentSelectIdx];
 }
 
 -(void)profileBtnAction
 {
+    [SZUserTracker trackingButtonClick:@"个人作品中心" moduleIndex:self.currentSelectIdx];
+    
     //未登录则跳转登录
     if (![SZGlobalInfo sharedManager].SZRMToken.length)
     {
@@ -366,6 +413,8 @@
 
 -(void)searchBtnAction
 {
+    [SZUserTracker trackingButtonClick:@"搜索"  moduleIndex:self.currentSelectIdx];
+    
     NSString * h5ur = APPEND_SUBURL(BASE_H5_URL, @"fuse/news/#/searchPlus");
     [[SZManager sharedManager].delegate onOpenWebview:h5ur param:nil];
 }

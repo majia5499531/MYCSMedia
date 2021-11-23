@@ -15,6 +15,7 @@
 #import <SDWebImage/SDWebImage.h>
 #import "SZManager.h"
 #import "GYRollingNoticeView.h"
+#import "SZUserTracker.h"
 
 @implementation GYNoticeCell
 {
@@ -106,7 +107,7 @@
 
 -(void)closeNoticeBtnAction
 {
-    GYRollingNoticeView * superview = self.superview;
+    GYRollingNoticeView * superview = (GYRollingNoticeView*)self.superview;
     [superview.delegate didClickCloseBtnAction];
 }
 
@@ -115,6 +116,8 @@
 #pragma mark - Tap
 -(void)didClickNotice
 {
+    [SZUserTracker trackingButtonClick:@"服务关联框" moduleIndex:0];
+    
     [[SZManager sharedManager].delegate onOpenWebview:model.url param:nil];
 }
 

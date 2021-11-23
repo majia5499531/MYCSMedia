@@ -30,6 +30,7 @@
 #import "UIScrollView+MJCategory.h"
 #import "UIResponder+MJCategory.h"
 #import "SZHomeVC.h"
+#import "SDWebImage.h"
 
 @interface SZHomeRootView2 ()<UICollectionViewDelegate, UICollectionViewDataSource>
 
@@ -41,10 +42,13 @@
     ContentModel * singleVideo;
     ContentListModel * dataModel;
     NSString * panelCode;
+    NSString * acitivity_link;
     
     //UI
     UICollectionView * collectionView;
     SZCommentBar * commentBar;
+    UIImageView * activityIcon_simple;
+    UIImageView * activityIcon_full;
 }
 
 
@@ -99,6 +103,36 @@
     return idx;
 }
 
+
+-(void)setActivityImg:(NSString *)img1 simpleImg:(NSString *)img2 linkUrl:(NSString *)url
+{
+    acitivity_link = url;
+    
+    //活动按钮
+    activityIcon_simple = [[UIImageView alloc]init];
+    [activityIcon_simple setFrame:CGRectMake(0, STATUS_BAR_HEIGHT+44+84, 31, 36)];
+    activityIcon_simple.userInteractionEnabled =YES;
+    UITapGestureRecognizer * tap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(activityUnfoldBtnAction)];
+    [activityIcon_simple addGestureRecognizer:tap];
+    [activityIcon_simple sd_setImageWithURL:[NSURL URLWithString:img2]];
+    activityIcon_simple.hidden=YES;
+    [self addSubview:activityIcon_simple];
+    
+    //活动按钮
+    activityIcon_full = [[UIImageView alloc]init];
+    [activityIcon_full setFrame:CGRectMake(0, STATUS_BAR_HEIGHT+44+84, 100, 50)];
+    activityIcon_full.userInteractionEnabled =YES;
+    [activityIcon_full sd_setImageWithURL:[NSURL URLWithString:img1]];
+    UITapGestureRecognizer * tap2 = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(activityTapAction)];
+    [activityIcon_full addGestureRecognizer:tap2];
+    [self addSubview:activityIcon_full];
+    
+    //活动按钮关闭按钮
+    MJButton * closebtn = [[MJButton alloc]initWithFrame:CGRectMake(70, 0, 30, 30)];
+    [closebtn addTarget:self action:@selector(activityCloseBtnAction) forControlEvents:UIControlEventTouchUpInside];
+    closebtn.backgroundColor=[UIColor clearColor];
+    [activityIcon_full addSubview:closebtn];
+}
 
 
 #pragma mark - Request
@@ -274,7 +308,32 @@
     [commentBar setCommentBarStyle:0 type:1];
 }
 
+#pragma mark - Btn Action
+-(void)activityTapAction
+{
+    [[SZManager sharedManager].delegate onOpenWebview:acitivity_link param:nil];
+}
 
+-(void)activityUnfoldBtnAction
+{
+    self->activityIcon_simple.hidden=YES;
+    self->activityIcon_full.hidden=NO;
+    
+    [UIView animateWithDuration:0.2 animations:^{
+        [self->activityIcon_full setFrame:CGRectMake(0, self->activityIcon_full.top, self->activityIcon_full.width, self->activityIcon_full.height)];
+        } completion:^(BOOL finished) {
+        }];
+}
+
+-(void)activityCloseBtnAction
+{
+    [UIView animateWithDuration:0.3 animations:^{
+        [self->activityIcon_full setFrame:CGRectMake(-100, self->activityIcon_full.top, self->activityIcon_full.width, self->activityIcon_full.height)];
+        } completion:^(BOOL finished) {
+            self->activityIcon_full.hidden=YES;
+            self->activityIcon_simple.hidden=NO;
+        }];
+}
 
 
 #pragma mark - 下拉/上拉

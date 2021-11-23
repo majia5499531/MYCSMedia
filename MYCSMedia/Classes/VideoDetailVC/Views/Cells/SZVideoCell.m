@@ -35,7 +35,7 @@
 #import "SPDefaultControlView.h"
 #import "ContentStateModel.h"
 #import "UIResponder+MJCategory.h"
-
+#import "SZUserTracker.h"
 
 @interface SZVideoCell ()<GYRollingNoticeViewDelegate,GYRollingNoticeViewDataSource>
 
@@ -705,6 +705,11 @@
 
 -(void)followBtnAction
 {
+    //tracking
+    NSMutableDictionary * param=[NSMutableDictionary dictionary];
+    [param setValue:dataModel.createBy forKey:@"user_id"];
+    [SZUserTracker trackingButtonEventName:@"notice_user" param:param];
+    
     //未登录则跳转登录
     if (![SZGlobalInfo sharedManager].SZRMToken.length)
     {
@@ -724,6 +729,13 @@
 
 -(void)authorDetailBtnAction
 {
+    //tracking
+    NSMutableDictionary * param=[NSMutableDictionary dictionary];
+    [param setValue:@"视频播放" forKey:@"module_source"];
+    [param setValue:[NSNumber numberWithBool:dataModel.whetherFollow] forKey:@"is_notice"];
+    [param setValue:dataModel.createBy forKey:@"user_id"];
+    [SZUserTracker trackingButtonEventName:@"click_user" param:param];
+    
     NSString * url = APPEND_SUBURL(BASE_H5_URL, @"act/xksh/#/others");
     url = [url appenURLParam:@"id" value:dataModel.createBy];
     
@@ -743,6 +755,8 @@
 
 -(void)descClickAction
 {
+    [SZUserTracker trackingButtonClick:@"展开简介"  moduleIndex:0];
+    
     YYLabel * label =  descLabel;
     if (label.numberOfLines < 2)
     {
@@ -756,6 +770,8 @@
 
 -(void)topicClickAction
 {
+    [SZUserTracker trackingButtonClick:@"话题" moduleIndex:0];
+    
     NSString * url = APPEND_SUBURL(BASE_H5_URL, @"act/xksh/#/topicDetails");
     url = [url appenURLParam:@"id" value:dataModel.belongTopicId];
 

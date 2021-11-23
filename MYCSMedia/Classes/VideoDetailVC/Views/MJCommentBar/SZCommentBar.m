@@ -27,6 +27,8 @@
 #import "SZUserTracker.h"
 #import "SZUploadingVC.h"
 #import "UIResponder+MJCategory.h"
+#import "SZUserTracker.h"
+#import "SZHomeVC.h"
 
 @interface SZCommentBar ()
 
@@ -406,6 +408,10 @@
 #pragma mark - Btn Action
 -(void)commentTapAction
 {
+    UIViewController * vc = [self getCurrentViewController];
+    SZHomeVC * home = (SZHomeVC*)vc;
+    [SZUserTracker trackingButtonClick:@"评论" moduleIndex:home.currentSelectIdx];
+    
     if (commentListView.superview==nil)
     {
         //listview
@@ -476,6 +482,8 @@
 
 -(void)shotBtnAction
 {
+    [SZUserTracker trackingButtonClick:@"short_video_start_make"  moduleIndex:0];
+    
     //未登录则跳转登录
     if (![SZGlobalInfo sharedManager].SZRMToken.length)
     {

@@ -30,6 +30,8 @@
 #import "UIScrollView+MJCategory.h"
 #import "PanelModel.h"
 #import "SDWebImage.h"
+#import "SZUserTracker.h"
+
 
 @interface SZHomeRootView1 ()<UICollectionViewDelegate, UICollectionViewDataSource>
 
@@ -293,12 +295,16 @@
 #pragma mark - Btn Action
 -(void)rankBtnAction
 {
+    [SZUserTracker trackingButtonEventName:@"short_video_like_ranking" param:nil];
+    
     NSString * url = APPEND_SUBURL(BASE_H5_URL, @"act/xksh/#/ranking");
     [[SZManager sharedManager].delegate onOpenWebview:url param:nil];
 }
 
 -(void)activityTapAction
 {
+    [SZUserTracker trackingButtonClick:@"活动规则"  moduleIndex:0];
+    
     [[SZManager sharedManager].delegate onOpenWebview:acitivity_link param:nil];
 }
 

@@ -409,8 +409,12 @@
 -(void)commentTapAction
 {
     UIViewController * vc = [self getCurrentViewController];
-    SZHomeVC * home = (SZHomeVC*)vc;
-    [SZUserTracker trackingButtonClick:@"评论" moduleIndex:home.currentSelectIdx];
+    if ([vc isKindOfClass:[SZHomeVC class]])
+    {
+        SZHomeVC * home = (SZHomeVC*)vc;
+        [SZUserTracker trackingButtonClick:@"评论" moduleIndex:home.currentSelectIdx];
+    }
+    
     
     if (commentListView.superview==nil)
     {

@@ -42,6 +42,7 @@
 +(void)trackContentEvent:(NSString*)eventName content:(ContentModel*)model
 {
     NSString * groupId = model.thirdPartyId;
+    NSString * categoryName = model.category_name.length>0 ? model.category_name : @"c2402539";
     
     if (model.thirdPartyId.length==0)
     {
@@ -50,12 +51,14 @@
     
     NSMutableDictionary * bizparam=[NSMutableDictionary dictionary];
     [bizparam setValue:@"click_category" forKey:@"enter_from"];
-    [bizparam setValue:@"c2402539" forKey:@"category_name"];
+    [bizparam setValue:categoryName forKey:@"category_name"];
     [bizparam setValue:groupId forKey:@"group_id"];
     [bizparam setValue:@"content_manager_system" forKey:@"params_for_special"];
     [bizparam setValue:[SZContentTracker make__items:groupId] forKey:@"__items"];
     
     [[SZContentTracker shareTracker]requestForUploading:bizparam eventKey:eventName contentModel:model];
+        
+    NSLog(@"MJContentTracker_once_事件:%@_新闻:%@_cateName:%@",eventName,groupId,categoryName);
 }
 
 
@@ -64,6 +67,7 @@
 {
     //内容ID
     NSString * groupId = model.thirdPartyId;
+    NSString * categoryName = model.category_name.length>0 ? model.category_name : @"c2402539";
     if (groupId.length==0)
     {
         groupId = model.id;
@@ -126,7 +130,7 @@
             //上报
             NSMutableDictionary * bizparam=[NSMutableDictionary dictionary];
             [bizparam setValue:@"click_category" forKey:@"enter_from"];
-            [bizparam setValue:@"c2402539" forKey:@"category_name"];
+            [bizparam setValue:categoryName forKey:@"category_name"];
             [bizparam setValue:groupId forKey:@"group_id"];
             [bizparam setValue:@"content_manager_system" forKey:@"params_for_special"];
             [bizparam setValue:[SZContentTracker make__items:groupId] forKey:@"__items"];
@@ -137,8 +141,8 @@
             [tracker requestForUploading:bizparam eventKey:@"cms_video_over_auto" contentModel:model];
             
             
-//            NSLog(@"mjduration_%g_%g",currentTime,totaltimeNumber.floatValue);
-            NSLog(@"mjduration_时长:%@_新闻:%@_百分比:%@",[NSNumber numberWithInteger:duration],groupId,progressNumber);
+
+            NSLog(@"MJContentTracker_end_auto_时长:%@_新闻:%@_百分比:%@_cateName:%@",[NSNumber numberWithInteger:duration],groupId,progressNumber,categoryName);
             
         }
         
@@ -148,10 +152,12 @@
 
 
 //重播时长
-+(void)trackingVideoPlayingDuration_Replay:(ContentModel*)model isPlaying:(BOOL)isplay currentTime:(CGFloat)currentTime totalTime:(CGFloat)totalTime
++(void)trackingVideoPlayingDuration_manual:(ContentModel*)model isPlaying:(BOOL)isplay currentTime:(CGFloat)currentTime totalTime:(CGFloat)totalTime
 {
     //内容ID
     NSString * groupId = model.thirdPartyId;
+    NSString * categoryName = model.category_name.length>0 ? model.category_name : @"c2402539";
+    
     if (groupId.length==0)
     {
         groupId = model.id;
@@ -211,7 +217,7 @@
             //上报
             NSMutableDictionary * bizparam=[NSMutableDictionary dictionary];
             [bizparam setValue:@"click_category" forKey:@"enter_from"];
-            [bizparam setValue:@"c2402539" forKey:@"category_name"];
+            [bizparam setValue:categoryName forKey:@"category_name"];
             [bizparam setValue:groupId forKey:@"group_id"];
             [bizparam setValue:@"content_manager_system" forKey:@"params_for_special"];
             [bizparam setValue:[SZContentTracker make__items:groupId] forKey:@"__items"];
@@ -222,10 +228,7 @@
             [tracker requestForUploading:bizparam eventKey:@"cms_video_over" contentModel:model];
             
             
-            
-            
-//            NSLog(@"mjduration_%g_%g",currentTime,totaltimeNumber.floatValue);
-            NSLog(@"mjduration_reload_时长:%@_新闻:%@_百分比:%@",[NSNumber numberWithInteger:duration],groupId,progressNumber);
+            NSLog(@"MJContentTracker_end_manual_时长:%@_新闻:%@_百分比:%@_cateName:%@",[NSNumber numberWithInteger:duration],groupId,progressNumber,categoryName);
             
         }
         
@@ -251,22 +254,23 @@
     //为空则记录
     if (progressNumber==nil)
     {
+        
         progressNumber = [NSNumber numberWithFloat:progess];
     }
     else
     {
-        CGFloat value = progressNumber.floatValue;
-        if (progess==0)
+        CGFloat lasetProgress = progressNumber.floatValue;
+
+        
+        //有更大值则记录
+        if (progess>lasetProgress)
         {
             progressNumber = [NSNumber numberWithFloat:progess];
         }
         
-        //有更大值则记录
-        else if (progess>value)
-        {
-            progressNumber = [NSNumber numberWithFloat:progess];
-        }
     }
+    
+    
     
     [[SZContentTracker shareTracker].progressDic setValue:progressNumber forKey:groupId];
 }

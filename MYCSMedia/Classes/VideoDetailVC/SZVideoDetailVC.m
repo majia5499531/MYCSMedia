@@ -208,6 +208,7 @@
         
         ContentListModel * list = [ContentListModel model];
         model.isManualPlay = YES;
+        model.category_name = self.category_name;
         [list.dataArr addObject:model];
         [weakSelf requestDone:list];
         

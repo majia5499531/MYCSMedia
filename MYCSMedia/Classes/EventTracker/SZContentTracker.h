@@ -16,7 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 +(void)trackingVideoPlayingDuration:(ContentModel*)content isPlaying:(BOOL)isplay currentTime:(CGFloat)currentTime totalTime:(CGFloat)totalTime;
 
-+(void)trackingVideoPlayingDuration_Replay:(ContentModel*)content isPlaying:(BOOL)isplay currentTime:(CGFloat)currentTime totalTime:(CGFloat)totalTime;
++(void)trackingVideoPlayingDuration_manual:(ContentModel*)content isPlaying:(BOOL)isplay currentTime:(CGFloat)currentTime totalTime:(CGFloat)totalTime;
 
 +(void)recordPlayingProgress:(CGFloat)progess content:(ContentModel*)contentM;
 

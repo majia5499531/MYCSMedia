@@ -31,6 +31,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property(strong,nonatomic)NSString * jumpUrl;
 @property(strong,nonatomic)NSString * backgroundImageUrl;
 
+@property(strong,nonatomic)NSString * volcengineCategoryId;
+
 @end
 
 NS_ASSUME_NONNULL_END

@@ -149,15 +149,15 @@ static UISlider * _volumeSlider;
     
     
     //内容埋点
-    if (self.isReplay || self.isManualPlay)
+    if (self.isManualPlay)
     {
         if (playerState==2)
         {
-            [SZContentTracker trackingVideoPlayingDuration_Replay:self.externalModel isPlaying:YES currentTime:self.playCurrentTime totalTime:self.vodPlayer.duration];
+            [SZContentTracker trackingVideoPlayingDuration_manual:self.externalModel isPlaying:YES currentTime:self.playCurrentTime totalTime:self.vodPlayer.duration];
         }
-        else if(playerState == 0 || playerState==3||playerState==5) //失败、停止、切后台，则记录时间
+        else if (playerState == StateFailed || playerState==StateStopped || playerState==StateIntoBackground) //失败、停止、切后台，则记录时间
         {
-            [SZContentTracker trackingVideoPlayingDuration_Replay:self.externalModel isPlaying:NO currentTime:self.playCurrentTime totalTime:0];
+            [SZContentTracker trackingVideoPlayingDuration_manual:self.externalModel isPlaying:NO currentTime:self.playCurrentTime totalTime:0];
         }
     }
     else
@@ -166,7 +166,7 @@ static UISlider * _volumeSlider;
         {
             [SZContentTracker trackingVideoPlayingDuration:self.externalModel isPlaying:YES currentTime:self.playCurrentTime totalTime:self.vodPlayer.duration];
         }
-        else if(playerState == 0 || playerState==3||playerState==5) //失败、停止、且后台，则记录时间
+        else if (playerState == StateFailed || playerState==StateStopped || playerState==StateIntoBackground) //失败、停止、切后台，则记录时间
         {
             [SZContentTracker trackingVideoPlayingDuration:self.externalModel isPlaying:NO currentTime:self.playCurrentTime totalTime:0];
         }
@@ -1211,6 +1211,7 @@ static UISlider * _volumeSlider;
 }
 
 
+
 //切换全屏和窗口
 -(void)makeLayersToKeyWindow:(BOOL)toKeywindow
 {
@@ -1864,18 +1865,24 @@ static UISlider * _volumeSlider;
 //播放结束
 -(void)moviePlayDidEnd
 {
-    //修改播放状态
-    self.playerState = StateStopped;
-    self.playDidEnd = YES;
-        
-    //通知代理
-    if ([self.delegate respondsToSelector:@selector(superPlayerDidFinishPlay:)])
-    {
-        [self.delegate superPlayerDidFinishPlay:self];
-    }
+    self.playerState = StatePrepareReplay;
     
-    //自动重播
-    [self repeatBtnClick:self.repeatBtn];
+    [self seekToTime:1];
+    
+//    //修改播放状态
+//    self.playerState = StateStopped;
+//    self.playDidEnd = YES;
+//
+//    //通知代理
+//    if ([self.delegate respondsToSelector:@selector(superPlayerDidFinishPlay:)])
+//    {
+//        [self.delegate superPlayerDidFinishPlay:self];
+//    }
+    
+    
+    
+//    //自动重播
+//    [self repeatBtnClick:self.repeatBtn];
 }
 
 

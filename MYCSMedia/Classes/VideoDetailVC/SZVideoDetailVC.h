@@ -11,6 +11,7 @@
 @interface SZVideoDetailVC : UIViewController
 
 @property(strong,nonatomic)NSString * contentId;
+@property(strong,nonatomic)NSString * category_name;
 @property(assign,nonatomic)BOOL isPreview;
 
 @end

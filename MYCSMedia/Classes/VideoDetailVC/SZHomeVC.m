@@ -261,7 +261,7 @@
     
     if (linkUrl.length)
     {
-        [columnbar setBadgeStr:@"有活动" atIndex:0];
+        [columnbar setBadgeStr:@"活动" atIndex:0];
         [rootview1 setActivityImg:img1 simpleImg:img2 linkUrl:linkUrl];
     }
     
@@ -276,7 +276,7 @@
     
     if (linkUrl.length)
     {
-        [columnbar setBadgeStr:@"有活动" atIndex:1];
+        [columnbar setBadgeStr:@"活动" atIndex:1];
         [rootview2 setActivityImg:img1 simpleImg:img2 linkUrl:linkUrl];
     }
     

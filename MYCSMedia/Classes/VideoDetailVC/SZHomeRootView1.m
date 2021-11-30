@@ -31,6 +31,8 @@
 #import "PanelModel.h"
 #import "SDWebImage.h"
 #import "SZUserTracker.h"
+#import <MJRefresh/MJRefresh.h>
+
 
 
 @interface SZHomeRootView1 ()<UICollectionViewDelegate, UICollectionViewDataSource>

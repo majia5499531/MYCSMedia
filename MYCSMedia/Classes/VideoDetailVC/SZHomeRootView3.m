@@ -17,6 +17,7 @@
 #import "MJVideoManager.h"
 #import "NSString+MJCategory.h"
 #import "SZData.h"
+#import <MJRefresh/MJRefresh.h>
 
 @interface SZHomeRootView3 ()<UITableViewDelegate,UITableViewDataSource>
 

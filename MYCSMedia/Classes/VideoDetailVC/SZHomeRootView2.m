@@ -31,6 +31,8 @@
 #import "UIResponder+MJCategory.h"
 #import "SZHomeVC.h"
 #import "SDWebImage.h"
+#import <MJRefresh/MJRefresh.h>
+
 
 @interface SZHomeRootView2 ()<UICollectionViewDelegate, UICollectionViewDataSource>
 

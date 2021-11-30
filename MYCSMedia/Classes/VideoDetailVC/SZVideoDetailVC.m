@@ -28,7 +28,7 @@
 #import "SZData.h"
 #import "SZGlobalInfo.h"
 #import "SZVideoCell.h"
-
+#import <MJRefresh/MJRefresh.h>
 
 @interface SZVideoDetailVC ()<UICollectionViewDelegate, UICollectionViewDataSource>
 @property(assign,nonatomic)BOOL MJHideStatusbar;

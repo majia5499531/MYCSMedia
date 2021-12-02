@@ -395,7 +395,7 @@
     else if (pan.state==UIGestureRecognizerStateChanged)
     {
         CGFloat offsetY = locationPoint.y-originy;
-        NSLog(@"pan___%g_______%g________%g",originy,locationPoint.y,offsetY);
+        
         
         [self commentListBGMoved:offsetY];
     }

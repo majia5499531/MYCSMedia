@@ -105,7 +105,7 @@
         
         //审核中label
         ispendingLabel = [[UILabel alloc]init];
-        ispendingLabel.text = @"（审核中）";
+        ispendingLabel.text = @"";
         ispendingLabel.textColor=[UIColor colorWithHexString:@"3E85ED"];
         ispendingLabel.font=name.font;
         [self addSubview:ispendingLabel];

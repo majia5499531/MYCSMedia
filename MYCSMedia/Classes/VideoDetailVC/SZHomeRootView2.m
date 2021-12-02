@@ -234,8 +234,9 @@
 
 -(void)requestSingleVideoDone:(ContentModel*)model
 {
+    SZHomeVC * home = (SZHomeVC*)[self getCurrentViewController];
     singleVideo = model;
-    
+    model.category_name = home.category_name;
     [self requestVideoList];
 }
 

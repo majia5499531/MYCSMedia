@@ -77,7 +77,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic , copy) NSString              * shareTitle;
 
 
-@property (strong,nonatomic) NSString * category_name;
+@property (strong,nonatomic) NSString * volcCategory;
 
 @end
 

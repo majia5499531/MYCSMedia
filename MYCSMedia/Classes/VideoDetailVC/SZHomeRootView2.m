@@ -236,7 +236,8 @@
 {
     SZHomeVC * home = (SZHomeVC*)[self getCurrentViewController];
     singleVideo = model;
-    model.category_name = home.category_name;
+    model.isManualPlay=YES;
+    model.volcCategory = home.category_name;
     [self requestVideoList];
 }
 

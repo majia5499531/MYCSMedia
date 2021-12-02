@@ -42,7 +42,6 @@
 +(void)trackContentEvent:(NSString*)eventName content:(ContentModel*)model
 {
     NSString * groupId = model.thirdPartyId;
-    NSString * categoryName = model.category_name.length>0 ? model.category_name : @"c2402539";
     
     if (model.thirdPartyId.length==0)
     {
@@ -51,14 +50,14 @@
     
     NSMutableDictionary * bizparam=[NSMutableDictionary dictionary];
     [bizparam setValue:@"click_category" forKey:@"enter_from"];
-    [bizparam setValue:categoryName forKey:@"category_name"];
+    [bizparam setValue:model.volcCategory forKey:@"category_name"];
     [bizparam setValue:groupId forKey:@"group_id"];
     [bizparam setValue:@"content_manager_system" forKey:@"params_for_special"];
     [bizparam setValue:[SZContentTracker make__items:groupId] forKey:@"__items"];
     
     [[SZContentTracker shareTracker]requestForUploading:bizparam eventKey:eventName contentModel:model];
         
-    NSLog(@"MJContentTracker_once_事件:%@_新闻:%@_cateName:%@",eventName,groupId,categoryName);
+    NSLog(@"MJContentTracker_once_事件:%@_新闻:%@_cateName:%@",eventName,groupId,model.volcCategory);
 }
 
 
@@ -67,7 +66,6 @@
 {
     //内容ID
     NSString * groupId = model.thirdPartyId;
-    NSString * categoryName = model.category_name.length>0 ? model.category_name : @"c2402539";
     if (groupId.length==0)
     {
         groupId = model.id;
@@ -130,7 +128,7 @@
             //上报
             NSMutableDictionary * bizparam=[NSMutableDictionary dictionary];
             [bizparam setValue:@"click_category" forKey:@"enter_from"];
-            [bizparam setValue:categoryName forKey:@"category_name"];
+            [bizparam setValue:model.volcCategory forKey:@"category_name"];
             [bizparam setValue:groupId forKey:@"group_id"];
             [bizparam setValue:@"content_manager_system" forKey:@"params_for_special"];
             [bizparam setValue:[SZContentTracker make__items:groupId] forKey:@"__items"];
@@ -142,7 +140,7 @@
             
             
 
-            NSLog(@"MJContentTracker_end_auto_时长:%@_新闻:%@_百分比:%@_cateName:%@",[NSNumber numberWithInteger:duration],groupId,progressNumber,categoryName);
+            NSLog(@"MJContentTracker_end_auto_时长:%@_新闻:%@_百分比:%@_cateName:%@",[NSNumber numberWithInteger:duration],groupId,progressNumber,model.volcCategory);
             
         }
         
@@ -156,7 +154,6 @@
 {
     //内容ID
     NSString * groupId = model.thirdPartyId;
-    NSString * categoryName = model.category_name.length>0 ? model.category_name : @"c2402539";
     
     if (groupId.length==0)
     {
@@ -217,7 +214,7 @@
             //上报
             NSMutableDictionary * bizparam=[NSMutableDictionary dictionary];
             [bizparam setValue:@"click_category" forKey:@"enter_from"];
-            [bizparam setValue:categoryName forKey:@"category_name"];
+            [bizparam setValue:model.volcCategory forKey:@"category_name"];
             [bizparam setValue:groupId forKey:@"group_id"];
             [bizparam setValue:@"content_manager_system" forKey:@"params_for_special"];
             [bizparam setValue:[SZContentTracker make__items:groupId] forKey:@"__items"];
@@ -228,7 +225,7 @@
             [tracker requestForUploading:bizparam eventKey:@"cms_video_over" contentModel:model];
             
             
-            NSLog(@"MJContentTracker_end_manual_时长:%@_新闻:%@_百分比:%@_cateName:%@",[NSNumber numberWithInteger:duration],groupId,progressNumber,categoryName);
+            NSLog(@"MJContentTracker_end_manual_时长:%@_新闻:%@_百分比:%@_cateName:%@",[NSNumber numberWithInteger:duration],groupId,progressNumber,model.volcCategory);
             
         }
         
@@ -393,7 +390,7 @@
 #pragma mark - Request
 -(void)requestForUploading:(NSDictionary*)bizParam eventKey:(NSString*)eventName contentModel:(ContentModel*)content
 {
-    if (content.thirdPartyId.length==0)
+    if (content.thirdPartyId.length==0 || content.volcCategory.length==0)
     {
         return;
     }

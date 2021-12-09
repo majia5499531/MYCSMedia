@@ -13,7 +13,13 @@
 #import "SZManager.h"
 #import "SZUserTracker.h"
 
+@interface SZGlobalInfo ()
+@property(strong,nonatomic)LoginCallback loginResult;
+@end
+
+
 @implementation SZGlobalInfo
+
 
 +(SZGlobalInfo *)sharedManager
 {
@@ -32,9 +38,11 @@
 
 
 #pragma mark - Login
-+(void)checkLoginStatus;
++(void)checkLoginStatus:(LoginCallback)result
 {
     SZGlobalInfo * globalobjc = [SZGlobalInfo sharedManager];
+    
+    globalobjc.loginResult = result;
     
     NSString * newTGT = [[SZManager sharedManager].delegate onGetTGT];
     NSString * localTGT = [SZGlobalInfo sharedManager].localTGT;
@@ -49,7 +57,11 @@
             if ([newTGT isEqualToString:localTGT])
             {
                 [SZGlobalInfo sharedManager].loginDesc = @"MJToken_我的长沙已登录_数智已登";
-                return;
+                if (result)
+                {
+                    result(YES);
+                }
+                
             }
             
             //TGT不同，则表示切换了用户
@@ -73,6 +85,13 @@
         //清理本地token和TGT
         [SZGlobalInfo sharedManager].loginDesc = @"MJToken_我的长沙未登录_清空数智";
         [SZGlobalInfo mjclearLoginInfo];
+        
+        if (result)
+        {
+            result(NO);
+        }
+        
+        
     }
 }
 
@@ -106,16 +125,26 @@
     __weak typeof (self) weakSelf = self;
     [model PostRequestInView:MJ_KEY_WINDOW WithUrl:APPEND_SUBURL(BASE_URL, API_URL_TOKEN_EXCHANGE) Params:param Success:^(id responseObject) {
             [weakSelf requestTokenDone:model TGT:tgt];
+        if (weakSelf.loginResult)
+        {
+            weakSelf.loginResult(YES);
+        }
         } Error:^(id responseObject) {
+            if (weakSelf.loginResult)
+            {
+                weakSelf.loginResult(NO);
+            }
             
         } Fail:^(NSError *error) {
-            
+            if (weakSelf.loginResult)
+            {
+                weakSelf.loginResult(NO);
+            }
         }];
 }
 
 -(void)requestTokenDone:(TokenExchangeModel*)model TGT:(NSString*)tgt
 {
-    NSLog(@"MJToken_数智融媒登录成功_%@",model.token);
     [SZGlobalInfo loginSuccess:model TGT:tgt];
 }
 
@@ -176,6 +205,7 @@
     self.userId = [[NSUserDefaults standardUserDefaults]valueForKey:@"SZRM_USER_ID"];
 }
 
+//分享
 +(void)mjshareToPlatform:(SZ_SHARE_PLATFORM)platform content:(ContentModel *)model
 {
     if ([SZGlobalInfo checkDelegate])

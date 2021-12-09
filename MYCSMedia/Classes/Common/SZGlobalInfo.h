@@ -10,7 +10,7 @@
 #import "ContentModel.h"
 
 @interface SZGlobalInfo : NSObject
-
+typedef void (^LoginCallback)(BOOL suc);
 
 +(SZGlobalInfo *)sharedManager;
 
@@ -24,7 +24,8 @@
 +(NSString*)mjgetBaseURL;           //获取BaseURL
 +(NSString*)mjgetBaseH5URL;         //获取H5 URL
 
-+(void)checkLoginStatus;            //检查登录信息
++(void)checkLoginStatus:(LoginCallback)result;
+
 +(void)mjshowLoginAlert;            //弹出登录提示框
 +(void)mjgoToLoginPage;             //跳登录页
 +(void)mjclearLoginInfo;            //清除登录状态

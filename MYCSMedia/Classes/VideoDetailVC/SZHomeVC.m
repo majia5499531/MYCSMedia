@@ -94,7 +94,7 @@
     self.navigationController.navigationBar.hidden=YES;
     
     //检查登录状态
-    [SZGlobalInfo checkLoginStatus];
+    [SZGlobalInfo checkLoginStatus:nil];
 }
 
 -(void)viewWillDisappear:(BOOL)animated

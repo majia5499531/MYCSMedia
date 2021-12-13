@@ -104,7 +104,7 @@
         
         //Logo
         logoImage = [[UIImageView alloc]init];
-        logoImage.image = [UIImage getBundleImage:@"sz_videoCell_logo"];
+        logoImage.image = [UIImage getBundleImage:@"sz_videoMark_logo"];
         [self.contentView addSubview:logoImage];
         
         

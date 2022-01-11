@@ -8,13 +8,22 @@
 
 #import <UIKit/UIKit.h>
 
+
+typedef NS_ENUM(NSUInteger, SZInputViewType)
+{
+    TypeSendComment,
+    TypeSendReply,
+    TypeSendMail,
+};
+
 typedef void (^CompletionBlock)(id responseObject);
 
 @interface SZInputView : UIView
 
 +(instancetype)sharedSZInputView;
 
-+(void)callInputView:(NSInteger)type contentId:(NSString*)contentId placeHolder:(NSString*)placeholder completion:(CompletionBlock)finish;
++(void)callInputView:(SZInputViewType)type contentId:(NSString*)contentId placeHolder:(NSString*)placeholder completion:(CompletionBlock)finish;
 
 @end
+
 

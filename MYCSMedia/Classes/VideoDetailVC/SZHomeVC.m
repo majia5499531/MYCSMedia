@@ -54,7 +54,6 @@
 @implementation SZHomeVC
 
 
-
 -(instancetype)init
 {
     self = [super init];

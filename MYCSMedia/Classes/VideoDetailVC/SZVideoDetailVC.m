@@ -29,6 +29,8 @@
 #import "SZGlobalInfo.h"
 #import "SZVideoCell.h"
 #import <MJRefresh/MJRefresh.h>
+#import "TopicListModel.h"
+
 
 @interface SZVideoDetailVC ()<UICollectionViewDelegate, UICollectionViewDataSource>
 @property(assign,nonatomic)BOOL MJHideStatusbar;
@@ -58,7 +60,18 @@
     
     [self addNotifications];
     
-    [self requestSingleVideo];
+    
+    //根据类型请求数据
+    if (self.detailType==0)
+    {
+        [self requestSingleVideo];
+    }
+    else if (self.detailType==1)
+    {
+        [self requestVideosInCollection];
+    }
+    
+    
 }
 
 -(void)dealloc
@@ -175,26 +188,26 @@
 
 
 #pragma mark - Request
--(void)requestVideosInPannel
+-(void)requestVideosInCollection
 {
-//    NSString * pagesize = [NSString stringWithFormat:@"%d",VIDEO_PAGE_SIZE];
-//
-//    NSMutableDictionary * param=[NSMutableDictionary dictionary];
-//    [param setValue:self.pannelId forKey:@"panelId"];
-//    [param setValue:pagesize forKey:@"pageSize"];
-//    [param setValue:self.contentId forKey:@"contentId"];
-//    [param setValue:@"0" forKey:@"removeFirst"];
-//
-//
-//    ContentListModel * dataModel = [ContentListModel model];
-//    __weak typeof (self) weakSelf = self;
-//    [dataModel GETRequestInView:self.view WithUrl:APPEND_SUBURL(BASE_URL, API_URL_VIDEO_LIST) Params:param Success:^(id responseObject){
-//        [weakSelf requestDone:dataModel];
-//        } Error:^(id responseObject) {
-//            [weakSelf requestFailed];
-//        } Fail:^(NSError *error) {
-//            [weakSelf requestFailed];
-//        }];
+    NSString * url = APPEND_SUBURL(BASE_URL, API_URL_VIDEOCOLLECT);
+    
+    NSMutableDictionary * param=[NSMutableDictionary dictionary];
+    [param setValue:self.albumId forKey:@"classId"];
+    [param setValue:@"9999" forKey:@"pageSize"];
+    [param setValue:@"1" forKey:@"pageIndex"];
+    
+    __weak typeof (self) weakSelf = self;
+    TopicListModel * model = [TopicListModel model];
+    [model GETRequestInView:self.view WithUrl:url Params:param Success:^(id responseObject) {
+        [weakSelf requestDone:model.dataArr];
+        } Error:^(id responseObject) {
+            [weakSelf requestFailed];
+        } Fail:^(NSError *error) {
+            [weakSelf requestFailed];
+        }];
+    
+
 }
 
 -(void)requestSingleVideo
@@ -210,7 +223,7 @@
         model.isManualPlay = YES;
         model.volcCategory = self.category_name;
         [list.dataArr addObject:model];
-        [weakSelf requestDone:list];
+        [weakSelf requestDone:list.dataArr];
         
         //加载更多
 //        [weakSelf fetchMoreVideos];
@@ -286,13 +299,13 @@
 
 
 #pragma mark - Request Done
--(void)requestDone:(ContentListModel*)model
+-(void)requestDone:(NSArray*)modelArr
 {
     [collectionView.mj_footer endRefreshing];
     [collectionView.mj_header endRefreshing];
     
     [self.dataArr removeAllObjects];
-    [self.dataArr addObjectsFromArray:model.dataArr];
+    [self.dataArr addObjectsFromArray:modelArr];
     
     
     [collectionView reloadData];

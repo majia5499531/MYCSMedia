@@ -17,7 +17,7 @@
     NSArray * arr = [data mj_arrayValue];
     for (int i = 0; i<arr.count; i++)
     {
-        ContentModel * model = [ContentModel  model];
+        ContentModel * model = [ContentModel model];
         NSDictionary * dic = data[i];
         
         [model yy_modelSetWithDictionary:dic];

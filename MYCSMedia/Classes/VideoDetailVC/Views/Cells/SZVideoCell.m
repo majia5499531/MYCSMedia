@@ -36,6 +36,8 @@
 #import "ContentStateModel.h"
 #import "UIResponder+MJCategory.h"
 #import "SZUserTracker.h"
+#import "ContentListModel.h"
+#import "SZVideoDetailVC.h"
 
 @interface SZVideoCell ()<GYRollingNoticeViewDelegate,GYRollingNoticeViewDataSource>
 
@@ -67,6 +69,8 @@
     MJProgressView * videoSlider;
     
     NSMutableArray * videoBtns;
+    
+    NSArray * belongAlbumArr;
 }
 
 -(instancetype)initWithFrame:(CGRect)frame
@@ -106,19 +110,6 @@
         logoImage = [[UIImageView alloc]init];
         logoImage.image = [UIImage getBundleImage:@"sz_videoMark_logo"];
         [self.contentView addSubview:logoImage];
-        
-        
-//        //视频
-//        MJButton * playBtn = [[MJButton alloc]init];
-//        [playBtn addTarget:self action:@selector(videoBtnAction) forControlEvents:UIControlEventTouchUpInside];
-//        [playBtn setImage:[UIImage getBundleImage:@"sz_middle_play"] forState:UIControlStateNormal];
-//        [videoCoverImage addSubview:playBtn];
-//        [playBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-//            make.centerX.mas_equalTo(videoCoverImage.mas_centerX);
-//            make.centerY.mas_equalTo(videoCoverImage.mas_centerY);
-//            make.width.mas_equalTo(44);
-//            make.height.mas_equalTo(44);
-//        }];
         
         
         //简述(包含话题)
@@ -350,39 +341,17 @@
     NSString * viewsStr = [NSString converToViewCountStr:dataModel.viewCountShow];
     viewCountLabel.text = [NSString stringWithFormat:@"%@人看过",viewsStr];
     
-    //话题 与 简述
-    NSString * finalDesc = @"";
-    NSString * topicStr = @"";
-    if (dataModel.belongTopicName.length)
-    {
-        topicStr = [NSString stringWithFormat:@"#%@",dataModel.belongTopicName];
-        NSString * descStr = dataModel.brief.length>0 ? dataModel.brief:dataModel.title;
-        finalDesc = [NSString stringWithFormat:@"%@ %@",topicStr,descStr];
-    }
-    else
-    {
-        NSString * descStr = dataModel.brief.length>0 ? dataModel.brief:dataModel.title;
-        finalDesc = [NSString stringWithFormat:@"%@",descStr];
-    }
-    
-    
-    //富文本简述
+    //有简介显示简介，没简介显示标题
+    NSString * finalDesc = dataModel.brief.length>0 ? dataModel.brief:dataModel.title;
+
+    //设置简介样式
     __weak typeof (self) weakSelf = self;
     NSMutableAttributedString *mutableString = [[NSMutableAttributedString alloc] initWithString:finalDesc];
-    
-    
-    [mutableString yy_setTextHighlightRange:NSMakeRange(0, topicStr.length) color:[UIColor whiteColor] backgroundColor:[UIColor clearColor] tapAction:^(UIView * _Nonnull containerView, NSAttributedString * _Nonnull text, NSRange range, CGRect rect) {
-        [weakSelf topicClickAction];
-    }];
-    [mutableString yy_setFont:[UIFont systemFontOfSize:15] range:NSMakeRange(0, topicStr.length)];
-    
-    
-    [mutableString yy_setTextHighlightRange:NSMakeRange(topicStr.length, finalDesc.length - topicStr.length) color:[UIColor colorWithRed:1 green:1 blue:1 alpha:0.7] backgroundColor:[UIColor clearColor] tapAction:^(UIView * _Nonnull containerView, NSAttributedString * _Nonnull text, NSRange range, CGRect rect) {
+    [mutableString yy_setTextHighlightRange:NSMakeRange(0, finalDesc.length) color:[UIColor colorWithRed:1 green:1 blue:1 alpha:0.7] backgroundColor:[UIColor clearColor] tapAction:^(UIView * _Nonnull containerView, NSAttributedString * _Nonnull text, NSRange range, CGRect rect) {
         [weakSelf descClickAction];
     }];
-    [mutableString yy_setFont:[UIFont systemFontOfSize:13] range:NSMakeRange(topicStr.length, finalDesc.length - topicStr.length)];
+    [mutableString yy_setFont:[UIFont systemFontOfSize:13] range:NSMakeRange(0, finalDesc.length)];
     [mutableString yy_setLineSpacing:4 range:NSMakeRange(0,finalDesc.length)];
-    
     descLabel.attributedText = mutableString;
     descLabel.lineBreakMode=NSLineBreakByTruncatingTail;
     
@@ -518,6 +487,8 @@
         [weakSelf currentFollowStateDidChange];
     }).observe(@"contentStateUpdateTime",^(id value){
         [weakSelf currentFollowStateDidChange];
+    }).observe(@"contentBelongAlbumsUpdateTime",^(id value){
+        [weakSelf updateVideoRelateAlbum];
     });
 }
 
@@ -558,6 +529,70 @@
             [noticeView reloadDataAndStartRoll];
             
         }
+
+    }
+}
+
+-(void)updateVideoRelateAlbum
+{
+    NSString * contentId = [SZData sharedSZData].currentContentId;
+        
+    if ([dataModel.id isEqualToString:contentId])
+    {
+        SZData * szdata = [SZData sharedSZData];
+        ContentListModel * listM = [szdata.contentBelongAlbumsDic valueForKey:contentId];
+        
+        if (listM.dataArr.count>0)
+        {
+            belongAlbumArr = listM.dataArr;
+            
+            NSMutableString * albumsTitleStr = [NSMutableString string];
+            for (int i=0; i<belongAlbumArr.count; i++)
+            {
+                ContentModel * album = belongAlbumArr[i];
+                
+                [albumsTitleStr appendFormat:@"#%@ ",album.title];
+            }
+            
+            [albumsTitleStr appendString:dataModel.title];
+            
+            
+            NSMutableAttributedString * attstr = [[NSMutableAttributedString alloc]initWithString:albumsTitleStr];
+            NSRange range1 = [albumsTitleStr rangeOfString:dataModel.title];
+            
+            //设置简介点击事件
+            __weak typeof (self) weakSelf = self;
+            [attstr yy_setTextHighlightRange:range1 color:[UIColor colorWithRed:1 green:1 blue:1 alpha:0.7] backgroundColor:[UIColor clearColor] tapAction:^(UIView * _Nonnull containerView, NSAttributedString * _Nonnull text, NSRange range, CGRect rect) {
+                [weakSelf descClickAction];
+            }];
+            [attstr yy_setFont:[UIFont systemFontOfSize:13] range:range1];
+            
+            //分别设置每个专辑的点击事件
+            for (int i = 0; i<belongAlbumArr.count; i++)
+            {
+                ContentModel * album = belongAlbumArr[i];
+                NSRange range = [albumsTitleStr rangeOfString:[NSString stringWithFormat:@"#%@",album.title]];
+                [attstr yy_setTextHighlightRange:range color:[UIColor whiteColor] backgroundColor:[UIColor clearColor] tapAction:^(UIView * _Nonnull containerView, NSAttributedString * _Nonnull text, NSRange range, CGRect rect) {
+                    
+                    NSString * substr = [[text string]substringWithRange:range];
+                    
+                    NSString * albumTitle = [substr substringFromIndex:1];
+                    [weakSelf albumClickAction:albumTitle];
+                }];
+                [attstr yy_setFont:[UIFont systemFontOfSize:15] range:range];
+            }
+            
+            //设置整体行间距
+            [attstr yy_setLineSpacing:4 range:NSMakeRange(0,albumsTitleStr.length)];
+            
+            
+            descLabel.attributedText = attstr;
+            descLabel.lineBreakMode=NSLineBreakByTruncatingTail;
+            
+
+        }
+        
+        
 
     }
 }
@@ -683,9 +718,7 @@
     [model GETRequestInView:self.window WithUrl:APPEND_COMPONENT(BASE_URL, API_URL_VIDEO_COLLECTION, dataModel.pid) Params:nil Success:^(id responseObject) {
         [weakSelf requestDone:model];
         } Error:^(id responseObject) {
-            
         } Fail:^(NSError *error) {
-            
         }];
 }
 
@@ -768,14 +801,21 @@
     }
 }
 
--(void)topicClickAction
+-(void)albumClickAction:(NSString*)albumTitle
 {
-    [SZUserTracker trackingButtonClick:@"话题" moduleIndex:0];
-    
-    NSString * url = APPEND_SUBURL(BASE_H5_URL, @"act/xksh/#/topicDetails");
-    url = [url appenURLParam:@"id" value:dataModel.belongTopicId];
+    for (int i = 0; i<belongAlbumArr.count; i++)
+    {
+        ContentModel * album = belongAlbumArr[i];
+        if ([album.title isEqualToString:albumTitle])
+        {
+            UINavigationController * nav = [self getCurrentNavigationController];
+            SZVideoDetailVC * vc = [[SZVideoDetailVC alloc]init];;
+            vc.albumId = album.id;
+            vc.detailType=1;
+            [nav pushViewController:vc animated:YES];
+        }
+    }
 
-    [[SZManager sharedManager].delegate onOpenWebview:url param:nil];
 }
 
 -(void)fullScreenBtnAction

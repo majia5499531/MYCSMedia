@@ -14,22 +14,21 @@
 #import "UIImage+MJCategory.h"
 #import <SDWebImage/SDWebImage.h>
 #import "SZManager.h"
-#import "CommentModel.h"
+#import "ReplyModel.h"
 #import "NSString+MJCategory.h"
 #import "NSAttributedString+MJCategory.h"
+#import "YYText.h"
+#import "UIView+MJCategory.h"
+#import "SZInputView.h"
+
 
 @implementation SZCommentCell
 {
-    CommentModel * dataModel;
+    ReplyModel * dataModel;
     
-    UIImageView * avatar;
-    UILabel * name;
+    YYLabel * contentLabel;
     UILabel * date;
-    UILabel * desc;
-    UIView * line;
-    UIView * replyBG;
-    UILabel * replyContent;
-    UILabel * replyDate;
+    MJButton * replyBtn;
     
     UILabel * istopLabel;
     UILabel * ispendingLabel;
@@ -41,27 +40,16 @@
     {
         self.backgroundColor = [UIColor whiteColor];
         
-        //头像
-        avatar = [[UIImageView alloc]init];
-        avatar.backgroundColor= [UIColor blackColor];
-        avatar.layer.cornerRadius=18;
-        avatar.layer.masksToBounds=YES;
-        [self addSubview:avatar];
-        [avatar mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.left.mas_equalTo(22);
-            make.top.mas_equalTo(17);
-            make.width.mas_equalTo(36);
-            make.height.mas_equalTo(36);
-        }];
-        
         //昵称
-        name = [[UILabel alloc]init];
-        name.textColor=HW_BLACK;
-        name.font=BOLD_FONT(12);
-        [self addSubview:name];
-        [name mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.left.mas_equalTo(avatar.mas_right).offset(6);
-            make.top.mas_equalTo(avatar.mas_top).offset(2);
+        contentLabel = [[YYLabel alloc]init];
+        contentLabel.textColor=HW_BLACK;
+        contentLabel.numberOfLines=0;
+        contentLabel.font=FONT(13);
+        contentLabel.preferredMaxLayoutWidth = (SCREEN_WIDTH-135);
+        [self addSubview:contentLabel];
+        [contentLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.left.mas_equalTo(65);
+            make.top.mas_equalTo(12);
         }];
         
         //时间
@@ -70,169 +58,90 @@
         date.font=FONT(11);
         [self addSubview:date];
         [date mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.left.mas_equalTo(name.mas_left).offset(0);
-            make.top.mas_equalTo(name.mas_bottom).offset(3);
-        }];
-        
-        //文字
-        desc = [[UILabel alloc]init];
-        desc.font=FONT(12);
-        desc.numberOfLines=0;
-        desc.textColor=HW_BLACK;
-        [self addSubview:desc];
-        [desc mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.left.mas_equalTo(date.mas_left);
-            make.top.mas_equalTo(avatar.mas_bottom).offset(14);
-            make.width.mas_equalTo(SCREEN_WIDTH-100);
-        }];
-        
-        //置顶tag
-        istopLabel = [[UILabel alloc]init];
-        istopLabel.text = @"置顶";
-        istopLabel.font = [UIFont systemFontOfSize:10];
-        istopLabel.textColor = HW_RED_WORD_1;
-        istopLabel.layer.backgroundColor=[UIColor colorWithRed:0.86 green:0.0 blue:0.15 alpha:0.1].CGColor;
-        istopLabel.clipsToBounds = YES;
-        istopLabel.layer.cornerRadius = 3;
-        istopLabel.textAlignment = NSTextAlignmentCenter;
-        [self addSubview:istopLabel];
-        [istopLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.left.mas_equalTo(name.mas_right).offset(5);
-            make.centerY.mas_equalTo(name);
-            make.width.mas_equalTo(25);
-            make.height.mas_equalTo(15);
-        }];
-        
-        //审核中label
-        ispendingLabel = [[UILabel alloc]init];
-        ispendingLabel.text = @"";
-        ispendingLabel.textColor=[UIColor colorWithHexString:@"3E85ED"];
-        ispendingLabel.font=name.font;
-        [self addSubview:ispendingLabel];
-        [ispendingLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.left.mas_equalTo(name.mas_right).offset(0);
-            make.centerY.mas_equalTo(name);
-        }];
-        
-        //编辑回复
-        replyBG = [[UIView alloc]init];
-        [self addSubview:replyBG];
-        [replyBG mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.top.mas_equalTo(desc.mas_bottom);
-            make.left.mas_equalTo(desc.mas_left);
-            make.width.mas_equalTo(desc.mas_width);
-        }];
-        
-        //编辑回复
-        UILabel * replylabel = [[UILabel alloc]init];
-        replylabel = [[UILabel alloc]init];
-        replylabel.textColor=HW_BLACK;
-        replylabel.text=@"编辑回复:";
-        replylabel.font=BOLD_FONT(12);
-        [replyBG addSubview:replylabel];
-        [replylabel mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.top.mas_equalTo(16);
-            make.left.mas_equalTo(0);
-        }];
-        
-        //编辑回复时间
-        replyDate = [[UILabel alloc]init];
-        replyDate.textColor=HW_GRAY_WORD_1;
-        replyDate.font=FONT(11);
-        [replyBG addSubview:replyDate];
-        [replyDate mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.top.mas_equalTo(replylabel.mas_bottom).offset(3);
-            make.left.mas_equalTo(replylabel.mas_left);
-        }];
-        
-        //文字
-        replyContent = [[UILabel alloc]init];
-        replyContent.font=FONT(12);
-        replyContent.numberOfLines=0;
-        replyContent.textColor=HW_BLACK;
-        [replyBG addSubview:replyContent];
-        [replyContent mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.left.mas_equalTo(0);
-            make.top.mas_equalTo(replyDate.mas_bottom).offset(14);
-            make.width.mas_equalTo(replyBG.mas_width);
-            make.bottom.mas_equalTo(2);
+            make.left.mas_equalTo(contentLabel.mas_left).offset(0);
+            make.top.mas_equalTo(contentLabel.mas_bottom).offset(3);
         }];
         
         
-        //line
-        line = [[UIView alloc]init];
-        line.backgroundColor=HW_GRAY_BORDER;
-        [self addSubview:line];
-        [line mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.left.mas_equalTo(avatar.mas_left);
-            make.top.mas_equalTo(replyBG.mas_bottom).offset(18.5);
-            make.height.mas_equalTo(0.5);
-            make.right.mas_equalTo(desc.mas_right);
-            make.bottom.mas_equalTo(0);
+        //回复按钮
+        replyBtn = [[MJButton alloc]init];
+        replyBtn.mj_text=@"回复";
+        replyBtn.mj_font=FONT(11);
+        replyBtn.mj_textColor=HW_GRAY_WORD_1;
+        [replyBtn addTarget:self action:@selector(replyBtnAction) forControlEvents:UIControlEventTouchUpInside];
+        [self addSubview:replyBtn];
+        [replyBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.left.mas_equalTo(date.mas_right).offset(14);
+            make.centerY.mas_equalTo(date);
         }];
+        
+        
+        
+        
     }
     return self;
 }
 
 
--(void)setCellData:(CommentModel*)data
+-(void)setCellData:(ReplyModel*)data
 {
     dataModel = data;
-    
-    [avatar sd_setImageWithURL:[NSURL URLWithString:dataModel.head]];
-    
-    name.text = data.nickname;
-    
-    //如果是置顶
-    if (data.isTop)
-    {
-        istopLabel.hidden=NO;
-        ispendingLabel.hidden=YES;
-    }
-    
-    //未上架
-    else if (!data.onShelve)
-    {
-        istopLabel.hidden=YES;
-        ispendingLabel.hidden=NO;
-    }
-    else
-    {
-        istopLabel.hidden=YES;
-        ispendingLabel.hidden=YES;
-    }
-    
-    
-    
+        
     date.text = [NSString converUTCDateStr:dataModel.createTime];
     
-    desc.text = dataModel.content;
-    
-    if (data.dataArr.count)
+    //如果是对话
+    if (data.rnikeName.length)
     {
-        CommentModel * replyModel = data.dataArr[0];
-        replyDate.text = [NSString converUTCDateStr:replyModel.createTime];
-        replyContent.text = replyModel.content;
+        NSString * content = [NSString stringWithFormat:@"%@ 回复 %@: %@",data.nickname,data.rnikeName,data.content];
+        NSMutableAttributedString *attString = [[NSMutableAttributedString alloc] initWithString:content];
         
-        replyBG.hidden=NO;
+        [attString yy_setFont:[UIFont boldSystemFontOfSize:13] range:NSMakeRange(0, data.nickname.length)];
+        [attString yy_setFont:[UIFont boldSystemFontOfSize:13] range:NSMakeRange(data.nickname.length+4, data.rnikeName.length+1)];
         
-        [replyBG mas_remakeConstraints:^(MASConstraintMaker *make) {
-            make.top.mas_equalTo(desc.mas_bottom);
-            make.left.mas_equalTo(desc.mas_left);
-            make.width.mas_equalTo(desc.mas_width);
-        }];
+        contentLabel.attributedText = attString;
     }
+    
+    //如果是回复
     else
     {
-        replyBG.hidden=YES;
-        [replyBG mas_remakeConstraints:^(MASConstraintMaker *make) {
-            make.top.mas_equalTo(desc.mas_bottom);
-            make.left.mas_equalTo(desc.mas_left);
-            make.width.mas_equalTo(desc.mas_width);
-            make.height.mas_equalTo(0);
-        }];
+        //如果是官方回复
+        if (data.official)
+        {
+            NSString * content = [NSString stringWithFormat:@"%@: %@",data.nickname,data.content];
+            NSMutableAttributedString *attString = [[NSMutableAttributedString alloc] initWithString:content];
+            [attString yy_setFont:[UIFont boldSystemFontOfSize:13] range:NSMakeRange(0, data.nickname.length+1)];
+            [attString yy_setColor:HW_RED_WORD_1 range:NSMakeRange(0, data.nickname.length+1)];
+            contentLabel.attributedText = attString;
+        }
+        
+        else
+        {
+            NSString * content = [NSString stringWithFormat:@"%@: %@",data.nickname,data.content];
+            NSMutableAttributedString *attString = [[NSMutableAttributedString alloc] initWithString:content];
+            [attString yy_setFont:[UIFont boldSystemFontOfSize:13] range:NSMakeRange(0, data.nickname.length+1)];
+            contentLabel.attributedText = attString;
+        }
+        
+        
+        
+        
     }
-    
+}
+
+
+-(void)replyBtnAction
+{
+    [SZInputView callInputView:TypeSendMail contentId:dataModel.id placeHolder:[NSString stringWithFormat:@"回复@%@",dataModel.nickname] completion:^(id responseObject) {
+        
+    }];
+}
+
+
+-(CGSize)getCellSize
+{
+    [self layoutIfNeeded];
+    CGFloat bottom = date.bottom;
+    return CGSizeMake(SCREEN_WIDTH, bottom);
 }
 
 

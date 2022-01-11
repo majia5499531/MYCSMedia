@@ -34,7 +34,8 @@
     MJButton * sendBtn;
     
     //data
-    NSString * contentId;
+    SZInputViewType inputtype;
+    NSString * ID;
     
     //block
     CompletionBlock resultBlock;
@@ -103,7 +104,7 @@
 
 
 #pragma mark - 公共方法
-+(void)callInputView:(NSInteger)type contentId:(NSString*)contentId placeHolder:(NSString*)placeholder completion:(CompletionBlock)finish
++(void)callInputView:(SZInputViewType)type contentId:(NSString*)contentId placeHolder:(NSString*)placeholder completion:(CompletionBlock)finish
 {
     //未登录则跳转登录
     if (![SZGlobalInfo sharedManager].SZRMToken.length)
@@ -117,8 +118,8 @@
     view.inputWindow.hidden=NO;
     [view.inputWindow makeKeyAndVisible];
     
-    
-    view->contentId = contentId;
+    view->inputtype = type;
+    view->ID = contentId;
     view->input.placeholder = placeholder;
     view->resultBlock = finish;
     
@@ -184,8 +185,15 @@
     NSString * text = [input.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
     if (text.length)
     {
+        if (inputtype==TypeSendComment)
+        {
+            [self requestForSendingComment:input.text];
+        }
+        else
+        {
+            [self requestForSendingReply:input.text];
+        }
         
-        [self requestForSendingComment:input.text];
     }
     else
     {
@@ -203,7 +211,7 @@
     model.isJSON = YES;
     NSMutableDictionary * param=[NSMutableDictionary dictionary];
     [param setValue:text forKey:@"content"];
-    [param setValue:contentId forKey:@"contentId"];
+    [param setValue:ID forKey:@"contentId"];
     
     UIWindow * keywindow = MJ_KEY_WINDOW;
     
@@ -217,6 +225,27 @@
         }];
     
     
+}
+
+-(void)requestForSendingReply:(NSString*)text
+{
+    BaseModel * model = [BaseModel model];
+    __weak typeof (self) weakSelf = self;
+    model.isJSON = YES;
+    NSMutableDictionary * param=[NSMutableDictionary dictionary];
+    [param setValue:text forKey:@"reply"];
+    [param setValue:ID forKey:@"id"];
+    
+    UIWindow * keywindow = MJ_KEY_WINDOW;
+    
+    
+    [model PostRequestInView:keywindow WithUrl:APPEND_SUBURL(BASE_URL, API_URL_SEND_REPLY) Params:param Success:^(id responseObject) {
+        [weakSelf requestSendingDone];
+        } Error:^(id responseObject) {
+            [weakSelf requestFailed];
+        } Fail:^(NSError *error) {
+            [weakSelf requestFailed];
+        }];
 }
 
 
@@ -233,8 +262,10 @@
     [[SZData sharedSZData]requestCommentListData];
 
     //回调
-    resultBlock(contentId);
+    resultBlock(ID);
 }
+
+
 -(void)requestFailed
 {
 //    [self closeCustomWindow];

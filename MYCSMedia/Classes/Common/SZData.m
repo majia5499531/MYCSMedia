@@ -15,6 +15,9 @@
 #import "SZGlobalInfo.h"
 #import "SZUserTracker.h"
 #import "StatusModel.h"
+#import "ReplyModel.h"
+#import "ReplyListModel.h"
+#import "ContentListModel.h"
 
 @implementation SZData
 
@@ -46,6 +49,7 @@
         
         if(self.currentContentId.length)
         {
+            [weakSelf requestContentBelongedAlbums];
             [weakSelf requestContentState];
             [weakSelf requestCommentListData];
             [weakSelf requestForAddingViewCount];
@@ -58,6 +62,27 @@
 
 
 #pragma mark - Request
+//请求内容所属合辑
+-(void)requestContentBelongedAlbums
+{
+    ContentListModel * model = [ContentListModel model];
+    
+    NSString * url = APPEND_SUBURL(BASE_URL, API_URL_CONTENT_IN_ALBUM);
+    url = APPEND_SUBURL(url, self.currentContentId);
+    
+    __weak typeof (self) weakSelf = self;
+    [model GETRequestInView:nil WithUrl:url Params:nil Success:^(id responseObject) {
+        [weakSelf requestContentBelongedAlbumsDone:model];
+        } Error:^(id responseObject) {
+            
+        } Fail:^(NSError *error) {
+            
+        }];
+    
+    
+}
+
+
 //请求内容状态
 -(void)requestContentState
 {
@@ -87,6 +112,7 @@
     [param setValue:self.currentContentId forKey:@"contentId"];
     [param setValue:@"9999" forKey:@"pageSize"];
     [param setValue:@"1" forKey:@"pageNum"];
+    [param setValue:@"0" forKey:@"pcommentId"];
     
     __weak typeof (self) weakSelf = self;
     [model PostRequestInView:nil WithUrl:APPEND_SUBURL(BASE_URL, API_URL_GET_COMMENT_LIST) Params:param Success:^(id responseObject) {
@@ -215,7 +241,25 @@
 }
 
 
+
+
+
 #pragma mark - Request Done
+-(void)requestContentBelongedAlbumsDone:(ContentListModel*)listModel
+{
+    if (listModel.dataArr.count==0)
+    {
+        return;
+    }
+    
+    //保存在字典中
+    [self.contentBelongAlbumsDic setValue:listModel forKey:self.currentContentId];
+    
+    //更新time
+    NSNumber * currrentTime = [NSNumber numberWithInteger:[[NSDate date]timeIntervalSince1970]];
+    self.contentBelongAlbumsUpdateTime = currrentTime;
+}
+
 -(void)requestContentStateDone:(ContentStateModel*)model
 {
     //保存在字典中
@@ -314,10 +358,40 @@
     self.contentCreateFollowTime = currrentTime;
 }
 
-
+-(void)requestReplyListDone:(NSArray*)replys commentID:(NSString*)commentID
+{
+    //找到这条评论，并将回复数据插入
+    CommentDataModel * commentDataM = [self.contentCommentDic valueForKey:self.currentContentId];
+    
+    for (CommentModel * M in commentDataM.dataArr)
+    {
+        if ([M.id isEqualToString:commentID])
+        {
+            //评论数据保存起来
+            [M.dataArr removeAllObjects];
+            [M.dataArr addObjectsFromArray:replys];
+            
+            
+        }
+    }
+    
+    
+    //更新time
+    NSNumber * currrentTime = [NSNumber numberWithInteger:[[NSDate date]timeIntervalSince1970]];
+    self.contentCommentsUpdateTime = currrentTime;
+}
 
 
 #pragma mark - Getter
+-(NSMutableDictionary *)contentBelongAlbumsDic
+{
+    if (_contentBelongAlbumsDic==nil)
+    {
+        _contentBelongAlbumsDic=[NSMutableDictionary dictionary];
+    }
+    return _contentBelongAlbumsDic;
+}
+
 -(NSMutableDictionary *)contentStateDic
 {
     if (_contentStateDic==nil)

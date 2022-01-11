@@ -24,8 +24,11 @@
 #import "ContentStateModel.h"
 #import "ContentModel.h"
 #import "SZManager.h"
+#import "SZCommentHeader.h"
+#import "SZCommentFooter.h"
+#import "ReplyModel.h"
 
-@interface SZCommentList ()<UICollectionViewDataSource,UICollectionViewDelegate>
+@interface SZCommentList ()<UICollectionViewDataSource,UICollectionViewDelegate,UIGestureRecognizerDelegate>
 
 @end
 
@@ -42,6 +45,8 @@
     UICollectionView * collectionView;
     
     MJButton * sendBtn;
+    
+    BOOL isDragging;
 }
 
 
@@ -176,7 +181,6 @@
     
     //collectionview
     UICollectionViewFlowLayout *flowLayout = [[UICollectionViewFlowLayout alloc] init];
-    flowLayout.estimatedItemSize = CGSizeMake(SCREEN_WIDTH, 100);
     collectionView = [[UICollectionView alloc] initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH,SCREEN_HEIGHT) collectionViewLayout:flowLayout];
     if (@available(iOS 11.0, *))
     {
@@ -185,6 +189,8 @@
     collectionView.showsHorizontalScrollIndicator = NO;
     collectionView.backgroundColor=HW_WHITE;
     [collectionView registerClass:[SZCommentCell class] forCellWithReuseIdentifier:@"commentCell"];
+    [collectionView registerClass:[SZCommentHeader class] forSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:@"szcommentheader"];
+    [collectionView registerClass:[SZCommentFooter class] forSupplementaryViewOfKind:UICollectionElementKindSectionFooter withReuseIdentifier:@"szcommentfooter"];
     collectionView.delegate = self;
     collectionView.dataSource = self;
     [BGView addSubview:collectionView];
@@ -194,6 +200,8 @@
         make.width.mas_equalTo(SCREEN_WIDTH);
         make.bottom.mas_equalTo(sepeline.mas_top);
     }];
+    
+    
     
 }
 
@@ -235,12 +243,12 @@
         [BGView setFrame:CGRectMake(BGView.left,newtop, BGView.width, BGView.height)];
     }
     
-    
+    isDragging = YES;
 }
 
 -(void)commentListBGMoveDone
 {
-    if (BGView.top > SCREEN_HEIGHT*0.5)
+    if (BGView.top > SCREEN_HEIGHT*0.45)
     {
         [self showCommentList:NO];
     }
@@ -249,8 +257,7 @@
         [self showCommentList:YES];
     }
     
-    
-    
+    isDragging = NO;
 }
 
 
@@ -311,22 +318,37 @@
 #pragma mark - CollectionView Datasource & Delegate
 -(UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    CommentModel * model = dataModel.dataArr [indexPath.row];
+    CommentModel * model = dataModel.dataArr[indexPath.section];
+    ReplyModel * reply = model.dataArr[indexPath.row];
+    
     SZCommentCell * cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"commentCell" forIndexPath:indexPath];
-    [cell setCellData:model];
+    [cell setCellData:reply];
     return  cell;
 }
 - (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath
 {
-    return nil;
+    CommentModel * model = dataModel.dataArr[indexPath.section];
+    if (kind==UICollectionElementKindSectionHeader)
+    {
+        SZCommentHeader * header = [collectionView dequeueReusableSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:@"szcommentheader" forIndexPath:indexPath];
+        [header setCellData:model];
+        return header;
+    }
+    else
+    {
+        SZCommentHeader * footer = [collectionView dequeueReusableSupplementaryViewOfKind:UICollectionElementKindSectionFooter withReuseIdentifier:@"szcommentfooter" forIndexPath:indexPath];
+        [footer setCellData:model];
+        return footer;
+    }
 }
 -(NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView
 {
-    return 1;
+    return dataModel.dataArr.count;
 }
 -(NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
 {
-    return dataModel.dataArr.count;
+    CommentModel * model = dataModel.dataArr[section];
+    return model.replyShowCount;
 }
 - (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout minimumLineSpacingForSectionAtIndex:(NSInteger)section
 {
@@ -342,17 +364,64 @@
 }
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout referenceSizeForHeaderInSection:(NSInteger)section
 {
-    return CGSizeZero;
+    CommentModel * model = dataModel.dataArr[section];
+    SZCommentHeader * header = [[SZCommentHeader alloc]initWithFrame:CGRectZero];
+    [header setCellData:model];
+    CGSize size = [header getHeaderSize];
+    
+    return size;
 }
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout referenceSizeForFooterInSection:(NSInteger)section
 {
-    return CGSizeZero;
+    CommentModel * model = dataModel.dataArr[section];
+    SZCommentFooter * header = [[SZCommentFooter alloc]initWithFrame:CGRectZero];
+    [header setCellData:model];
+    CGSize size = [header getHeaderSize];
+    
+    return size;
+}
+- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath
+{
+    SZCommentCell * cell = [[SZCommentCell alloc]initWithFrame:CGRectZero];
+    CommentModel * model = dataModel.dataArr[indexPath.section];
+    ReplyModel * reply = model.dataArr[indexPath.row];
+    [cell setCellData:reply];
+    CGSize cellsize = [cell getCellSize];
+    return cellsize;
 }
 
 
+#pragma mark - Scrollview Delegate
+-(void)scrollViewWillBeginDragging:(UIScrollView *)scrollView
+{
+    [self panGestureAction:scrollView.panGestureRecognizer];
+}
 
-
-
+-(void)scrollViewDidScroll:(UIScrollView *)scrollView
+{
+    if (scrollView.contentOffset.y<0)
+    {
+        [scrollView setContentOffset:CGPointMake(0, 0)];
+        [self panGestureAction:scrollView.panGestureRecognizer];
+    }
+    else
+    {
+        static CGFloat lastOffsetY = 0;
+        if (isDragging==YES)
+        {
+            [scrollView setContentOffset:CGPointMake(0, lastOffsetY)];
+            [self panGestureAction:scrollView.panGestureRecognizer];
+        }
+        else
+        {
+            lastOffsetY = scrollView.contentOffset.y;
+        }
+    }
+}
+-(void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate
+{
+    [self panGestureAction:scrollView.panGestureRecognizer];
+}
 
 
 
@@ -374,7 +443,7 @@
     }
 
     __weak typeof (self) weakSelf = self;
-    [SZInputView callInputView:0 contentId:_contentId placeHolder:@"发表您的评论" completion:^(id responseObject) {
+    [SZInputView callInputView:TypeSendComment contentId:_contentId placeHolder:@"发表您的评论" completion:^(id responseObject) {
         [MJHUD_Notice showSuccessView:@"评论已提交，请等待审核通过！" inView:weakSelf.window hideAfterDelay:2];
     }];
     
@@ -383,19 +452,15 @@
 -(void)panGestureAction:(UIPanGestureRecognizer*)pan
 {
     CGPoint locationPoint = [pan locationInView:BGView];
-//    CGPoint veloctyPoint = [pan velocityInView:self];
-    
+        
     static CGFloat originy = 0;
     if (pan.state==UIGestureRecognizerStateBegan)
     {
         originy = locationPoint.y;
-        
-//        NSLog(@"pan_%g",locationPoint.y);
     }
     else if (pan.state==UIGestureRecognizerStateChanged)
     {
         CGFloat offsetY = locationPoint.y-originy;
-        
         
         [self commentListBGMoved:offsetY];
     }
@@ -403,10 +468,11 @@
     {
         [self commentListBGMoveDone];
     }
-    
-    
-    
-    
 }
+
+
+
+
+
 
 @end

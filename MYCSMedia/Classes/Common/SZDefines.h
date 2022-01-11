@@ -39,13 +39,16 @@
 #define API_URL_VIDEO_LIST          @"api/cms/client/video/queryVideoPullDownList"
 #define API_URL_RANDOM_VIDEO_LIST   @"api/cms/client/video/queryRandomVideoList"
 #define API_URL_VIDEO               @"api/cms/client/video/getVideoDetails"
+#define API_URL_VIDEOCOLLECT        @"api/cms/client/content/getSpecList"
 #define API_URL_VIDEO_COLLECTION    @"api/cms/client/video/getVideoCollect"
 #define API_URL_FAVOR               @"api/cms/client/favor/addOrCancelFavor"
 #define API_URL_ZAN                 @"api/cms/client/like/likeOrCancel"
 #define API_URL_VIEW_COUNT          @"api/cms/client/contentStats/view/count"
 #define API_URL_SEND_COMMENT        @"api/cms/client/comment/add"
-#define API_URL_GET_COMMENT_LIST    @"api/cms/client/comment/getCommentByContent"
+#define API_URL_SEND_REPLY          @"api/cms/client/comment/addUserReply"
+#define API_URL_GET_COMMENT_LIST    @"api/cms/client/comment/getCommentWithReply"
 #define API_URL_GET_CONTENT_STATE   @"api/cms/client/contentStats/queryStatsData"
+#define API_URL_GET_REPLY_LIST      @"api/cms/client/comment/getCommentByContent"
 #define API_URL_TOKEN_EXCHANGE      @"api/sys/login/mycs/token"
 #define API_URL_QUERYCATEGORY       @"api/cms/client/panel/queryPanelByCategory"
 #define API_URL_RELATED_CONTENT     @"api/cms/client/content/recommend"
@@ -56,7 +59,7 @@
 #define API_URL_VIDEO_COMMIT        @"api/cms/client/content/activity/works/create"
 #define API_URL_PANEL_ACTIVITY      @"api/cms/client/panel/info"
 #define API_URL_CONTENT_TRACKING    @"api/cms/client/tracking/upload"
-
+#define API_URL_CONTENT_IN_ALBUM    @"api/cms/client/video/getCollectToVideo"
 
 
 
@@ -211,6 +214,7 @@
 #define HW_GRAY_BG_6                [UIColor colorWithHexString:@"666666"]
 #define HW_GRAY_BG_7                [UIColor colorWithHexString:@"777777"]
 #define HW_GRAY_BG_8                [UIColor colorWithHexString:@"888888"]
+#define HW_GRAY_BG_9                [UIColor colorWithHexString:@"999999"]
 
 #define HW_GRAY_BG_White            [UIColor colorWithHexString:@"F3F4F5"]
 #define HW_GRAY_BORDER              [UIColor colorWithHexString:@"E8E8E8"]

@@ -21,7 +21,7 @@
 @property(strong,nonatomic)NSNumber * contentCreateFollowTime;       //关注发布者
 @property(strong,nonatomic)NSNumber * contentStateUpdateTime;        //内容状态变化
 @property(strong,nonatomic)NSNumber * contentRelateUpdateTime;       //相关推荐变化
-
+@property(strong,nonatomic)NSNumber * contentBelongAlbumsUpdateTime;         //内容标签变化
 
 //数据
 @property(strong,nonatomic)NSMutableDictionary * contentDic;
@@ -29,7 +29,7 @@
 @property(strong,nonatomic)NSMutableDictionary * contentCommentDic;
 @property(strong,nonatomic)NSMutableDictionary * contentRelateContentDic;
 @property(strong,nonatomic)NSMutableDictionary * contentRelateContentDislikeDic;
-
+@property(strong,nonatomic)NSMutableDictionary * contentBelongAlbumsDic;;
 
 +(instancetype)sharedSZData;
 
@@ -39,7 +39,6 @@
 -(void)requestFollowUser:(NSString*)userId;
 -(void)requestUnFollowUser:(NSString*)userId;
 -(void)requestCommentListData;
-
 
 
 @end

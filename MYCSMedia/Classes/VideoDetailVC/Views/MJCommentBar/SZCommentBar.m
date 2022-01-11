@@ -69,7 +69,7 @@
 }
 
 
-#pragma mark - 监听
+#pragma mark - 数据绑定
 -(void)addObserver
 {
     //绑定数据
@@ -437,7 +437,7 @@
     }
     
     __weak typeof (self) weakSelf = self;
-    [SZInputView callInputView:0 contentId:_contentId placeHolder:@"发表您的评论" completion:^(id responseObject) {
+    [SZInputView callInputView:TypeSendComment contentId:_contentId placeHolder:@"发表您的评论" completion:^(id responseObject) {
         [MJHUD_Notice showSuccessView:@"评论已提交，请等待审核通过！" inView:weakSelf.window hideAfterDelay:2];
         
         [weakSelf commentTapAction];
@@ -488,27 +488,6 @@
 {
     [SZUserTracker trackingButtonClick:@"short_video_start_make"  moduleIndex:0];
     
-    //未登录则跳转登录
-    if (![SZGlobalInfo sharedManager].SZRMToken.length)
-    {
-        [SZGlobalInfo mjshowLoginAlert];
-        return;
-    }
-    
-    [self jumpToUploadingVC];
-}
-
-
--(void)jumoToOtherApp
-{
-    [MJHUD_Alert showAppRoutingAlert:^(id objc) {
-        NSURL * url = [NSURL URLWithString:@"https://apps.apple.com/cn/app/id1458072671"];
-        [[UIApplication sharedApplication]openURL:url];
-    }];
-}
-
--(void)jumpToUploadingVC
-{
     //未登录则跳转登录
     if (![SZGlobalInfo sharedManager].SZRMToken.length)
     {

@@ -38,6 +38,7 @@
 
 
 
+#pragma mark - 追踪事件
 //一次性事件5个参数
 +(void)trackContentEvent:(NSString*)eventName content:(ContentModel*)model
 {
@@ -54,6 +55,7 @@
     [bizparam setValue:groupId forKey:@"group_id"];
     [bizparam setValue:@"content_manager_system" forKey:@"params_for_special"];
     [bizparam setValue:[SZContentTracker make__items:groupId] forKey:@"__items"];
+    [bizparam setValue:model.requestId forKey:@"req_id"];
     
     [[SZContentTracker shareTracker]requestForUploading:bizparam eventKey:eventName contentModel:model];
         
@@ -134,6 +136,7 @@
             [bizparam setValue:[SZContentTracker make__items:groupId] forKey:@"__items"];
             [bizparam setValue:[NSString stringWithFormat:@"%ld",(long)duration] forKey:@"duration"];
             [bizparam setValue:progressNumber forKey:@"percent"];
+            [bizparam setValue:model.requestId forKey:@"req_id"];
             
             
             [tracker requestForUploading:bizparam eventKey:@"cms_video_over_auto" contentModel:model];
@@ -220,7 +223,7 @@
             [bizparam setValue:[SZContentTracker make__items:groupId] forKey:@"__items"];
             [bizparam setValue:[NSString stringWithFormat:@"%ld",(long)duration] forKey:@"duration"];
             [bizparam setValue:progressNumber forKey:@"percent"];
-            
+            [bizparam setValue:model.requestId forKey:@"req_id"];
             
             [tracker requestForUploading:bizparam eventKey:@"cms_video_over" contentModel:model];
             
@@ -273,7 +276,7 @@
 }
 
 
-#pragma mark - Tools
+#pragma mark - 工具方法
 +(NSArray*)make__items:(NSString*)contentId
 {
     NSDictionary * dic = @{@"id":contentId};
@@ -287,18 +290,12 @@
     return arr2;
 }
 
-
-
-
-
-#pragma mark - 工具类
 +(NSString*)currentTimeStr
 {
     long inter = [[NSDate date] timeIntervalSince1970]*1000;
     NSString * timestr = [NSString stringWithFormat:@"%ld",inter];
     return timestr;
 }
-
 
 +(NSString*)currentDeviceModel
 {
@@ -309,7 +306,6 @@
 {
     return [[UIDevice currentDevice]systemVersion];
 }
-
 
 +(NSString*)currentDeviceUniqueId
 {

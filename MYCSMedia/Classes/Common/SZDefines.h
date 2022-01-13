@@ -60,7 +60,7 @@
 #define API_URL_PANEL_ACTIVITY      @"api/cms/client/panel/info"
 #define API_URL_CONTENT_TRACKING    @"api/cms/client/tracking/upload"
 #define API_URL_CONTENT_IN_ALBUM    @"api/cms/client/video/getCollectToVideo"
-
+#define API_URL_CATEGORY_LIST       @"api/cms/client/category/getCategoryData"
 
 
 

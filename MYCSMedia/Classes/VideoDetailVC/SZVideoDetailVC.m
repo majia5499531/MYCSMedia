@@ -115,8 +115,6 @@
 }
 
 
-
-
 -(NSIndexPath*)getCurrentRow
 {
     //获取当前cell的index
@@ -512,7 +510,7 @@
     else
     {
         SZVideoCell * cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"fullVideoCell" forIndexPath:indexPath];
-        [cell setCellData:self.dataArr[indexPath.row] enableFollow:NO];
+        [cell setCellData:self.dataArr[indexPath.row] enableFollow:NO albumnName:self.albumName];
         return  cell;
     }
     

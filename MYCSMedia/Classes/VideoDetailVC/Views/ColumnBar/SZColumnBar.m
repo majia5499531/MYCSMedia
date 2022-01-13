@@ -12,7 +12,6 @@
 #import "UIColor+MJCategory.h"
 #import "MJButton.h"
 #import "UIScrollView+MJCategory.h"
-#import "CategoryModel.h"
 
 @interface SZColumnBar ()<UIScrollViewDelegate>
 

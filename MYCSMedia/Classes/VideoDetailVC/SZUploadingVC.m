@@ -31,22 +31,19 @@
 @interface SZUploadingVC ()
 {
     UIScrollView * bgscroll;
-    UILabel * secTitle1;
+    
     FSTextView * inputview;
-    TopicListModel * listModel;
     MJButton * uploadBtn;
     UIProgressView * progress;
     MJButton * deleteBtn;
     UIImageView * coverImage;
     UILabel * successLabel;
     
-    UIView * filterview;
+    
     
     NSMutableArray * btsArr;
     
-    NSString * currentSelectTopicId;
     NSString * currentDesc;
-    
     
     FileUploadModel * uploadModel;
 }
@@ -61,8 +58,6 @@
     [super viewDidLoad];
     
     [self MJInitSubviews];
-    
-    [self requestTopicLists];
 }
 
 
@@ -119,95 +114,28 @@
     [sureBtn addTarget:self action:@selector(commitBtnAction) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:sureBtn];
     
-    //话题选择
-    secTitle1 = [[UILabel alloc]init];
-    secTitle1.text=@"话题选择";
-    secTitle1.textColor=HW_BLACK;
-    secTitle1.font=BOLD_FONT(18);
-    [bgscroll addSubview:secTitle1];
-    [secTitle1 mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(STATUS_BAR_HEIGHT+44+15);
-        make.left.mas_equalTo(16);
-    }];
-    
-    
-    //描述
-    UILabel * secDesc1 = [[UILabel alloc]init];
-    secDesc1.text=@"必选，作品必须符合话题其中之一";
-    secDesc1.textColor=HW_GRAY_WORD_1;
-    secDesc1.font=FONT(13);
-    [bgscroll addSubview:secDesc1];
-    [secDesc1 mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.mas_equalTo(secTitle1.mas_right).offset(6);
-        make.bottom.mas_equalTo(secTitle1.mas_bottom);
-    }];
-    
-    
-    //filter
-    filterview = [[UIView alloc]init];
-    [filterview setWidth:SCREEN_WIDTH];
-    [bgscroll addSubview:filterview];
-    [filterview mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.mas_equalTo(0);
-        make.top.mas_equalTo(secTitle1.mas_bottom).offset(20);
-        make.width.mas_equalTo(SCREEN_WIDTH);
-        make.height.mas_equalTo(55);
-    }];
-    
-    
-    //视频简介
-    UILabel * secTitle2 = [[UILabel alloc]init];
-    secTitle2.text=@"视频简介";
-    secTitle2.textColor=HW_BLACK;
-    secTitle2.font=BOLD_FONT(18);
-    [bgscroll addSubview:secTitle2];
-    [secTitle2 mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.mas_equalTo(16);
-        make.top.mas_equalTo(filterview.mas_bottom).offset(30);
-    }];
-    
-    
-    //输入框
-    inputview = [[FSTextView alloc]init];
-    inputview.placeholder=@"填写视频介绍，让更多人了解你的作品，最多120个字符";
-    inputview.font=FONT(14);
-    inputview.maxLength=120;
-    inputview.backgroundColor=HW_WHITE;
-    inputview.textColor=HW_BLACK;
-    inputview.maxLength=120;
-    [inputview addTextDidChangeHandler:^(FSTextView *textView) {
-        self->currentDesc = textView.text;
-    }];
-    [bgscroll addSubview:inputview];
-    [inputview mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.mas_equalTo(12);
-        make.top.mas_equalTo(secTitle2.mas_bottom).offset(8);
-        make.width.mas_equalTo(SCREEN_WIDTH-24);
-        make.height.mas_equalTo(150);
-    }];
-    
     
     //视频上传
-    UILabel * secTitle3 = [[UILabel alloc]init];
-    secTitle3.text=@"视频上传";
-    secTitle3.textColor=HW_BLACK;
-    secTitle3.font=BOLD_FONT(18);
-    [bgscroll addSubview:secTitle3];
-    [secTitle3 mas_makeConstraints:^(MASConstraintMaker *make) {
+    UILabel * title1 = [[UILabel alloc]init];
+    title1.text=@"视频上传";
+    title1.textColor=HW_BLACK;
+    title1.font=BOLD_FONT(18);
+    [bgscroll addSubview:title1];
+    [title1 mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_equalTo(16);
-        make.top.mas_equalTo(inputview.mas_bottom).offset(15);
+        make.top.mas_equalTo(cancelBtn.mas_bottom).offset(21);
     }];
     
     
     //视频上传描述
-    UILabel * secDesc3 = [[UILabel alloc]init];
-    secDesc3.text=@"视频时长建议不超过180秒";
-    secDesc3.textColor=HW_GRAY_WORD_1;
-    secDesc3.font=FONT(13);
-    [bgscroll addSubview:secDesc3];
-    [secDesc3 mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.mas_equalTo(secTitle3.mas_right).offset(6);
-        make.bottom.mas_equalTo(secTitle3.mas_bottom);
+    UILabel * desc1 = [[UILabel alloc]init];
+    desc1.text=@"视频时长建议不超过180秒";
+    desc1.textColor=HW_GRAY_WORD_1;
+    desc1.font=FONT(13);
+    [bgscroll addSubview:desc1];
+    [desc1 mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.mas_equalTo(title1.mas_right).offset(6);
+        make.bottom.mas_equalTo(title1.mas_bottom);
     }];
     
     
@@ -218,8 +146,8 @@
     [bgscroll addSubview:uploadBtn];
     [uploadBtn addTarget:self action:@selector(uploadBtnAction) forControlEvents:UIControlEventTouchUpInside];
     [uploadBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.mas_equalTo(secTitle3.mas_left);
-        make.top.mas_equalTo(secTitle3.mas_bottom).offset(20);
+        make.left.mas_equalTo(title1.mas_left);
+        make.top.mas_equalTo(title1.mas_bottom).offset(20);
         make.width.mas_equalTo(94);
         make.height.mas_equalTo(94);
     }];
@@ -279,89 +207,46 @@
         make.centerX.mas_equalTo(uploadBtn);
         make.top.mas_equalTo(uploadBtn.mas_bottom).offset(5);
     }];
-}
-
-
-
--(void)createTopicItems
-{
-    
-    CGFloat marginX = 16;
-    CGFloat marginY = 10;
-    CGFloat btnH = 26;
-    CGFloat originX=16;
-    CGFloat originY=0;
-    
-    btsArr = [NSMutableArray array];
-    for (int i = 0; i<listModel.dataArr.count; i++)
-    {
-        ContentModel * model = listModel.dataArr[i];
-        MJButton * btn = [[MJButton alloc]init];
-        btn.titleLabel.numberOfLines=2;
-        btn.mj_text = [NSString stringWithFormat:@"#%@",model.title];
-        btn.mj_font = FONT(13);
-        btn.mj_textColor=HW_BLACK;
-        btn.mj_textColor_sel = HW_WHITE;
-        btn.mj_bgColor=[UIColor colorWithHexString:@"F5F5F5"];
-        btn.mj_bgColor_sel = HW_RED_WORD_1;
-        btn.layer.cornerRadius=5;
-        [btn addTarget:self action:@selector(topicBtnAction:) forControlEvents:UIControlEventTouchUpInside];
-        btn.tag = i;
-        [btn sizeToFit];
-        [btn setSize:CGSizeMake(btn.width+20, btnH)];
-        
-        
-        //如果当前行放得下
-        if (originX + btn.width + marginX <= SCREEN_WIDTH)
-        {
-            [btn setOrigin:CGPointMake(originX, originY)];
-            
-            originX = btn.right+marginX;
-            originY = btn.top;
-        }
-        else
-        {
-            [btn setOrigin:CGPointMake(marginX, originY+marginY+btnH)];
-            
-            originX = btn.right+marginX;
-            originY = btn.top;
-        }
-        
-        [filterview addSubview:btn];
-        [btsArr addObject:btn];
-    }
     
     
-    [self.view layoutIfNeeded];
-    [filterview mas_updateConstraints:^(MASConstraintMaker *make) {
-        make.height.mas_equalTo(originY+btnH);
+    //视频简介
+    UILabel * secTitle2 = [[UILabel alloc]init];
+    secTitle2.text=@"视频简介";
+    secTitle2.textColor=HW_BLACK;
+    secTitle2.font=BOLD_FONT(18);
+    [bgscroll addSubview:secTitle2];
+    [secTitle2 mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.mas_equalTo(16);
+        make.top.mas_equalTo(uploadBtn.mas_bottom).offset(35);
+    }];
+    
+    
+    //输入框
+    inputview = [[FSTextView alloc]init];
+    inputview.placeholder=@"填写视频介绍，让更多人了解你的作品，最多120个字符";
+    inputview.font=FONT(14);
+    inputview.maxLength=120;
+    inputview.backgroundColor=HW_WHITE;
+    inputview.textColor=HW_BLACK;
+    inputview.maxLength=120;
+    [inputview addTextDidChangeHandler:^(FSTextView *textView) {
+        self->currentDesc = textView.text;
+    }];
+    [bgscroll addSubview:inputview];
+    [inputview mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.mas_equalTo(12);
+        make.top.mas_equalTo(secTitle2.mas_bottom).offset(8);
+        make.width.mas_equalTo(SCREEN_WIDTH-24);
+        make.height.mas_equalTo(150);
     }];
     
     
 }
 
 
+
+
 #pragma mark - Request
--(void)requestTopicLists
-{
-    TopicListModel * model =[TopicListModel model];
-    model.isJSON=YES;
-    
-    NSMutableDictionary * param=[NSMutableDictionary dictionary];
-    [param setValue:@"xksh" forKey:@"activityCode"];
-    [param setValue:@"activity.topic" forKey:@"type"];
-    
-    __weak typeof (self) weakSelf = self;
-    [model PostRequestInView:self.view WithUrl:APPEND_SUBURL(BASE_URL, API_URL_TOPICS) Params:param Success:^(id responseObject) {
-        [weakSelf requestDone:model];
-        } Error:^(id responseObject) {
-            
-        } Fail:^(NSError *error) {
-            
-        }];
-}
-
-
 -(void)requestUploadData:(NSURL*)dataUrl
 {
     FileUploadModel * model = [FileUploadModel model];
@@ -412,8 +297,6 @@
     
     [param setValue:currentDesc forKey:@"title"];
     
-    [param setValue:currentSelectTopicId forKey:@"belongTopicId"];
-    
     __weak typeof (self) weakSelf = self;
     StatusModel * model = [StatusModel model];
     model.isJSON = YES;
@@ -429,13 +312,6 @@
 
 
 #pragma mark - Rquest Done
--(void)requestDone:(TopicListModel*)model
-{
-    listModel = model;
-    
-    [self createTopicItems];
-}
-
 -(void)requestUploadDone:(FileUploadModel*)model
 {
     //显示封面图，删除按钮
@@ -494,11 +370,7 @@
 
 -(void)commitBtnAction
 {
-    if (currentSelectTopicId.length==0)
-    {
-        [MJHUD_Notice showNoticeView:@"请选择视频相关话题" inView:self.view hideAfterDelay:2];
-    }
-    else if (currentDesc.length==0)
+    if (currentDesc.length==0)
     {
         [MJHUD_Notice showNoticeView:@"请输入视频简介" inView:self.view hideAfterDelay:2];
     }
@@ -525,18 +397,6 @@
     }];
 }
 
--(void)topicBtnAction:(MJButton*)targetBtn
-{
-    for (MJButton * btn in btsArr)
-    {
-        btn.MJSelectState=NO;
-    }
-    
-    targetBtn.MJSelectState=YES;
-    
-    ContentModel * model = listModel.dataArr[targetBtn.tag];
-    currentSelectTopicId = model.id;
-}
 
 -(void)deleteBtnAction
 {

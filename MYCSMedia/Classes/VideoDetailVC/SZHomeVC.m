@@ -25,8 +25,6 @@
 #import "ContentModel.h"
 #import "TokenExchangeModel.h"
 #import "MJLabel.h"
-#import "CategoryView.h"
-#import "MJProvider.h"
 #import "IQDataBinding.h"
 #import "NSString+MJCategory.h"
 #import "SZGlobalInfo.h"
@@ -37,9 +35,12 @@
 #import "SZData.h"
 #import "PanelModel.h"
 #import "SZUserTracker.h"
+#import "CategoryListModel.h"
+#import "CategoryModel.h"
 
 @interface SZHomeVC ()<UIScrollViewDelegate,NewsColumnDelegate>
 {
+    CategoryListModel * cateList;
     UIScrollView * scrollBG;
     SZColumnBar * columnbar;
     
@@ -68,13 +69,7 @@
 {
     [super viewDidLoad];
     
-    [self MJInitSubviews];
-    
-    [self addNotifications];
-    
-    [self requestXKSH_Activity];
-    
-    [self requestVideoColumnInfo];
+    [self requestCategoryList];
 }
 
 -(void)dealloc
@@ -167,14 +162,25 @@
     rootview3 = [[SZHomeRootView3 alloc]initWithFrame:CGRectMake(scrollBG.width*2, NAVI_HEIGHT, scrollBG.width, scrollBG.height-NAVI_HEIGHT)];
     [scrollBG addSubview:rootview3];
     
+    
+    NSString * str = @"我的小康生活";
+    for (int i =0; i<cateList.dataArr.count; i++)
+    {
+        CategoryModel * model = cateList.dataArr[i];
+        if ([model.code isEqualToString:@"mycs.xksh"])
+        {
+            str = model.name;
+        }
+    }
+    
     //SZColumnBar
     columnbar = [[SZColumnBar alloc]initWithFrame:CGRectMake(70, STATUS_BAR_HEIGHT, 235, 36)];
     columnbar.columnDelegate=self;
     [self.view addSubview:columnbar];
-    NSArray * titles = @[@"我的小康生活",@"视频",@"直播"];
+    NSArray * titles = @[str,@"视频",@"直播"];
     [columnbar setTopicTitles:titles relateScrollView:scrollBG originX:10 minWidth:50 itemMargin:12 initialIndex:self.initialIndex];
     [self.view addSubview:columnbar];
-    [columnbar setCenterX:self.view.width/2-20];
+    [columnbar setCenterX:self.view.width/2];
     
     //backbtn
     MJButton * backBtn = [[MJButton alloc]init];
@@ -216,6 +222,23 @@
 
 
 #pragma mark - Request
+-(void)requestCategoryList
+{
+    CategoryListModel * list = [CategoryListModel model];
+    NSMutableDictionary * param=[NSMutableDictionary dictionary];
+    [param setValue:@"mycs.video" forKey:@"categoryCode"];
+    
+    __weak typeof (self) weakSelf = self;
+    [list GETRequestInView:self.view WithUrl:APPEND_SUBURL(BASE_URL, API_URL_CATEGORY_LIST) Params:param Success:^(id responseObject) {
+        [weakSelf requestCategoryListDone:list];
+        } Error:^(id responseObject) {
+            
+        } Fail:^(NSError *error) {
+            
+        }];
+}
+
+
 -(void)requestXKSH_Activity
 {
     PanelModel * model = [PanelModel model];
@@ -252,6 +275,18 @@
 
 
 #pragma mark - Request Done
+-(void)requestCategoryListDone:(CategoryListModel*)list
+{
+    cateList = list;
+    
+    [self MJInitSubviews];
+    
+    [self addNotifications];
+    
+    [self requestXKSH_Activity];
+    
+    [self requestVideoColumnInfo];
+}
 -(void)requestXKSH_ActivityDone:(PanelConfigModel*)panelConfig
 {
     NSString * img1 = panelConfig.imageUrl;

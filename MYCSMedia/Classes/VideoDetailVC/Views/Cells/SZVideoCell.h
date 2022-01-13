@@ -8,15 +8,9 @@
 
 #import <UIKit/UIKit.h>
 
-NS_ASSUME_NONNULL_BEGIN
-
-
-
 
 @interface SZVideoCell : UICollectionViewCell
 
--(void)setCellData:(id)objc enableFollow:(BOOL)enable;
+-(void)setCellData:(id)objc enableFollow:(BOOL)enable albumnName:(NSString*)albumnName;
 
 @end
-
-NS_ASSUME_NONNULL_END

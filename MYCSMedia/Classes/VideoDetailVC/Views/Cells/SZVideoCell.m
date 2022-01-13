@@ -38,6 +38,7 @@
 #import "SZUserTracker.h"
 #import "ContentListModel.h"
 #import "SZVideoDetailVC.h"
+#import "YYText.h"
 
 @interface SZVideoCell ()<GYRollingNoticeViewDelegate,GYRollingNoticeViewDataSource>
 
@@ -49,6 +50,7 @@
     ContentModel * dataModel;
     VideoRelateModel * relateModel;
     VideoCollectModel * collectModel;
+    NSString * albumName;
     NSInteger videoWHSize;                       //9:16 -- 0          16:9 -- 2        其他比例 -- 1
     
     
@@ -231,7 +233,7 @@
 
 
 #pragma mark - SetCellData
--(void)setCellData:(ContentModel*)objc enableFollow:(BOOL)isUGC
+-(void)setCellData:(ContentModel*)objc enableFollow:(BOOL)isUGC albumnName:(NSString *)albumnName
 {
     //model
     dataModel = objc;
@@ -241,6 +243,8 @@
     {
         isUGC = NO;
     }
+    
+    albumName = albumnName;
     
     //视频宽高比
     CGFloat imageWidth = objc.width.floatValue > 0 ? objc.width.floatValue : 1920;
@@ -341,20 +345,80 @@
     NSString * viewsStr = [NSString converToViewCountStr:dataModel.viewCountShow];
     viewCountLabel.text = [NSString stringWithFormat:@"%@人看过",viewsStr];
     
-    //有简介显示简介，没简介显示标题
-    NSString * finalDesc = dataModel.brief.length>0 ? dataModel.brief:dataModel.title;
-
-    //设置简介样式
-    __weak typeof (self) weakSelf = self;
-    NSMutableAttributedString *mutableString = [[NSMutableAttributedString alloc] initWithString:finalDesc];
-    [mutableString yy_setTextHighlightRange:NSMakeRange(0, finalDesc.length) color:[UIColor colorWithRed:1 green:1 blue:1 alpha:0.7] backgroundColor:[UIColor clearColor] tapAction:^(UIView * _Nonnull containerView, NSAttributedString * _Nonnull text, NSRange range, CGRect rect) {
-        [weakSelf descClickAction];
-    }];
-    [mutableString yy_setFont:[UIFont systemFontOfSize:13] range:NSMakeRange(0, finalDesc.length)];
-    [mutableString yy_setLineSpacing:4 range:NSMakeRange(0,finalDesc.length)];
-    descLabel.attributedText = mutableString;
-    descLabel.lineBreakMode=NSLineBreakByTruncatingTail;
     
+    //如果是视频详情且有合集名称
+    if (albumName.length)
+    {
+        //合辑图标
+        UIImage * img = [UIImage getBundleImage:@"sz_videoCollection"];
+        UIImageView * imgv = [[UIImageView alloc]initWithImage:img];
+        [imgv setFrame:CGRectMake(0, 5, 13, 13)];
+        
+        NSMutableAttributedString * attstr = [NSMutableAttributedString yy_attachmentStringWithContent:imgv contentMode:UIViewContentModeScaleAspectFit attachmentSize:imgv.size alignToFont:[UIFont systemFontOfSize:16] alignment:YYTextVerticalAlignmentCenter];
+        
+        
+        //插一个space
+        UIView * space = [[UIView alloc]init];
+        [space setSize:CGSizeMake(6, 0)];
+        NSMutableAttributedString * tempattstr = [NSMutableAttributedString yy_attachmentStringWithContent:space contentMode:UIViewContentModeScaleAspectFit attachmentSize:space.size alignToFont:[UIFont systemFontOfSize:24] alignment:YYTextVerticalAlignmentCenter];
+        [attstr appendAttributedString:tempattstr];
+        
+        //拼专辑
+        NSMutableAttributedString * attstr_album = [[NSMutableAttributedString alloc]initWithString:albumName];
+        [attstr appendAttributedString:attstr_album];
+        
+        
+        //插一个space
+        UIView * space2 = [[UIView alloc]init];
+        [space2 setSize:CGSizeMake(6, 0)];
+        NSMutableAttributedString * tempattstr2 = [NSMutableAttributedString yy_attachmentStringWithContent:space2 contentMode:UIViewContentModeScaleAspectFit attachmentSize:space2.size alignToFont:[UIFont systemFontOfSize:24] alignment:YYTextVerticalAlignmentCenter];
+        [attstr appendAttributedString:tempattstr2];
+        
+        //拼简介
+        NSString * finalDesc = dataModel.brief.length>0 ? dataModel.brief:dataModel.title;
+        NSMutableAttributedString * attstr_desc = [[NSMutableAttributedString alloc]initWithString:finalDesc];
+        [attstr appendAttributedString:attstr_desc];
+        
+        
+        //设置合集标题样式
+        NSRange range3 = [attstr.string rangeOfString:albumName];
+        [attstr yy_setTextHighlightRange:range3 color:[UIColor whiteColor] backgroundColor:[UIColor clearColor] tapAction:^(UIView * _Nonnull containerView, NSAttributedString * _Nonnull text, NSRange range, CGRect rect) {
+        }];
+        [attstr yy_setFont:[UIFont systemFontOfSize:15] range:range3];
+        
+
+        //设置简介点击事件和样式
+        __weak typeof (self) weakSelf = self;
+        NSRange range1 = [attstr.string rangeOfString:finalDesc];
+        [attstr yy_setTextHighlightRange:range1 color:[UIColor colorWithRed:1 green:1 blue:1 alpha:0.7] backgroundColor:[UIColor clearColor] tapAction:^(UIView * _Nonnull containerView, NSAttributedString * _Nonnull text, NSRange range, CGRect rect) {
+            [weakSelf descClickAction];
+        }];
+        [attstr yy_setFont:[UIFont systemFontOfSize:14] range:range1];
+        
+        //设置整体行间距
+        [attstr yy_setLineSpacing:4 range:NSMakeRange(0,attstr.string.length)];
+
+
+        descLabel.attributedText = attstr;
+        descLabel.lineBreakMode=NSLineBreakByTruncatingTail;
+    }
+    else
+    {
+        //有简介显示简介，没简介显示标题
+        NSString * finalDesc = dataModel.brief.length>0 ? dataModel.brief:dataModel.title;
+
+        //设置简介样式
+        __weak typeof (self) weakSelf = self;
+        NSMutableAttributedString *mutableString = [[NSMutableAttributedString alloc] initWithString:finalDesc];
+        [mutableString yy_setTextHighlightRange:NSMakeRange(0, finalDesc.length) color:[UIColor colorWithRed:1 green:1 blue:1 alpha:0.7] backgroundColor:[UIColor clearColor] tapAction:^(UIView * _Nonnull containerView, NSAttributedString * _Nonnull text, NSRange range, CGRect rect) {
+            [weakSelf descClickAction];
+        }];
+        [mutableString yy_setFont:[UIFont systemFontOfSize:13] range:NSMakeRange(0, finalDesc.length)];
+        [mutableString yy_setLineSpacing:4 range:NSMakeRange(0,finalDesc.length)];
+        descLabel.attributedText = mutableString;
+        descLabel.lineBreakMode=NSLineBreakByTruncatingTail;
+        
+    }
     
     //头像、昵称
     authorName.text = dataModel.issuerName;
@@ -536,7 +600,7 @@
 -(void)updateVideoRelateAlbum
 {
     NSString * contentId = [SZData sharedSZData].currentContentId;
-        
+    
     if ([dataModel.id isEqualToString:contentId])
     {
         SZData * szdata = [SZData sharedSZData];
@@ -545,47 +609,85 @@
         if (listM.dataArr.count>0)
         {
             belongAlbumArr = listM.dataArr;
+    
             
-            NSMutableString * albumsTitleStr = [NSMutableString string];
+            //合辑图标
+            UIImage * img = [UIImage getBundleImage:@"sz_videoCollection"];
+            UIImageView * imgv = [[UIImageView alloc]initWithImage:img];
+            [imgv setFrame:CGRectMake(0, 5, 13, 13)];
+            
+            NSMutableAttributedString * attstr = [NSMutableAttributedString yy_attachmentStringWithContent:imgv contentMode:UIViewContentModeScaleAspectFit attachmentSize:imgv.size alignToFont:[UIFont systemFontOfSize:16] alignment:YYTextVerticalAlignmentCenter];
+            
+            
+            //插一个space
+            UIView * space = [[UIView alloc]init];
+            [space setSize:CGSizeMake(6, 0)];
+            NSMutableAttributedString * tempattstr = [NSMutableAttributedString yy_attachmentStringWithContent:space contentMode:UIViewContentModeScaleAspectFit attachmentSize:space.size alignToFont:[UIFont systemFontOfSize:24] alignment:YYTextVerticalAlignmentCenter];
+            [attstr appendAttributedString:tempattstr];
+            
+            
+            //插入合集标题和分隔符
             for (int i=0; i<belongAlbumArr.count; i++)
             {
                 ContentModel * album = belongAlbumArr[i];
                 
-                [albumsTitleStr appendFormat:@"#%@ ",album.title];
+                if (i>0)
+                {
+                    //拼分隔符
+                    UIView * sepaView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, 10, 16)];
+                    UIView * line = [[UIView alloc]initWithFrame:CGRectMake(4.5, 5, 1, 12)];
+                    line.backgroundColor=[UIColor whiteColor];
+                    [sepaView addSubview:line];
+                    
+                    NSMutableAttributedString * tempattstr = [NSMutableAttributedString yy_attachmentStringWithContent:sepaView contentMode:UIViewContentModeScaleAspectFit attachmentSize:sepaView.size alignToFont:[UIFont systemFontOfSize:24] alignment:YYTextVerticalAlignmentCenter];
+                    [attstr appendAttributedString:tempattstr];
+
+                }
+                
+                //拼标题
+                NSMutableAttributedString * attstr_album = [[NSMutableAttributedString alloc]initWithString:album.title];
+                [attstr appendAttributedString:attstr_album];
             }
             
-            [albumsTitleStr appendString:dataModel.title];
+            
+            //插一个space
+            UIView * space2 = [[UIView alloc]init];
+            [space2 setSize:CGSizeMake(6, 0)];
+            NSMutableAttributedString * tempattstr2 = [NSMutableAttributedString yy_attachmentStringWithContent:space2 contentMode:UIViewContentModeScaleAspectFit attachmentSize:space2.size alignToFont:[UIFont systemFontOfSize:24] alignment:YYTextVerticalAlignmentCenter];
+            [attstr appendAttributedString:tempattstr2];
             
             
-            NSMutableAttributedString * attstr = [[NSMutableAttributedString alloc]initWithString:albumsTitleStr];
-            NSRange range1 = [albumsTitleStr rangeOfString:dataModel.title];
+            //拼简介
+            NSString * finalDesc = dataModel.brief.length>0 ? dataModel.brief:dataModel.title;
+            NSMutableAttributedString * attstr_desc = [[NSMutableAttributedString alloc]initWithString:finalDesc];
+            [attstr appendAttributedString:attstr_desc];
             
-            //设置简介点击事件
+
+            //设置简介点击事件和样式
             __weak typeof (self) weakSelf = self;
+            NSRange range1 = [attstr.string rangeOfString:finalDesc];
             [attstr yy_setTextHighlightRange:range1 color:[UIColor colorWithRed:1 green:1 blue:1 alpha:0.7] backgroundColor:[UIColor clearColor] tapAction:^(UIView * _Nonnull containerView, NSAttributedString * _Nonnull text, NSRange range, CGRect rect) {
                 [weakSelf descClickAction];
             }];
-            [attstr yy_setFont:[UIFont systemFontOfSize:13] range:range1];
+            [attstr yy_setFont:[UIFont systemFontOfSize:14] range:range1];
             
-            //分别设置每个专辑的点击事件
+
+            //分别设置每个合集标题的点击事件和样式
             for (int i = 0; i<belongAlbumArr.count; i++)
             {
                 ContentModel * album = belongAlbumArr[i];
-                NSRange range = [albumsTitleStr rangeOfString:[NSString stringWithFormat:@"#%@",album.title]];
-                [attstr yy_setTextHighlightRange:range color:[UIColor whiteColor] backgroundColor:[UIColor clearColor] tapAction:^(UIView * _Nonnull containerView, NSAttributedString * _Nonnull text, NSRange range, CGRect rect) {
-                    
+                NSRange range3 = [attstr.string rangeOfString:album.title];
+                [attstr yy_setTextHighlightRange:range3 color:[UIColor whiteColor] backgroundColor:[UIColor clearColor] tapAction:^(UIView * _Nonnull containerView, NSAttributedString * _Nonnull text, NSRange range, CGRect rect) {
                     NSString * substr = [[text string]substringWithRange:range];
-                    
-                    NSString * albumTitle = [substr substringFromIndex:1];
-                    [weakSelf albumClickAction:albumTitle];
+                    [weakSelf albumClickAction:substr];
                 }];
-                [attstr yy_setFont:[UIFont systemFontOfSize:15] range:range];
+                [attstr yy_setFont:[UIFont systemFontOfSize:15] range:range3];
             }
-            
+
             //设置整体行间距
-            [attstr yy_setLineSpacing:4 range:NSMakeRange(0,albumsTitleStr.length)];
-            
-            
+            [attstr yy_setLineSpacing:4 range:NSMakeRange(0,attstr.string.length)];
+
+
             descLabel.attributedText = attstr;
             descLabel.lineBreakMode=NSLineBreakByTruncatingTail;
             
@@ -812,6 +914,7 @@
             SZVideoDetailVC * vc = [[SZVideoDetailVC alloc]init];;
             vc.albumId = album.id;
             vc.detailType=1;
+            vc.albumName=albumTitle;
             [nav pushViewController:vc animated:YES];
         }
     }

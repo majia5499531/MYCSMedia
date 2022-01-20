@@ -513,7 +513,6 @@
         [cell setCellData:self.dataArr[indexPath.row] enableFollow:NO albumnName:self.albumName];
         return  cell;
     }
-    
 }
 - (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath
 {

@@ -17,6 +17,8 @@
 #import "BaseModel.h"
 #import "SZGlobalInfo.h"
 #import "SZData.h"
+#import "Masonry.h"
+
 
 
 @interface SZInputView ()<UITextViewDelegate>
@@ -29,12 +31,12 @@
     CGFloat keyboardHeight;
     
     //输入框
-    FSTextView * input;
+    FSTextView * inputView;
     UIView * inputBG;
     MJButton * sendBtn;
     
     //data
-    SZInputViewType inputtype;
+    SZInputViewType inputType;
     NSString * ID;
     
     //block
@@ -74,30 +76,63 @@
         [maskView addGestureRecognizer:tap];
         
         //输入框背景
-        inputBG = [[UIView alloc]initWithFrame:CGRectMake(0, SCREEN_HEIGHT, SCREEN_WIDTH, 50)];
+        inputBG = [[UIView alloc]init];
         inputBG.backgroundColor=HW_WHITE;
         [self.inputWindow addSubview:inputBG];
         
         //输入框
-        input = [[FSTextView alloc]initWithFrame:CGRectMake(15, 7.5, inputBG.frame.size.width-100, 35)];
-        input.layer.cornerRadius=7;
-        input.layer.backgroundColor=HW_GRAY_BG_White.CGColor;
-        input.autocapitalizationType=UITextAutocapitalizationTypeNone;
-        input.font=FONT(15);
-        input.textColor=HW_BLACK;
-        input.delegate=self;
-        [inputBG addSubview:input];
+        __weak typeof (self) weakSelf = self;
+        inputView = [[FSTextView alloc]init];
+        inputView.layer.cornerRadius=7;
+        inputView.layer.backgroundColor=HW_GRAY_BG_White.CGColor;
+        inputView.autocapitalizationType=UITextAutocapitalizationTypeNone;
+        inputView.maxLength=500;
+        inputView.font=FONT(15);
+        inputView.textColor=HW_BLACK;
+        inputView.delegate=self;
+        [inputView addTextDidChangeHandler:^(FSTextView *textView) {
+            [weakSelf inputviewDidInput:textView.text];
+        }];
+        [inputBG addSubview:inputView];
         
         //发布按钮
-        sendBtn = [[MJButton alloc]initWithFrame:CGRectMake(input.right, input.top, inputBG.width-input.right, input.height)];
+        sendBtn = [[MJButton alloc]init];
         sendBtn.mj_text=@"发布";
         sendBtn.mj_textColor=HW_BLACK;
         sendBtn.mj_font = BOLD_FONT(15);
         [sendBtn addTarget:self action:@selector(sendBtnAction) forControlEvents:UIControlEventTouchUpInside];
         [inputBG addSubview:sendBtn];
         
+        
+        //layout
+        [inputView mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.left.mas_equalTo(15);
+            make.top.mas_equalTo(7.5);
+            make.right.mas_equalTo(-100);
+            make.bottom.mas_equalTo(-7.5);
+        }];
+       
+        
+        [sendBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.left.mas_equalTo(inputView.mas_right);
+            make.right.mas_equalTo(0);
+            make.height.mas_equalTo(inputView.mas_height);
+            make.centerY.mas_equalTo(inputView.mas_centerY);
+        }];
+        
+        [inputBG mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.left.mas_equalTo(0);
+            make.width.mas_equalTo(SCREEN_WIDTH);
+            make.bottom.mas_equalTo(0);
+        }];
+        
+        [self.inputWindow layoutIfNeeded];
+        
+        
+        
         //监听键盘
         [self addKeyboardNotification];
+    
     }
     return self;
 }
@@ -113,22 +148,24 @@
         return;
     }
     
+    //显示window
     SZInputView * view = [SZInputView sharedSZInputView];
-    
     view.inputWindow.hidden=NO;
     [view.inputWindow makeKeyAndVisible];
     
-    view->inputtype = type;
+    //配置属性
+    view->inputType = type;
     view->ID = contentId;
-    view->input.placeholder = placeholder;
+    view->inputView.placeholder = placeholder;
     view->resultBlock = finish;
     
-    [view->input becomeFirstResponder];
+    //输入框获取焦点
+    [view->inputView becomeFirstResponder];
 }
 
 -(void)dissmissInputView
 {
-    [input resignFirstResponder];
+    [inputView resignFirstResponder];
     
     self.inputWindow.hidden = YES;
     [self.inputWindow resignKeyWindow];
@@ -160,17 +197,40 @@
     CGRect keyboardRect = [aValue CGRectValue];
     keyboardHeight = keyboardRect.size.height;
     
-    [inputBG setFrame:CGRectMake(0, SCREEN_HEIGHT-keyboardHeight-inputBG.height, inputBG.width, inputBG.height)];
+    [inputBG mas_remakeConstraints:^(MASConstraintMaker *make) {
+        make.left.mas_equalTo(0);
+        make.width.mas_equalTo(SCREEN_WIDTH);
+        make.bottom.mas_equalTo(-keyboardHeight);
+    }];
+    [self.inputWindow layoutIfNeeded];
+    
 }
 -(void)keyboardWillHide:(NSNotification*)notify
 {
-    [inputBG setFrame:CGRectMake(0, SCREEN_HEIGHT, inputBG.width, inputBG.height)];
+    [inputBG mas_remakeConstraints:^(MASConstraintMaker *make) {
+        make.left.mas_equalTo(0);
+        make.width.mas_equalTo(SCREEN_WIDTH);
+        make.bottom.mas_equalTo(0);
+    }];
+    [self.inputWindow layoutIfNeeded];
 }
--(void)textViewDidChange:(UITextView *)textView
+-(void)inputviewDidInput:(NSString*)text
 {
-    CGSize siz = [textView sizeThatFits:CGSizeMake(inputBG.width-100, 34)];
-    [textView setFrame:CGRectMake(15, 8, inputBG.width-100, siz.height)];
-    [inputBG setFrame:CGRectMake(0, SCREEN_HEIGHT-keyboardHeight-(siz.height+16), inputBG.width, siz.height+16)];
+    CGSize size = [inputView sizeThatFits:CGSizeMake(inputView.width, 37)];
+    
+    CGFloat inputHeight = size.height;
+    if (inputHeight>150)
+    {
+        inputHeight = 150;
+    }
+    
+    [inputView mas_remakeConstraints:^(MASConstraintMaker *make) {
+        make.left.mas_equalTo(15);
+        make.top.mas_equalTo(7.5);
+        make.right.mas_equalTo(-100);
+        make.bottom.mas_equalTo(-7.5);
+        make.height.mas_equalTo(inputHeight);
+    }];
 }
 
 
@@ -182,16 +242,16 @@
 
 -(void)sendBtnAction
 {
-    NSString * text = [input.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    NSString * text = [inputView.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
     if (text.length)
     {
-        if (inputtype==TypeSendComment)
+        if (inputType==TypeSendComment)
         {
-            [self requestForSendingComment:input.text];
+            [self requestForSendingComment:inputView.text];
         }
         else
         {
-            [self requestForSendingReply:input.text];
+            [self requestForSendingReply:inputView.text];
         }
         
     }
@@ -219,13 +279,12 @@
     [model PostRequestInView:keywindow WithUrl:APPEND_SUBURL(BASE_URL, API_URL_SEND_COMMENT) Params:param Success:^(id responseObject) {
         [weakSelf requestSendingDone];
         } Error:^(id responseObject) {
-            [weakSelf requestFailed];
+            
         } Fail:^(NSError *error) {
-            [weakSelf requestFailed];
+            
         }];
-    
-    
 }
+
 
 -(void)requestForSendingReply:(NSString*)text
 {
@@ -238,13 +297,12 @@
     
     UIWindow * keywindow = MJ_KEY_WINDOW;
     
-    
     [model PostRequestInView:keywindow WithUrl:APPEND_SUBURL(BASE_URL, API_URL_SEND_REPLY) Params:param Success:^(id responseObject) {
         [weakSelf requestSendingDone];
         } Error:^(id responseObject) {
-            [weakSelf requestFailed];
+            
         } Fail:^(NSError *error) {
-            [weakSelf requestFailed];
+            
         }];
 }
 
@@ -256,7 +314,7 @@
     [self closeCustomWindow];
     
     //清空输入框
-    input.text=@"";
+    inputView.text=@"";
     
     //刷新评论列表
     [[SZData sharedSZData]requestCommentListData];
@@ -266,10 +324,7 @@
 }
 
 
--(void)requestFailed
-{
-//    [self closeCustomWindow];
-}
+
 
 
 

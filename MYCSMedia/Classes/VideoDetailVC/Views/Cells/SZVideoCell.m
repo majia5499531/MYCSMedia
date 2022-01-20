@@ -597,6 +597,8 @@
     }
 }
 
+
+
 -(void)updateVideoRelateAlbum
 {
     NSString * contentId = [SZData sharedSZData].currentContentId;
@@ -691,11 +693,7 @@
             descLabel.attributedText = attstr;
             descLabel.lineBreakMode=NSLineBreakByTruncatingTail;
             
-
         }
-        
-        
-
     }
 }
 

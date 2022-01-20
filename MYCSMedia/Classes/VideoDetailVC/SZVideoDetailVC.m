@@ -30,7 +30,7 @@
 #import "SZVideoCell.h"
 #import <MJRefresh/MJRefresh.h>
 #import "TopicListModel.h"
-
+#import "SZHomeVC.h"
 
 @interface SZVideoDetailVC ()<UICollectionViewDelegate, UICollectionViewDataSource>
 @property(assign,nonatomic)BOOL MJHideStatusbar;
@@ -70,18 +70,17 @@
     {
         [self requestVideosInCollection];
     }
-    
-    
 }
 
 -(void)dealloc
 {
     [self removeNotifications];
     
+
     [[SZData sharedSZData]setCurrentContentId:@""];
-    
-    [MJVideoManager destroyVideoPlayer];
+//    [MJVideoManager destroyVideoPlayer];
 }
+
 
 -(void)viewWillAppear:(BOOL)animated
 {

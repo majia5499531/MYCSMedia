@@ -86,7 +86,7 @@
         inputView.layer.cornerRadius=7;
         inputView.layer.backgroundColor=HW_GRAY_BG_White.CGColor;
         inputView.autocapitalizationType=UITextAutocapitalizationTypeNone;
-        inputView.maxLength=500;
+        inputView.maxLength=120;
         inputView.font=FONT(15);
         inputView.textColor=HW_BLACK;
         inputView.delegate=self;
@@ -102,7 +102,6 @@
         sendBtn.mj_font = BOLD_FONT(15);
         [sendBtn addTarget:self action:@selector(sendBtnAction) forControlEvents:UIControlEventTouchUpInside];
         [inputBG addSubview:sendBtn];
-        
         
         //layout
         [inputView mas_makeConstraints:^(MASConstraintMaker *make) {

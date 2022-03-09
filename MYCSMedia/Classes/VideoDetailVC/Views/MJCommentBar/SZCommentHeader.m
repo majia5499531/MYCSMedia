@@ -20,6 +20,7 @@
 #import "UIView+MJCategory.h"
 #import "SZInputView.h"
 #import "SZGlobalInfo.h"
+#import "SZData.h"
 
 @implementation SZCommentHeader
 {
@@ -156,7 +157,8 @@
 
 -(void)replyBtnAction
 {
-    [SZInputView callInputView:TypeSendReply contentId:dataModel.id placeHolder:[NSString stringWithFormat:@"回复@%@",dataModel.nickname] completion:^(id responseObject) {
+    ContentModel * model = [[SZData sharedSZData].contentDic valueForKey:[SZData sharedSZData].currentContentId];
+    [SZInputView callInputView:TypeSendReply contentModel:model replyId:dataModel.id placeHolder:[NSString stringWithFormat:@"回复@%@",dataModel.nickname] completion:^(id responseObject) {
         
     }];
     

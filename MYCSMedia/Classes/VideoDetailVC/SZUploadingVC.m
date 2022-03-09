@@ -26,7 +26,8 @@
 #import "ContentModel.h"
 #import "UIScrollView+MJCategory.h"
 #import "StatusModel.h"
-
+#import "UploadModel.h"
+#import "SZUserTracker.h"
 
 @interface SZUploadingVC ()
 {
@@ -294,14 +295,14 @@
     
     
     [param setValue:upmodel.duration forKey:@"playDuration"];
-    
     [param setValue:currentDesc forKey:@"title"];
     
     __weak typeof (self) weakSelf = self;
-    StatusModel * model = [StatusModel model];
+    UploadModel * model = [UploadModel model];
+    model.size = upmodel.size;
     model.isJSON = YES;
     [model PostRequestInView:self.view WithUrl:APPEND_SUBURL(BASE_URL, API_URL_VIDEO_COMMIT) Params:param Success:^(id responseObject) {
-        [weakSelf requestCommitDone];
+        [weakSelf requestCommitDone:model];
         } Error:^(id responseObject) {
             
         } Fail:^(NSError *error) {
@@ -348,11 +349,20 @@
     progress.progress = value;
 }
 
--(void)requestCommitDone
+-(void)requestCommitDone:(UploadModel*)model
 {
     [MJHUD_Notice showSuccessView:@"你的作品发布成功，正在等待审核" inView:self.view hideAfterDelay:2];
     
     [self performSelector:@selector(dissmissVC) withObject:nil afterDelay:2];
+    
+    
+    //行为埋点
+    NSMutableDictionary * param=[NSMutableDictionary dictionary];
+    [param setValue:model.title forKey:@"content_name"];
+    [param setValue:model.id forKey:@"content_id"];
+    [param setValue:model.playDuration forKey:@"works_duration"];
+    [param setValue:model.size forKey:@"works_size"];
+    [SZUserTracker trackingButtonEventName:@"short_video_submit" param:param];
 }
 
 

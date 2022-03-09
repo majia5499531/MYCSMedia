@@ -43,6 +43,7 @@
     CategoryListModel * cateList;
     UIScrollView * scrollBG;
     SZColumnBar * columnbar;
+    NSArray * titleArr;
     
     SZHomeRootView1 * rootview1;
     SZHomeRootView2 * rootview2;
@@ -177,8 +178,8 @@
     columnbar = [[SZColumnBar alloc]initWithFrame:CGRectMake(70, STATUS_BAR_HEIGHT, 235, 36)];
     columnbar.columnDelegate=self;
     [self.view addSubview:columnbar];
-    NSArray * titles = @[str,@"视频",@"直播"];
-    [columnbar setTopicTitles:titles relateScrollView:scrollBG originX:10 minWidth:50 itemMargin:12 initialIndex:self.initialIndex];
+    titleArr = @[str,@"视频",@"直播"];
+    [columnbar setTopicTitles:titleArr relateScrollView:scrollBG originX:10 minWidth:50 itemMargin:12 initialIndex:self.initialIndex];
     [self.view addSubview:columnbar];
     [columnbar setCenterX:self.view.width/2];
     
@@ -385,6 +386,9 @@
 #pragma mark - Delegate
 - (void)mjview:(UIView *)view didSelectColumn:(id)model collectionviewIndex:(NSInteger)index
 {
+    //行为埋点
+    [SZUserTracker trackingVideoTab:titleArr[index]];
+    
     if (index==0)
     {
         rootview1.selected=YES;
@@ -394,7 +398,6 @@
         _currentSelectIdx = 0;
         
         
-        [SZUserTracker trackingVideoTab:@"我的小康生活"  moduleIndex:self.currentSelectIdx];
         
     }
     else if (index==1)
@@ -405,7 +408,6 @@
         [rootview2 viewWillAppear];
         _currentSelectIdx = 1;
         
-        [SZUserTracker trackingVideoTab:@"视频"  moduleIndex:self.currentSelectIdx];
     }
     else
     {
@@ -415,7 +417,6 @@
         [rootview3 viewWillAppear];
         _currentSelectIdx = 2;
         
-        [SZUserTracker trackingVideoTab:@"直播"  moduleIndex:self.currentSelectIdx];
     }
 }
 
@@ -428,12 +429,14 @@
 {
     [self.navigationController popViewControllerAnimated:YES];
     
-    [SZUserTracker trackingButtonClick:@"返回"  moduleIndex:self.currentSelectIdx];
+    //行为埋点
+    [SZUserTracker trackingButtonEventName:@"short_video_page_click" param:@{@"button_name":@"页面关闭"}];
 }
 
 -(void)profileBtnAction
 {
-    [SZUserTracker trackingButtonClick:@"个人作品中心" moduleIndex:self.currentSelectIdx];
+    //行为埋点
+    [SZUserTracker trackingButtonEventName:@"short_video_page_click" param:@{@"button_name":@"视频个人中心"}];
     
     //未登录则跳转登录
     if (![SZGlobalInfo sharedManager].SZRMToken.length)
@@ -448,7 +451,8 @@
 
 -(void)searchBtnAction
 {
-    [SZUserTracker trackingButtonClick:@"搜索"  moduleIndex:self.currentSelectIdx];
+    //行为埋点
+    [SZUserTracker trackingButtonEventName:@"short_video_page_click" param:@{@"button_name":@"搜索"}];
     
     NSString * h5ur = APPEND_SUBURL(BASE_H5_URL, @"fuse/news/#/searchPlus");
     [[SZManager sharedManager].delegate onOpenWebview:h5ur param:nil];

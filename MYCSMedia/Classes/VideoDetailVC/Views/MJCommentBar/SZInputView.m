@@ -18,7 +18,7 @@
 #import "SZGlobalInfo.h"
 #import "SZData.h"
 #import "Masonry.h"
-
+#import "SZUserTracker.h"
 
 
 @interface SZInputView ()<UITextViewDelegate>
@@ -37,7 +37,8 @@
     
     //data
     SZInputViewType inputType;
-    NSString * ID;
+    ContentModel * ContentM;
+    NSString * replyID;
     
     //block
     CompletionBlock resultBlock;
@@ -138,7 +139,7 @@
 
 
 #pragma mark - 公共方法
-+(void)callInputView:(SZInputViewType)type contentId:(NSString*)contentId placeHolder:(NSString*)placeholder completion:(CompletionBlock)finish
++(void)callInputView:(SZInputViewType)type contentModel:(ContentModel*)M replyId:(NSString*)replyId placeHolder:(NSString*)placeholder completion:(CompletionBlock)finish
 {
     //未登录则跳转登录
     if (![SZGlobalInfo sharedManager].SZRMToken.length)
@@ -154,9 +155,10 @@
     
     //配置属性
     view->inputType = type;
-    view->ID = contentId;
+    view->ContentM = M;
     view->inputView.placeholder = placeholder;
     view->resultBlock = finish;
+    view->replyID = replyId;
     
     //输入框获取焦点
     [view->inputView becomeFirstResponder];
@@ -270,7 +272,7 @@
     model.isJSON = YES;
     NSMutableDictionary * param=[NSMutableDictionary dictionary];
     [param setValue:text forKey:@"content"];
-    [param setValue:ID forKey:@"contentId"];
+    [param setValue:ContentM.id forKey:@"contentId"];
     
     UIWindow * keywindow = MJ_KEY_WINDOW;
     
@@ -292,7 +294,7 @@
     model.isJSON = YES;
     NSMutableDictionary * param=[NSMutableDictionary dictionary];
     [param setValue:text forKey:@"reply"];
-    [param setValue:ID forKey:@"id"];
+    [param setValue:replyID forKey:@"id"];
     
     UIWindow * keywindow = MJ_KEY_WINDOW;
     
@@ -319,7 +321,31 @@
     [[SZData sharedSZData]requestCommentListData];
 
     //回调
-    resultBlock(ID);
+    if (replyID.length)
+    {
+        resultBlock(replyID);
+    }
+    else
+    {
+        resultBlock(ContentM.id);
+    }
+    
+    
+    //行为埋点
+    NSMutableDictionary * param=[NSMutableDictionary dictionary];
+    [param setValue:ContentM.id forKey:@"content_id"];
+    [param setValue:ContentM.title forKey:@"content_name"];
+    [param setValue:ContentM.keywords forKey:@"content_key"];
+    [param setValue:ContentM.tags forKey:@"content_list"];
+    [param setValue:ContentM.classification forKey:@"content_classify"];
+    [param setValue:ContentM.thirdPartyId forKey:@"third_ID"];
+    [param setValue:ContentM.startTime forKey:@"create_time"];
+    [param setValue:ContentM.issueTimeStamp forKey:@"publish_time"];
+    [param setValue:ContentM.type forKey:@"content_type"];
+    
+    [SZUserTracker trackingButtonEventName:@"content_comment" param:param];
+    
+    
 }
 
 

@@ -17,6 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property(strong,nonatomic)NSNumber * height;
 @property(strong,nonatomic)NSNumber * duration;
 @property(strong,nonatomic)NSString * orientation;
+@property(strong,nonatomic)NSNumber * size;
 
 @end
 

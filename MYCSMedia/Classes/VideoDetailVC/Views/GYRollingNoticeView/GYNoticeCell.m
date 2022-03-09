@@ -116,7 +116,8 @@
 #pragma mark - Tap
 -(void)didClickNotice
 {
-    [SZUserTracker trackingButtonClick:@"服务关联框" moduleIndex:0];
+    //行为埋点
+    [SZUserTracker trackingButtonEventName:@"short_video_page_click" param:@{@"button_name":[NSString stringWithFormat:@"服务_%@",model.title]}];
     
     [[SZManager sharedManager].delegate onOpenWebview:model.url param:nil];
 }

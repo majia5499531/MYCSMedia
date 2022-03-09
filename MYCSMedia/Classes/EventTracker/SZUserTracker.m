@@ -35,93 +35,9 @@
 
 
 #pragma mark - tracking
-+ (void)trackingVideoTab:(NSString *)btnTitle moduleIndex:(NSInteger)moduleIdx
++(void)trackingVideoTab:(NSString *)tabName;
 {
-    static NSInteger lastIdx = -1;
-    NSString * eventName = @"";
-    
-    
-    if (lastIdx==-1)
-    {
-        lastIdx = moduleIdx;
-        return;
-    }
-    else if(lastIdx==moduleIdx)
-    {
-        return;
-    }
-    else if (moduleIdx==2)
-    {
-        
-    }
-    else
-    {
-        lastIdx = moduleIdx;
-    }
-    
-    
-    
-    if (moduleIdx==0)
-    {
-        eventName = @"short_video_home_click";
-    }
-    else if(moduleIdx==1)
-    {
-        eventName = @"well_life_home_click";
-    }
-    else
-    {
-        if (lastIdx==0)
-        {
-            eventName = @"well_life_home_click";
-        }
-        else
-        {
-            eventName = @"short_video_home_click";
-        }
-        
-        
-    }
-    
-    
-    
-    
-    
-    NSMutableDictionary * param=[NSMutableDictionary dictionary];
-    [param setValue:eventName forKey:@"eventName"];
-    [param setValue:btnTitle forKey:@"button_name"];
-    
-    [self eventUpload:param evnetKey:eventName];
-    
-}
-
-+ (void)trackingButtonClick:(NSString *)btnTitle moduleIndex:(NSInteger)moduleIdx
-{
-    //忽略直播tab下的按钮点击
-    if (moduleIdx==2)
-    {
-        return;
-    }
-    
-    NSString * eventName = @"";
-    if (moduleIdx==0)
-    {
-        eventName = @"well_life_home_click";
-    }
-    else
-    {
-        eventName = @"short_video_home_click";
-    }
-    
-    
-    
-    
-    
-    NSMutableDictionary * param=[NSMutableDictionary dictionary];
-    [param setValue:eventName forKey:@"eventName"];
-    [param setValue:btnTitle forKey:@"button_name"];
-    
-    [self eventUpload:param evnetKey:eventName];
+    [SZUserTracker trackingButtonEventName:@"short_video_page_click" param:@{@"button_name":tabName}];
     
 }
 
@@ -144,7 +60,7 @@
 #pragma mark - 上报数据
 +(void)eventUpload:(NSDictionary*)param evnetKey:(NSString*)key
 {
-    NSLog(@"user_tracking_%@",[param convertToJSON]);
+    NSLog(@"user_tracking_%@_%@",key,[param convertToJSON]);
     [[SZManager sharedManager].delegate onEventTracking:key param:param];
 }
 

@@ -21,6 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property(assign,nonatomic)BOOL whetherFavor;
 
 @property(assign,nonatomic)BOOL isManualPlay;
+@property(assign,nonatomic)BOOL isFinishPlay;
 
 @property (nonatomic , copy) NSString              * id;
 @property (nonatomic , copy) NSString              * thirdPartyId;
@@ -29,6 +30,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic , copy) NSString              * title;
 @property (nonatomic , copy) NSString              * brief;
 @property (nonatomic , copy) NSString              * keywords;
+@property(strong,nonatomic)NSString *   tags;
+@property(strong,nonatomic)NSString *   classification;
 @property (nonatomic , copy) NSString              * issueTimeStamp;
 @property (nonatomic , copy) NSString              * type;
 @property (nonatomic , copy) NSString              * external;

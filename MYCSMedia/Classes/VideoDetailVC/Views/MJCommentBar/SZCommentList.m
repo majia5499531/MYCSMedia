@@ -443,7 +443,7 @@
     }
 
     __weak typeof (self) weakSelf = self;
-    [SZInputView callInputView:TypeSendComment contentId:_contentId placeHolder:@"发表您的评论" completion:^(id responseObject) {
+    [SZInputView callInputView:TypeSendComment contentModel:model replyId:nil placeHolder:@"发表您的评论" completion:^(id responseObject) {
         [MJHUD_Notice showSuccessView:@"评论已提交，请等待审核通过！" inView:weakSelf.window hideAfterDelay:2];
     }];
     

@@ -18,7 +18,7 @@
 #import "SZGlobalInfo.h"
 #import "SZUserTracker.h"
 #import "SZContentTracker.h"
-
+#import "SZUserTracker.h"
 
 
 static UISlider * _volumeSlider;
@@ -879,6 +879,7 @@ static UISlider * _volumeSlider;
     self.liveProgressTime = 0;
     self.maxLiveProgressTime = 0;
     self.isReplay = NO;
+    self.externalModel.isFinishPlay=NO;
     
     //控制层清零
     [self.controlView setProgressTime:0 totalTime:0 progressValue:0 playableValue:0];
@@ -1630,6 +1631,24 @@ static UISlider * _volumeSlider;
             }
             
             
+            //行为埋点
+            ContentModel * contentM = self.externalModel;
+            NSMutableDictionary * param=[NSMutableDictionary dictionary];
+            [param setValue:contentM.id forKey:@"content_id"];
+            [param setValue:contentM.title forKey:@"content_name"];
+            [param setValue:contentM.source forKey:@"content_source"];
+            [param setValue:@"否" forKey:@"is_renew"];
+            [param setValue:contentM.createBy forKey:@"creator_id"];
+            [param setValue:contentM.thirdPartyId forKey:@"third_ID"];
+            [param setValue:contentM.keywords forKey:@"content_key"];
+            [param setValue:contentM.tags forKey:@"content_list"];
+            [param setValue:contentM.classification forKey:@"content_classify"];
+            [param setValue:contentM.startTime forKey:@"create_time"];
+            [param setValue:contentM.issueTimeStamp forKey:@"publish_time"];
+            [param setValue:contentM.type forKey:@"content_type"];
+            [SZUserTracker trackingButtonEventName:@"content_video_play" param:param];
+            
+            
             self.isLoaded = YES;
             
             [self setNeedsLayout];
@@ -1868,6 +1887,8 @@ static UISlider * _volumeSlider;
     self.playerState = StatePrepareReplay;
     
     [self seekToTime:1];
+    
+    self.externalModel.isFinishPlay=YES;
     
 //    //修改播放状态
 //    self.playerState = StateStopped;
@@ -2261,17 +2282,17 @@ static UISlider * _volumeSlider;
 -(void)wechatBtnAction
 {
     
-    [SZGlobalInfo mjshareToPlatform:WECHAT_PLATFORM content:self.externalModel];
+    [SZGlobalInfo mjshareToPlatform:WECHAT_PLATFORM content:self.externalModel source:@"视频详情分享"];
 }
 
 -(void)timelineBtnAction
 {
-    [SZGlobalInfo mjshareToPlatform:TIMELINE_PLATFORM content:self.externalModel];
+    [SZGlobalInfo mjshareToPlatform:TIMELINE_PLATFORM content:self.externalModel source:@"视频详情分享"];
 }
 
 -(void)qqBtnAction
 {
-    [SZGlobalInfo mjshareToPlatform:QQ_PLATFORM content:self.externalModel];
+    [SZGlobalInfo mjshareToPlatform:QQ_PLATFORM content:self.externalModel source:@"视频详情分享"];
 }
 
 -(void)MJNetStatusBtnAction

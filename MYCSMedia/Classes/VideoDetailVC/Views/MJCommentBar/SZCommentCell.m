@@ -20,7 +20,7 @@
 #import "YYText.h"
 #import "UIView+MJCategory.h"
 #import "SZInputView.h"
-
+#import "SZData.h"
 
 @implementation SZCommentCell
 {
@@ -131,7 +131,8 @@
 
 -(void)replyBtnAction
 {
-    [SZInputView callInputView:TypeSendMail contentId:dataModel.id placeHolder:[NSString stringWithFormat:@"回复@%@",dataModel.nickname] completion:^(id responseObject) {
+    ContentModel * model = [[SZData sharedSZData].contentDic valueForKey:[SZData sharedSZData].currentContentId];
+    [SZInputView callInputView:TypeSendMail contentModel:model replyId:dataModel.id placeHolder:[NSString stringWithFormat:@"回复@%@",dataModel.nickname] completion:^(id responseObject) {
         
     }];
 }

@@ -30,7 +30,7 @@ typedef void (^LoginCallback)(BOOL suc);
 +(void)mjgoToLoginPage;             //跳登录页
 +(void)mjclearLoginInfo;            //清除登录状态
 
-+(void)mjshareToPlatform:(SZ_SHARE_PLATFORM)platform content:(ContentModel*)model;          //分享
++(void)mjshareToPlatform:(SZ_SHARE_PLATFORM)platform content:(ContentModel*)model source:(NSString*)source;          //分享
 
 
 

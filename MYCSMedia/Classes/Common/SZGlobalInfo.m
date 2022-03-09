@@ -12,6 +12,7 @@
 #import "MJHud.h"
 #import "SZManager.h"
 #import "SZUserTracker.h"
+#import "SZData.h"
 
 @interface SZGlobalInfo ()
 @property(strong,nonatomic)LoginCallback loginResult;
@@ -205,11 +206,27 @@
 }
 
 //分享
-+(void)mjshareToPlatform:(SZ_SHARE_PLATFORM)platform content:(ContentModel *)model
++(void)mjshareToPlatform:(SZ_SHARE_PLATFORM)platform content:(ContentModel*)contentM source:(NSString*)source
 {
     if ([SZGlobalInfo checkDelegate])
     {
-        [[SZManager sharedManager].delegate onShareAction:platform title:model.shareTitle image:model.shareImageUrl desc:model.shareBrief URL:model.shareUrl];
+        [[SZManager sharedManager].delegate onShareAction:platform title:contentM.shareTitle image:contentM.shareImageUrl desc:contentM.shareBrief URL:contentM.shareUrl];
+        
+        //行为埋点
+        NSMutableDictionary * param=[NSMutableDictionary dictionary];
+        [param setValue:contentM.id forKey:@"content_id"];
+        [param setValue:contentM.title forKey:@"content_name"];
+        [param setValue:contentM.source forKey:@"content_source"];
+        [param setValue:contentM.thirdPartyId forKey:@"third_ID"];
+        [param setValue:contentM.keywords forKey:@"content_key"];
+        [param setValue:contentM.tags forKey:@"content_list"];
+        [param setValue:contentM.classification forKey:@"content_classify"];
+        [param setValue:contentM.startTime forKey:@"create_time"];
+        [param setValue:contentM.issueTimeStamp forKey:@"publish_time"];
+        [param setValue:contentM.type forKey:@"content_type"];
+        [param setValue:source forKey:@"transmit_location"];
+        
+        [SZUserTracker trackingButtonEventName:@"content_transmit" param:param];
     }
     
 }

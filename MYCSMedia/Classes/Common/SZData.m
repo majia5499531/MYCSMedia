@@ -18,6 +18,7 @@
 #import "ReplyModel.h"
 #import "ReplyListModel.h"
 #import "ContentListModel.h"
+#import "SZUserTracker.h"
 
 @implementation SZData
 
@@ -302,6 +303,22 @@
         stateM.favorCountShow = k;
     }
     
+    //行为埋点
+    ContentModel * contentM = [self.contentDic valueForKey:self.currentContentId];
+    NSMutableDictionary * param=[NSMutableDictionary dictionary];
+    [param setValue:contentM.id forKey:@"content_id"];
+    [param setValue:contentM.title forKey:@"content_name"];
+    [param setValue:contentM.source forKey:@"content_source"];
+    [param setValue:contentM.thirdPartyId forKey:@"third_ID"];
+    [param setValue:contentM.keywords forKey:@"content_key"];
+    [param setValue:contentM.tags forKey:@"content_list"];
+    [param setValue:contentM.classification forKey:@"content_classify"];
+    [param setValue:contentM.startTime forKey:@"create_time"];
+    [param setValue:contentM.issueTimeStamp forKey:@"publish_time"];
+    [param setValue:contentM.type forKey:@"content_type"];
+    
+    [SZUserTracker trackingButtonEventName:@"content_favorite" param:param];
+    
     //更新time
     NSNumber * currrentTime = [NSNumber numberWithInteger:[[NSDate date]timeIntervalSince1970]];
     self.contentCollectTime = currrentTime;
@@ -327,6 +344,24 @@
         k--;
         stateM.likeCountShow = k;
     }
+    
+    
+    //行为埋点
+    ContentModel * contentM = [self.contentDic valueForKey:self.currentContentId];
+    NSMutableDictionary * param=[NSMutableDictionary dictionary];
+    [param setValue:contentM.id forKey:@"content_id"];
+    [param setValue:contentM.title forKey:@"content_name"];
+    [param setValue:contentM.source forKey:@"content_source"];
+    [param setValue:contentM.keywords forKey:@"content_key"];
+    [param setValue:contentM.tags forKey:@"content_list"];
+    [param setValue:contentM.classification forKey:@"content_classify"];
+    [param setValue:contentM.thirdPartyId forKey:@"third_ID"];
+    [param setValue:contentM.startTime forKey:@"create_time"];
+    [param setValue:contentM.issueTimeStamp forKey:@"publish_time"];
+    [param setValue:contentM.type forKey:@"content_type"];
+    
+    [SZUserTracker trackingButtonEventName:@"content_like" param:param];
+    
     
     
     //更新time

@@ -81,7 +81,6 @@
 //    [MJVideoManager destroyVideoPlayer];
 }
 
-
 -(void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
@@ -112,7 +111,6 @@
     
     [self needUpdateCurrentContentId_now:YES];
 }
-
 
 -(NSIndexPath*)getCurrentRow
 {

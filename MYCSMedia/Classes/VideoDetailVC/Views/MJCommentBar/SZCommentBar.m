@@ -408,14 +408,6 @@
 #pragma mark - Btn Action
 -(void)commentTapAction
 {
-    UIViewController * vc = [self getCurrentViewController];
-    if ([vc isKindOfClass:[SZHomeVC class]])
-    {
-        SZHomeVC * home = (SZHomeVC*)vc;
-        [SZUserTracker trackingButtonClick:@"评论" moduleIndex:home.currentSelectIdx];
-    }
-    
-    
     if (commentListView.superview==nil)
     {
         //listview
@@ -437,7 +429,7 @@
     }
     
     __weak typeof (self) weakSelf = self;
-    [SZInputView callInputView:TypeSendComment contentId:_contentId placeHolder:@"发表您的评论" completion:^(id responseObject) {
+    [SZInputView callInputView:TypeSendComment contentModel:contentModel replyId:nil placeHolder:@"发表您的评论" completion:^(id responseObject) {
         [MJHUD_Notice showSuccessView:@"评论已提交，请等待审核通过！" inView:weakSelf.window hideAfterDelay:2];
         
         [weakSelf commentTapAction];
@@ -478,7 +470,7 @@
         NSNumber * number = objc;
         SZ_SHARE_PLATFORM plat = number.integerValue;
         ContentModel * contentModel = [[SZData sharedSZData].contentDic valueForKey:self.contentId];
-        [SZGlobalInfo mjshareToPlatform:plat content:contentModel];
+        [SZGlobalInfo mjshareToPlatform:plat content:contentModel source:@"底部分享"];
     }];
     
 }
@@ -486,7 +478,9 @@
 
 -(void)shotBtnAction
 {
-    [SZUserTracker trackingButtonClick:@"short_video_start_make"  moduleIndex:0];
+    //行为埋点
+    [SZUserTracker trackingButtonEventName:@"short_video_start_make" param:nil];
+    
     
     //未登录则跳转登录
     if (![SZGlobalInfo sharedManager].SZRMToken.length)

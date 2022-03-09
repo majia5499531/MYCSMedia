@@ -11,6 +11,7 @@
 #import "SZGlobalInfo.h"
 #import "StatusModel.h"
 #import "SZDefines.h"
+#import "SZUserTracker.h"
 
 @interface SZContentTracker ()
 @property(strong,nonatomic)NSMutableDictionary * startTimeDic;
@@ -63,7 +64,7 @@
 }
 
 
-//时长
+//播放时长（自动版）
 +(void)trackingVideoPlayingDuration:(ContentModel*)model isPlaying:(BOOL)isplay currentTime:(CGFloat)currentTime totalTime:(CGFloat)totalTime
 {
     //内容ID
@@ -137,9 +138,29 @@
             [bizparam setValue:[NSString stringWithFormat:@"%ld",(long)duration] forKey:@"duration"];
             [bizparam setValue:progressNumber forKey:@"percent"];
             [bizparam setValue:model.requestId forKey:@"req_id"];
-            
-            
             [tracker requestForUploading:bizparam eventKey:@"cms_video_over_auto" contentModel:model];
+            
+            
+            
+            //行为埋点
+            ContentModel * contentM = model;
+            NSString * finishState = contentM.isFinishPlay? @"是":@"否";
+            NSMutableDictionary * param=[NSMutableDictionary dictionary];
+            [param setValue:contentM.id forKey:@"content_id"];
+            [param setValue:contentM.title forKey:@"content_name"];
+            [param setValue:contentM.source forKey:@"content_source"];
+            [param setValue:contentM.createBy forKey:@"creator_id"];
+            [param setValue:contentM.thirdPartyId forKey:@"third_ID"];
+            [param setValue:contentM.keywords forKey:@"content_key"];
+            [param setValue:contentM.tags forKey:@"content_list"];
+            [param setValue:contentM.classification forKey:@"content_classify"];
+            [param setValue:contentM.startTime forKey:@"create_time"];
+            [param setValue:contentM.issueTimeStamp forKey:@"publish_time"];
+            [param setValue:contentM.type forKey:@"content_type"];
+            [param setValue:[NSNumber numberWithInteger:duration] forKey:@"play_duration"];
+            [param setValue:finishState forKey:@"is_finish"];
+            [SZUserTracker trackingButtonEventName:@"content_video_duration" param:param];
+            
             
             
 
@@ -152,7 +173,7 @@
 }
 
 
-//重播时长
+//播放时长（手动版）
 +(void)trackingVideoPlayingDuration_manual:(ContentModel*)model isPlaying:(BOOL)isplay currentTime:(CGFloat)currentTime totalTime:(CGFloat)totalTime
 {
     //内容ID
@@ -226,6 +247,27 @@
             [bizparam setValue:model.requestId forKey:@"req_id"];
             
             [tracker requestForUploading:bizparam eventKey:@"cms_video_over" contentModel:model];
+            
+            
+            
+            //行为埋点
+            ContentModel * contentM = model;
+            NSMutableDictionary * param=[NSMutableDictionary dictionary];
+            NSString * finishState = contentM.isFinishPlay? @"是":@"否";
+            [param setValue:contentM.id forKey:@"content_id"];
+            [param setValue:contentM.title forKey:@"content_name"];
+            [param setValue:contentM.source forKey:@"content_source"];
+            [param setValue:contentM.createBy forKey:@"creator_id"];
+            [param setValue:contentM.thirdPartyId forKey:@"third_ID"];
+            [param setValue:contentM.keywords forKey:@"content_key"];
+            [param setValue:contentM.tags forKey:@"content_list"];
+            [param setValue:contentM.classification forKey:@"content_classify"];
+            [param setValue:contentM.startTime forKey:@"create_time"];
+            [param setValue:contentM.issueTimeStamp forKey:@"publish_time"];
+            [param setValue:contentM.type forKey:@"content_type"];
+            [param setValue:[NSNumber numberWithInteger:duration] forKey:@"play_duration"];
+            [param setValue:finishState forKey:@"is_finish"];
+            [SZUserTracker trackingButtonEventName:@"content_video_duration" param:param];
             
             
             NSLog(@"MJContentTracker_end_manual_时长:%@_新闻:%@_百分比:%@_cateName:%@",[NSNumber numberWithInteger:duration],groupId,progressNumber,model.volcCategory);

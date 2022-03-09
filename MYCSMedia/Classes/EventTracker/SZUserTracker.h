@@ -14,13 +14,11 @@
 +(SZUserTracker *)shareTracker;
 
 
-+(void)trackingVideoTab:(NSString *)btnTitle moduleIndex:(NSInteger)moduleIdx;
-+(void)trackingButtonClick:(NSString *)btnTitle moduleIndex:(NSInteger)moduleIdx;
-+ (void)trackingButtonEventName:(NSString *)eventName param:(NSDictionary*)dic;
++(void)trackingVideoTab:(NSString *)tabName;
+
++(void)trackingButtonEventName:(NSString *)eventName param:(NSDictionary*)dic;
 
 
 
 
 @end
-
-

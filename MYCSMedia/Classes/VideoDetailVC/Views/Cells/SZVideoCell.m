@@ -39,6 +39,7 @@
 #import "ContentListModel.h"
 #import "SZVideoDetailVC.h"
 #import "YYText.h"
+#import "SZHomeVC.h"
 
 @interface SZVideoCell ()<GYRollingNoticeViewDelegate,GYRollingNoticeViewDataSource>
 
@@ -59,7 +60,7 @@
     UIImageView * logoImage;
     YYLabel * descLabel;
     MJButton * selecBtn;
-    GYRollingNoticeView * noticeView;
+    GYRollingNoticeView * rollingNoticeView;
     UILabel * authorName;
     UILabel * viewCountLabel;
     
@@ -129,12 +130,12 @@
         }];
         
         //滚动通知
-        noticeView = [[GYRollingNoticeView alloc]init];
-        noticeView.delegate = self;
-        noticeView.dataSource = self;
-        [self addSubview:noticeView];
-        [noticeView registerClass:[GYNoticeCell class] forCellReuseIdentifier:@"gynoticecellid"];
-        [noticeView mas_makeConstraints:^(MASConstraintMaker *make) {
+        rollingNoticeView = [[GYRollingNoticeView alloc]init];
+        rollingNoticeView.delegate = self;
+        rollingNoticeView.dataSource = self;
+        [self addSubview:rollingNoticeView];
+        [rollingNoticeView registerClass:[GYNoticeCell class] forCellReuseIdentifier:@"gynoticecellid"];
+        [rollingNoticeView mas_makeConstraints:^(MASConstraintMaker *make) {
             make.left.mas_equalTo(descLabel.mas_left).offset(-3);
             make.bottom.mas_equalTo(descLabel.mas_top).offset(-13);
             make.width.mas_equalTo(descLabel.mas_width);
@@ -468,7 +469,7 @@
     
     
     //默认隐藏通知条
-    noticeView.hidden=YES;
+    rollingNoticeView.hidden=YES;
     [authorBG mas_remakeConstraints:^(MASConstraintMaker *make) {
         make.bottom.mas_equalTo(descLabel.mas_top).offset(-13);
         make.left.mas_equalTo(descLabel.mas_left);
@@ -563,7 +564,7 @@
 {
     NSString * contentId = [SZData sharedSZData].currentContentId;
     
-    if (noticeView.superview==nil)
+    if (rollingNoticeView.superview==nil)
     {
         return;
     }
@@ -579,18 +580,18 @@
         //如果不喜欢推荐
         if (isdislike || relateModel.dataArr.count==0)
         {
-            [noticeView stopRoll];
-            noticeView.hidden=YES;
+            [rollingNoticeView stopRoll];
+            rollingNoticeView.hidden=YES;
         }
         
         //如果有相关推荐
         else
         {
-            noticeView.hidden=NO;
+            rollingNoticeView.hidden=NO;
             [authorBG mas_updateConstraints:^(MASConstraintMaker *make) {
                 make.bottom.mas_equalTo(descLabel.mas_top).offset(-58);
             }];
-            [noticeView reloadDataAndStartRoll];
+            [rollingNoticeView reloadDataAndStartRoll];
             
         }
 
@@ -838,10 +839,6 @@
 
 -(void)followBtnAction
 {
-    //tracking
-    NSMutableDictionary * param=[NSMutableDictionary dictionary];
-    [param setValue:dataModel.createBy forKey:@"user_id"];
-    [SZUserTracker trackingButtonEventName:@"notice_user" param:param];
     
     //未登录则跳转登录
     if (![SZGlobalInfo sharedManager].SZRMToken.length)
@@ -862,33 +859,26 @@
 
 -(void)authorDetailBtnAction
 {
-    //tracking
+    //行为埋点
     NSMutableDictionary * param=[NSMutableDictionary dictionary];
     [param setValue:@"视频播放" forKey:@"module_source"];
     [param setValue:[NSNumber numberWithBool:dataModel.whetherFollow] forKey:@"is_notice"];
     [param setValue:dataModel.createBy forKey:@"user_id"];
     [SZUserTracker trackingButtonEventName:@"click_user" param:param];
     
+    
+    //拼接URL，打开webview
     NSString * url = APPEND_SUBURL(BASE_H5_URL, @"act/xksh/#/others");
     url = [url appenURLParam:@"id" value:dataModel.createBy];
-    
     [[SZManager sharedManager].delegate onOpenWebview:url param:nil];
 }
 
--(void)selectBtnAction
-{
-    if (collectModel==nil)
-    {
-        [self requestVideoCollection];
-        return;
-    }
-    
-    [self showSelectionView];
-}
 
 -(void)descClickAction
 {
-    [SZUserTracker trackingButtonClick:@"展开简介"  moduleIndex:0];
+    //行为埋点
+    [SZUserTracker trackingButtonEventName:@"short_video_page_click" param:@{@"button_name":@"展开简介"}];
+    
     
     YYLabel * label =  descLabel;
     if (label.numberOfLines < 2)
@@ -908,6 +898,12 @@
         ContentModel * album = belongAlbumArr[i];
         if ([album.title isEqualToString:albumTitle])
         {
+            //行为埋点
+            [SZUserTracker trackingButtonEventName:@"short_video_page_click" param:@{@"button_name":[NSString stringWithFormat:@"合集_%@",albumTitle]}];
+            
+            
+            
+            //视频合集
             UINavigationController * nav = [self getCurrentNavigationController];
             SZVideoDetailVC * vc = [[SZVideoDetailVC alloc]init];;
             vc.albumId = album.id;
@@ -973,8 +969,8 @@
 }
 -(void)didClickCloseBtnAction
 {
-    [noticeView stopRoll];
-    noticeView.hidden=YES;
+    [rollingNoticeView stopRoll];
+    rollingNoticeView.hidden=YES;
     
     //保存不喜欢
     [[SZData sharedSZData].contentRelateContentDislikeDic setValue:@"1" forKey:dataModel.id];

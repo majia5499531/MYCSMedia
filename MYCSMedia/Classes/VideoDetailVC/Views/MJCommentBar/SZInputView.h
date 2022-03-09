@@ -7,7 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
-
+#import "ContentModel.h"
 
 typedef NS_ENUM(NSUInteger, SZInputViewType)
 {
@@ -22,7 +22,7 @@ typedef void (^CompletionBlock)(id responseObject);
 
 +(instancetype)sharedSZInputView;
 
-+(void)callInputView:(SZInputViewType)type contentId:(NSString*)contentId placeHolder:(NSString*)placeholder completion:(CompletionBlock)finish;
++(void)callInputView:(SZInputViewType)type contentModel:(ContentModel*)contentM replyId:(NSString*)replyId placeHolder:(NSString*)placeholder completion:(CompletionBlock)finish;
 
 @end
 

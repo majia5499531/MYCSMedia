@@ -30,7 +30,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic , copy) NSString              * title;
 @property (nonatomic , copy) NSString              * brief;
 @property (nonatomic , copy) NSString              * keywords;
+@property(strong,nonatomic)NSArray *    keywordsShow;
 @property(strong,nonatomic)NSString *   tags;
+@property(strong,nonatomic)NSArray *    tagsShow;
 @property(strong,nonatomic)NSString *   classification;
 @property (nonatomic , copy) NSString              * issueTimeStamp;
 @property (nonatomic , copy) NSString              * type;
@@ -49,7 +51,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic , copy) NSString              * liveStatus;
 @property (nonatomic , copy) NSString              * startTime;
 @property (nonatomic , copy) NSString              * endTime;
-
+@property(strong,nonatomic)NSString *               createTime;
 
 @property(strong,nonatomic) NSString               * belongActivityId;
 @property(strong,nonatomic) NSString               * belongActivityName;

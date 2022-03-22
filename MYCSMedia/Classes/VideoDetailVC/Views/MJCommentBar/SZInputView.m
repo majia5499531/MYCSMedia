@@ -335,12 +335,12 @@
     NSMutableDictionary * param=[NSMutableDictionary dictionary];
     [param setValue:ContentM.id forKey:@"content_id"];
     [param setValue:ContentM.title forKey:@"content_name"];
-    [param setValue:ContentM.keywords forKey:@"content_key"];
-    [param setValue:ContentM.tags forKey:@"content_list"];
+    [param setValue:ContentM.keywordsShow forKey:@"content_key"];
+    [param setValue:ContentM.tagsShow forKey:@"content_list"];
     [param setValue:ContentM.classification forKey:@"content_classify"];
     [param setValue:ContentM.thirdPartyId forKey:@"third_ID"];
-    [param setValue:ContentM.startTime forKey:@"create_time"];
-    [param setValue:ContentM.issueTimeStamp forKey:@"publish_time"];
+    [param setValue:ContentM.createTime forKey:@"create_time"];
+    [param setValue:ContentM.startTime forKey:@"publish_time"];
     [param setValue:ContentM.type forKey:@"content_type"];
     
     [SZUserTracker trackingButtonEventName:@"content_comment" param:param];

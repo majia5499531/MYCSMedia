@@ -1640,11 +1640,11 @@ static UISlider * _volumeSlider;
             [param setValue:@"否" forKey:@"is_renew"];
             [param setValue:contentM.createBy forKey:@"creator_id"];
             [param setValue:contentM.thirdPartyId forKey:@"third_ID"];
-            [param setValue:contentM.keywords forKey:@"content_key"];
-            [param setValue:contentM.tags forKey:@"content_list"];
+            [param setValue:contentM.keywordsShow forKey:@"content_key"];
+            [param setValue:contentM.tagsShow forKey:@"content_list"];
             [param setValue:contentM.classification forKey:@"content_classify"];
-            [param setValue:contentM.startTime forKey:@"create_time"];
-            [param setValue:contentM.issueTimeStamp forKey:@"publish_time"];
+            [param setValue:contentM.createTime forKey:@"create_time"];
+            [param setValue:contentM.startTime forKey:@"publish_time"];
             [param setValue:contentM.type forKey:@"content_type"];
             [SZUserTracker trackingButtonEventName:@"content_video_play" param:param];
             

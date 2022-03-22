@@ -184,12 +184,12 @@
     [param setValue:contentM.title forKey:@"content_name"];
     [param setValue:contentM.source forKey:@"content_source"];
     [param setValue:[NSString stringWithFormat:@"%.1f",rateValue] forKey:@"speed_n"];
-    [param setValue:contentM.keywords forKey:@"content_key"];
-    [param setValue:contentM.tags forKey:@"content_list"];
+    [param setValue:contentM.keywordsShow forKey:@"content_key"];
+    [param setValue:contentM.tagsShow forKey:@"content_list"];
     [param setValue:contentM.classification forKey:@"content_classify"];
     [param setValue:contentM.thirdPartyId forKey:@"third_ID"];
-    [param setValue:contentM.startTime forKey:@"create_time"];
-    [param setValue:contentM.issueTimeStamp forKey:@"publish_time"];
+    [param setValue:contentM.createTime forKey:@"create_time"];
+    [param setValue:contentM.startTime forKey:@"publish_time"];
     [SZUserTracker trackingButtonEventName:@"video_click_speed" param:param];
     
 }

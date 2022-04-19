@@ -306,10 +306,10 @@
     [self addSubview:collectionView];
     
     
-    //commentview
-    commentBar = [[SZCommentBar alloc]init];
-    [self addSubview:commentBar];
-    [commentBar setCommentBarStyle:0 type:1];
+//    //commentview
+//    commentBar = [[SZCommentBar alloc]init];
+//    [self addSubview:commentBar];
+//    [commentBar setCommentBarStyle:0 type:1];
 }
 
 #pragma mark - Btn Action
@@ -407,7 +407,7 @@
 -(UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
     SZVideoCell * cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"shortSZVideoCell" forIndexPath:indexPath];
-    [cell setCellData:dataModel.dataArr[indexPath.row] enableFollow:YES albumnName:nil];
+    [cell setCellData:dataModel.dataArr[indexPath.row] isUGC:YES albumnName:nil simpleMode:NO];
     return  cell;
 }
 - (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath

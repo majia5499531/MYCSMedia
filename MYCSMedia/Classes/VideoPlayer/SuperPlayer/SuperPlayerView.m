@@ -437,40 +437,31 @@ static UISlider * _volumeSlider;
 //单击手势
 -(void)singleTapAction:(UIGestureRecognizer *)gesture
 {
-    if (gesture.state == UIGestureRecognizerStateRecognized)
+    if (self.controlView.isFullScreen)
     {
-        //播放完成则不响应
-        if (self.playDidEnd)
-        {
-            return;
-        }
-        
-        //控制层样式
-        if (self.controlView.hidden)
-        {
-            //非全屏，切无手势模式下，则不现实controlview
-            if (self.disableInteraction && !self.controlView.isFullScreen)
-            {
-                SPDefaultControlView * controlv = (SPDefaultControlView*)self.controlView;
-                controlv.externalSlider.hidden = !controlv.externalSlider.hidden;
-                controlv.externalFullScreenBtn.hidden = !controlv.externalFullScreenBtn.hidden;
-            }
-            else
-            {
-                [[self.controlView fadeShow] fadeOut:3];
-            }
-        }
-        
-        else
-        {
-            [self.controlView fadeOut:0.1];
-        }
+        [self TapAction1:gesture];
+    }
+    else
+    {
+        [self TapAction2:gesture];
     }
 }
 
 
 //双击手势
 -(void)doubleTapAction:(UIGestureRecognizer *)gesture
+{
+    if (self.controlView.isFullScreen)
+    {
+        [self TapAction2:gesture];
+    }
+    else
+    {
+        [self TapAction1:gesture];
+    }
+}
+
+-(void)TapAction2:(UIGestureRecognizer*)gesture
 {
     if (self.playDidEnd)
     {
@@ -497,6 +488,37 @@ static UISlider * _volumeSlider;
     else
     {
         [self pause];
+    }
+}
+
+-(void)TapAction1:(UIGestureRecognizer*)gesture
+{
+    if (gesture.state == UIGestureRecognizerStateRecognized)
+    {
+        //播放完成则不响应
+        if (self.playDidEnd)
+        {
+            return;
+        }
+        
+        //控制层样式
+        if (self.controlView.hidden)
+        {
+            //非全屏，切无手势模式下，则不现实controlview
+            if (self.disableInteraction && !self.controlView.isFullScreen)
+            {
+//                SPDefaultControlView * controlv = (SPDefaultControlView*)self.controlView;
+            }
+            else
+            {
+                [[self.controlView fadeShow] fadeOut:3];
+            }
+        }
+        
+        else
+        {
+            [self.controlView fadeOut:0.1];
+        }
     }
 }
 

@@ -35,6 +35,7 @@
 
 
 
+
 @interface SZHomeRootView1 ()<UICollectionViewDelegate, UICollectionViewDataSource>
 
 @end
@@ -263,13 +264,6 @@
     collectionView.showsVerticalScrollIndicator=NO;
     [self addSubview:collectionView];
     
-    
-    //commentview
-    commentBar = [[SZCommentBar alloc]init];
-    [self addSubview:commentBar];
-    [commentBar setCommentBarStyle:0 type:0];
-    
-    
     //排行榜按钮
     MJButton * rankBtn = [[MJButton alloc]initWithFrame:CGRectMake(SCREEN_WIDTH-77, STATUS_BAR_HEIGHT+44+33, 77, 24)];
     [rankBtn addTarget:self action:@selector(rankBtnAction) forControlEvents:UIControlEventTouchUpInside];
@@ -380,7 +374,7 @@
 -(UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
     SZVideoCell * cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"shortSZVideoCell" forIndexPath:indexPath];
-    [cell setCellData:dataModel.dataArr[indexPath.row] enableFollow:YES albumnName:nil];
+    [cell setCellData:dataModel.dataArr[indexPath.row] isUGC:YES albumnName:nil simpleMode:NO];
     return  cell;
 }
 - (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath

@@ -294,11 +294,79 @@
     [hud.contentView setFrame:CGRectMake(hud.contentView.left, hud.contentView.top, hud.contentView.width, sureBtn.bottom)];
     [hud.contentView setCenterY:hud.centerY];
     
-    
-    
 }
 
++(void)showUGCNoticeAlert:(HUD_BLOCK)sure cancel:(HUD_BLOCK)cancel
+{
+    //HUD
+    UIView * window = [UIApplication sharedApplication].keyWindow;
+    MJHUD_Alert * hud = [[MJHUD_Alert alloc]initWithFrame:window.frame];
+    [window addSubview:hud];
+    
+    //保存block
+    hud.sureBlock = sure;
+    hud.cancelBlock = cancel;
+    
+    //Mask
+    [hud.maskView setFrame:hud.bounds];
+    hud.maskView.backgroundColor=[UIColor blackColor];
+    hud.maskView.alpha=0.5;
+     
+    //BG
+    hud.contentView.backgroundColor=[UIColor whiteColor];
+    hud.contentView.layer.cornerRadius=16;
+    [hud.contentView setFrame:CGRectMake(27.5, SCREEN_HEIGHT, SCREEN_WIDTH-55, 500)];
+    
+    //title
+    UILabel * titleLabel=[[UILabel alloc]init];
+    [titleLabel setFrame:CGRectMake(0, 24, hud.contentView.width, 20)];
+    titleLabel.font=BOLD_FONT(17);
+    titleLabel.textAlignment=NSTextAlignmentCenter;
+    titleLabel.textColor=HW_BLACK;
+    titleLabel.text=@"内容合作协议";
+    [hud.contentView addSubview:titleLabel];
+     
+    NSString * noticewords = @"1.第一条协议范围内,双方的关系确定为合作关系。为拓展市场更好地、更规范地服务消费者,根据公司的规划,甲方根据乙方的申请和对乙方的经营能力的审核,同意乙方加入公司的销售网络。.第二条订立本协议的目的在于确保甲、乙双方忠实地履行本协议规定的双方的职责和权利。乙方作为单独的企业法人或经营者进行经济活动。因此,他必须遵守对所有企业法人或经营者共同的法律要求,特别是有关资格的规则以及社会的、财务的商业合作协议因此,他必须遵守对所有企业法人或经营者共同的法律要求,特别是有关资格的规则以及社会的、财务的商业合作协合作协合作1.第一条协议范围内,双方的关系确定为合作关系。为拓展市场更好地、更规范地服务消费者,根据公司的规划,甲方根据乙方的申请和对乙方的经营能力的审核,同意乙方加入公司的销售网络。2.第二条订立本协议的目的在于确保甲、乙双方忠实地履行本协议规定的双方的职责和权利。乙方作为单独的企业法人或经营者进行经济活动。因此,他必须遵守对所有企业法人或经营者共同的法律要求,特别是有关资格的规则以及社会的、财务的商业合作协议因此,他必须遵守对所有企业法人或经营者共同的法律要求,特别是有关资格的规则以及社会的、财务的商业合作协合作协合作";
+    
+    //text
+    UITextView * descview = [[UITextView alloc]init];
+    descview.editable=NO;
+    [descview setFrame:CGRectMake(27, titleLabel.bottom+12, hud.contentView.width-54, hud.contentView.width-40)];
+    descview.font=FONT(13);
+    descview.text = noticewords;
+    descview.textColor=HW_GRAY_BG_6;
+    [hud.contentView addSubview:descview];
+    
+    //lineH
+    UIView * line1 = [[UIView alloc]initWithFrame:CGRectMake(0, descview.bottom+20, hud.contentView.width, MINIMUM_PX)];
+    line1.backgroundColor=HW_GRAY_BORDER_3;
+    [hud.contentView addSubview:line1];
+     
+    //cancelBtn
+    MJButton * cancelBtn =[[MJButton alloc]initWithFrame:CGRectMake(0, line1.bottom, line1.width/2-0.5, 55)];
+    [cancelBtn addTarget:hud action:@selector(cancelBtnAction) forControlEvents:UIControlEventTouchUpInside];
+    [cancelBtn setTitle:@"取消" forState:UIControlStateNormal];
+    [cancelBtn setTitleColor:HW_BLACK forState:UIControlStateNormal];
+    cancelBtn.titleLabel.font=FONT(17);
+    [hud.contentView addSubview:cancelBtn];
+    
+    //line2
+    UIView * line2 = [[UIView alloc]initWithFrame:CGRectMake(line1.centerX-0.5, line1.bottom, MINIMUM_PX, cancelBtn.height)];
+    line2.backgroundColor=HW_GRAY_BORDER_3;
+    [hud.contentView addSubview:line2];
+    
+    //sureBtn
+    MJButton * sureBtn =[[MJButton alloc]initWithFrame:CGRectMake(cancelBtn.right+1, line1.bottom, cancelBtn.width, cancelBtn.height)];
+    [sureBtn addTarget:hud action:@selector(sureBtnAction) forControlEvents:UIControlEventTouchUpInside];
+    [sureBtn setTitle:@"确定" forState:UIControlStateNormal];
+    [sureBtn setTitleColor:[UIColor colorWithHexString:@"1C337A"] forState:UIControlStateNormal];
+    sureBtn.titleLabel.font=FONT(17);
+    [hud.contentView addSubview:sureBtn];
 
+    //contentview frame
+    [hud.contentView setFrame:CGRectMake(hud.contentView.left, hud.contentView.top, hud.contentView.width, sureBtn.bottom)];
+    [hud.contentView setCenterY:hud.centerY];
+}
 
 
 +(void)hideAlertView

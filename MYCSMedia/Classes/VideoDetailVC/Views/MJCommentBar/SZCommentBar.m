@@ -25,7 +25,7 @@
 #import "ContentModel.h"
 #import "SZManager.h"
 #import "SZUserTracker.h"
-#import "SZUploadingVC.h"
+#import "SZVideoUploadVC.h"
 #import "UIResponder+MJCategory.h"
 #import "SZUserTracker.h"
 #import "SZHomeVC.h"
@@ -490,7 +490,7 @@
     }
     
     UINavigationController * nav = [self getCurrentNavigationController];
-    SZUploadingVC * vc = [SZUploadingVC new];
+    SZVideoUploadVC * vc = [SZVideoUploadVC new];
     vc.modalPresentationStyle = UIModalPresentationFullScreen;
     [nav presentViewController:vc animated:YES completion:nil];
 }

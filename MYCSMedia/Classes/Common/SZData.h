@@ -9,7 +9,6 @@
 #import "IQDataBinding.h"
 
 
-
 @interface SZData : NSObject
 
 

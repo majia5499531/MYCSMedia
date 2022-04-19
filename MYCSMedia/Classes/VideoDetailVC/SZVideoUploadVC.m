@@ -1,11 +1,11 @@
 //
-//  SZUploadingVC.m
+//  SZVideoUploadVC.m
 //  MYCSMedia
 //
 //  Created by 马佳 on 2021/8/21.
 //
 
-#import "SZUploadingVC.h"
+#import "SZVideoUploadVC.h"
 #import "SZDefines.h"
 #import "UIColor+MJCategory.h"
 #import "UIImage+MJCategory.h"
@@ -29,7 +29,7 @@
 #import "UploadModel.h"
 #import "SZUserTracker.h"
 
-@interface SZUploadingVC ()
+@interface SZVideoUploadVC ()
 {
     UIScrollView * bgscroll;
     
@@ -50,7 +50,7 @@
 }
 @end
 
-@implementation SZUploadingVC
+@implementation SZVideoUploadVC
 
 
 
@@ -59,6 +59,13 @@
     [super viewDidLoad];
     
     [self MJInitSubviews];
+}
+
+-(void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+    
+    [self showProtocol];
 }
 
 
@@ -105,17 +112,6 @@
     titleLabel.font=BOLD_FONT(18);
     [self.view addSubview:titleLabel];
     
-    //sure
-    MJButton * sureBtn = [[MJButton alloc]initWithFrame:CGRectMake(SCREEN_WIDTH-55-16, STATUS_BAR_HEIGHT+8, 55, 26)];
-    sureBtn.mj_text=@"发布";
-    sureBtn.mj_font=FONT(15);
-    sureBtn.layer.cornerRadius=3;
-    sureBtn.backgroundColor=HW_RED_WORD_1;
-    sureBtn.mj_textColor=HW_WHITE;
-    [sureBtn addTarget:self action:@selector(commitBtnAction) forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:sureBtn];
-    
-    
     //视频上传
     UILabel * title1 = [[UILabel alloc]init];
     title1.text=@"视频上传";
@@ -130,8 +126,8 @@
     
     //视频上传描述
     UILabel * desc1 = [[UILabel alloc]init];
-    desc1.text=@"视频时长建议不超过180秒";
-    desc1.textColor=HW_GRAY_WORD_1;
+    desc1.text=@"视频时长建议不超过180秒，小于25M";
+    desc1.textColor=HW_GRAY_BG_9;
     desc1.font=FONT(13);
     [bgscroll addSubview:desc1];
     [desc1 mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -225,26 +221,73 @@
     //输入框
     inputview = [[FSTextView alloc]init];
     inputview.placeholder=@"填写视频介绍，让更多人了解你的作品，最多120个字符";
-    inputview.font=FONT(14);
+    inputview.placeholderColor=HW_GRAY_BG_9;
+    inputview.font=FONT(15);
     inputview.maxLength=120;
     inputview.backgroundColor=HW_WHITE;
     inputview.textColor=HW_BLACK;
     inputview.maxLength=120;
     [inputview addTextDidChangeHandler:^(FSTextView *textView) {
         self->currentDesc = textView.text;
+        [inputview mas_updateConstraints:^(MASConstraintMaker *make) {
+            make.height.mas_equalTo(inputview.contentSize.height);
+        }];
     }];
     [bgscroll addSubview:inputview];
     [inputview mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_equalTo(12);
         make.top.mas_equalTo(secTitle2.mas_bottom).offset(8);
         make.width.mas_equalTo(SCREEN_WIDTH-24);
-        make.height.mas_equalTo(150);
+        
+    }];
+    inputview.backgroundColor=[UIColor redColor];
+    
+    //话题选择
+    UILabel * secTitle3 = [[UILabel alloc]init];
+    secTitle3.text=@"话题选择";
+    secTitle3.textColor=HW_BLACK;
+    secTitle3.font=BOLD_FONT(18);
+    [bgscroll addSubview:secTitle3];
+    [secTitle3 mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.mas_equalTo(16);
+        make.top.mas_equalTo(inputview.mas_bottom).offset(55);
     }];
     
+    //话题选择desc
+    UILabel * desc3 = [[UILabel alloc]init];
+    desc3.text=@"非必选，最多选择3个标签";
+    desc3.textColor=HW_GRAY_BG_9;
+    desc3.font=FONT(13);
+    [bgscroll addSubview:desc3];
+    [desc3 mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.mas_equalTo(secTitle3.mas_right).offset(6);
+        make.bottom.mas_equalTo(secTitle3.mas_bottom);
+    }];
     
 }
 
-
+-(void)showProtocol
+{
+    
+    BOOL auth = [[NSUserDefaults standardUserDefaults]boolForKey:@"UGC_Protocol"];
+    if (auth)
+    {
+        return;
+    }
+    
+    [MJHUD_Alert showUGCNoticeAlert:^(id objc) {
+        
+        
+        [[NSUserDefaults standardUserDefaults]setBool:YES forKey:@"UGC_Protocol"];
+        
+        [MJHUD_Alert hideAlertView];
+        
+    } cancel:^(id objc) {
+        [MJHUD_Alert hideAlertView];
+        
+        [self dismissViewControllerAnimated:YES completion:nil];
+    }];
+}
 
 
 #pragma mark - Request

@@ -11,6 +11,6 @@
 
 @interface SZVideoCell : UICollectionViewCell
 
--(void)setCellData:(id)objc enableFollow:(BOOL)enable albumnName:(NSString*)albumnName;
+-(void)setCellData:(id)objc isUGC:(BOOL)enable albumnName:(NSString*)albumnName simpleMode:(BOOL)simple;
 
 @end

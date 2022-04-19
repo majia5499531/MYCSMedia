@@ -10,7 +10,6 @@
 #import "UIColor+MJCategory.h"
 #import "CustomFooter.h"
 #import "CustomAnimatedHeader.h"
-#import "SZVideoDetailSimpleCell.h"
 #import "UIImage+MJCategory.h"
 #import "MJButton.h"
 #import "MJVideoManager.h"
@@ -376,7 +375,6 @@
     }
     collectionView.showsHorizontalScrollIndicator = NO;
     collectionView.backgroundColor=HW_BLACK;
-    [collectionView registerClass:[SZVideoDetailSimpleCell class] forCellWithReuseIdentifier:@"simpleVideoCell"];
     [collectionView registerClass:[SZVideoCell class] forCellWithReuseIdentifier:@"fullVideoCell"];
 //    collectionView.mj_header = [CustomAnimatedHeader headerWithRefreshingTarget:self refreshingAction:@selector(pulldownRefreshAction:)];
 //    collectionView.mj_footer = [CustomFooter footerWithRefreshingTarget:self refreshingAction:@selector(pullupLoadAction:)];
@@ -401,16 +399,6 @@
     gest.minimumPressDuration = 3;
     [consoleBtn addGestureRecognizer:gest];
     [self.view addSubview:consoleBtn];
-    
-    
-    
-    if (!_isPreview)
-    {
-        //commentview
-        commentBar = [[SZCommentBar alloc]init];
-        [commentBar setCommentBarStyle:0 type:1];
-        [self.view addSubview:commentBar];
-    }
     
 }
 
@@ -498,18 +486,9 @@
 #pragma mark - CollectionView Datasource & Delegate
 -(UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    if (self.isPreview)
-    {
-        SZVideoDetailSimpleCell * cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"simpleVideoCell" forIndexPath:indexPath];
-        [cell setCellData:self.dataArr[indexPath.row] enableFollow:NO];
-        return  cell;
-    }
-    else
-    {
-        SZVideoCell * cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"fullVideoCell" forIndexPath:indexPath];
-        [cell setCellData:self.dataArr[indexPath.row] enableFollow:NO albumnName:self.albumName];
-        return  cell;
-    }
+    SZVideoCell * cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"fullVideoCell" forIndexPath:indexPath];
+    [cell setCellData:self.dataArr[indexPath.row] isUGC:NO albumnName:self.albumName simpleMode:self.isPreview];
+    return  cell;
 }
 - (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath
 {

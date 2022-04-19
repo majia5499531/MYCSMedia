@@ -17,6 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
 +(void)showAlertViewWithTitle:(NSString *)title text:(NSString *)text sure:(HUD_BLOCK)block;
 +(void)showAlertViewWithTitle:(NSString*)title text:(NSString*)text cancel:(HUD_BLOCK)cancel sure:(HUD_BLOCK)sure;
 +(void)showAppRoutingAlert:(HUD_BLOCK)block;
++(void)showUGCNoticeAlert:(HUD_BLOCK)sure cancel:(HUD_BLOCK)cancel;
 +(void)hideAlertView;
 
 

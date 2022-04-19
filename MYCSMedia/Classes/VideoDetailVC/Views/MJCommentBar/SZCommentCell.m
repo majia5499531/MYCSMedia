@@ -22,6 +22,7 @@
 #import "SZInputView.h"
 #import "SZData.h"
 
+
 @implementation SZCommentCell
 {
     ReplyModel * dataModel;
@@ -121,10 +122,6 @@
             [attString yy_setFont:[UIFont boldSystemFontOfSize:13] range:NSMakeRange(0, data.nickname.length+1)];
             contentLabel.attributedText = attString;
         }
-        
-        
-        
-        
     }
 }
 

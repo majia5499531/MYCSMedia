@@ -48,41 +48,41 @@
         //滑动条
         _slider = [[MJSlider alloc]init];
         _slider.layer.masksToBounds=YES;
-        _slider.minimumTrackTintColor=HW_WHITE;
+        _slider.minimumTrackTintColor=[UIColor colorWithRed:1 green:1 blue:1 alpha:0.2];;
         _slider.maximumTrackTintColor=[UIColor colorWithRed:1 green:1 blue:1 alpha:0.1];
         UIImage * dot = [UIImage getBundleImage:@"sz_slider_whiteDot"];
         [_slider setThumbImage:dot forState:UIControlStateNormal];
         [self addSubview:_slider];
         [_slider mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.left.mas_equalTo(74);
+            make.left.mas_equalTo(0);
             make.centerY.mas_equalTo(self);
-            make.right.mas_equalTo(-74);
+            make.right.mas_equalTo(0);
             make.height.mas_equalTo(self);
         }];
         
         //当前时长
-        timeLabel = [[UILabel alloc]init];
-        timeLabel.font=[UIFont systemFontOfSize:14];
-        timeLabel.textColor=[UIColor whiteColor];
-        timeLabel.alpha=0.4;
-        timeLabel.textAlignment=NSTextAlignmentCenter;
-        [self addSubview:timeLabel];
-        [timeLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.left.mas_equalTo(17);
-            make.centerY.mas_equalTo(self);
-        }];
-        
-        //总时长
-        totalTimeLabel = [[UILabel alloc]init];
-        totalTimeLabel.font = [UIFont systemFontOfSize:14];
-        totalTimeLabel.textColor = [UIColor whiteColor];
-        totalTimeLabel.alpha=0.4;
-        timeLabel.textAlignment = NSTextAlignmentCenter;
-        [self addSubview:totalTimeLabel];
-        [totalTimeLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.right.mas_equalTo(-17);
-            make.centerY.mas_equalTo(self);
-        }];
+//        timeLabel = [[UILabel alloc]init];
+//        timeLabel.font=[UIFont systemFontOfSize:14];
+//        timeLabel.textColor=[UIColor whiteColor];
+//        timeLabel.alpha=0.4;
+//        timeLabel.textAlignment=NSTextAlignmentCenter;
+//        [self addSubview:timeLabel];
+//        [timeLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+//            make.left.mas_equalTo(17);
+//            make.centerY.mas_equalTo(self);
+//        }];
+//
+//        //总时长
+//        totalTimeLabel = [[UILabel alloc]init];
+//        totalTimeLabel.font = [UIFont systemFontOfSize:14];
+//        totalTimeLabel.textColor = [UIColor whiteColor];
+//        totalTimeLabel.alpha=0.4;
+//        timeLabel.textAlignment = NSTextAlignmentCenter;
+//        [self addSubview:totalTimeLabel];
+//        [totalTimeLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+//            make.right.mas_equalTo(-17);
+//            make.centerY.mas_equalTo(self);
+//        }];
         
     }
     return self;
@@ -90,9 +90,9 @@
 
 -(void)setCurrentTime:(NSInteger)time totalTime:(NSInteger)totalTime progress:(CGFloat)progress isDragging:(BOOL)isDragging;
 {
-    timeLabel.text = [self timeFormat:time];
-    totalTimeLabel.text = [self timeFormat:totalTime];
-    
+//    timeLabel.text = [self timeFormat:time];
+//    totalTimeLabel.text = [self timeFormat:totalTime];
+//
     if (!isDragging)
     {
         _slider.value = progress;

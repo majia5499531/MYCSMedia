@@ -19,6 +19,8 @@
 #import "ReplyListModel.h"
 #import "ContentListModel.h"
 #import "SZUserTracker.h"
+#import "RelateAlbumsModel.h"
+
 
 @implementation SZData
 
@@ -66,10 +68,18 @@
 //请求内容所属合辑
 -(void)requestContentBelongedAlbums
 {
-    ContentListModel * model = [ContentListModel model];
+    RelateAlbumsModel * model = [RelateAlbumsModel model];
+    
+    NSString * belongTopicId = @"0";
+    ContentModel * contentM = [self.contentDic valueForKey:self.currentContentId];
+    if (contentM.belongTopicId.length)
+    {
+        belongTopicId = contentM.belongTopicId;
+    }
     
     NSString * url = APPEND_SUBURL(BASE_URL, API_URL_CONTENT_IN_ALBUM);
     url = APPEND_SUBURL(url, self.currentContentId);
+    url = APPEND_SUBURL(url, belongTopicId);
     
     __weak typeof (self) weakSelf = self;
     [model GETRequestInView:nil WithUrl:url Params:nil Success:^(id responseObject) {
@@ -79,8 +89,6 @@
         } Fail:^(NSError *error) {
             
         }];
-    
-    
 }
 
 
@@ -246,15 +254,15 @@
 
 
 #pragma mark - Request Done
--(void)requestContentBelongedAlbumsDone:(ContentListModel*)listModel
+-(void)requestContentBelongedAlbumsDone:(RelateAlbumsModel*)albums
 {
-    if (listModel.dataArr.count==0)
+    if (albums.dataArr.count==0)
     {
         return;
     }
     
     //保存在字典中
-    [self.contentBelongAlbumsDic setValue:listModel forKey:self.currentContentId];
+    [self.contentBelongAlbumsDic setValue:albums forKey:self.currentContentId];
     
     //更新time
     NSNumber * currrentTime = [NSNumber numberWithInteger:[[NSDate date]timeIntervalSince1970]];

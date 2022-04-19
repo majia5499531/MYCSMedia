@@ -16,11 +16,6 @@
 
 @interface SZCommentList : UIView
 
-
-
-@property(strong,nonatomic)NSString * contentId;
-
-
 -(void)showCommentList:(BOOL)show;
 
 @end

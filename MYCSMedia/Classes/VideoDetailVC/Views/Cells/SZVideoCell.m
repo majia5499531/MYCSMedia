@@ -20,7 +20,6 @@
 #import "UIView+MJCategory.h"
 #import "MJHUD.h"
 #import "ContentModel.h"
-#import "VideoCollectModel.h"
 #import "MJLabel.h"
 #import "UIScrollView+MJCategory.h"
 #import "GYRollingNoticeView.h"
@@ -40,6 +39,9 @@
 #import "SZVideoDetailVC.h"
 #import "YYText.h"
 #import "SZHomeVC.h"
+#import "SZSideBar.h"
+#import "RelateAlbumsModel.h"
+
 
 @interface SZVideoCell ()<GYRollingNoticeViewDelegate,GYRollingNoticeViewDataSource>
 
@@ -50,28 +52,25 @@
     //data
     ContentModel * dataModel;
     VideoRelateModel * relateModel;
-    VideoCollectModel * collectModel;
     NSString * albumName;
     NSInteger videoWHSize;                       //9:16 -- 0          16:9 -- 2        其他比例 -- 1
-    
+    BOOL simpleMode;
     
     //UI
     UIImageView * videoCoverImage;
     UIImageView * logoImage;
     YYLabel * descLabel;
-    MJButton * selecBtn;
     GYRollingNoticeView * rollingNoticeView;
     UILabel * authorName;
     UILabel * viewCountLabel;
     
+    SZSideBar * sideBar;
     UIView * authorBG;
     UIImageView * avatar;
     UIImageView * levelIcon;
     MJButton * followBtn;
     
     MJProgressView * videoSlider;
-    
-    NSMutableArray * videoBtns;
     
     NSArray * belongAlbumArr;
 }
@@ -98,15 +97,20 @@
         }];
         
         
-        //遮罩
-        UIImageView * videoMask = [[UIImageView alloc]init];
-        videoMask.image=[UIImage getBundleImage:@"sz_video_mask1"];
-        [self.contentView addSubview:videoMask];
-        [videoMask mas_makeConstraints:^(MASConstraintMaker *make) {
+        //顶部遮罩
+        UIImageView * topmask = [[UIImageView alloc]init];
+        topmask.image=[UIImage getBundleImage:@"sz_video_mask1"];
+        [self.contentView addSubview:topmask];
+        [topmask mas_makeConstraints:^(MASConstraintMaker *make) {
             make.left.top.mas_equalTo(0);
             make.width.mas_equalTo(SCREEN_WIDTH);
             make.height.mas_equalTo(STATUS_BAR_HEIGHT+100);
         }];
+        
+        //底部遮罩
+        UIImageView * bottomMask = [[UIImageView alloc]init];
+        bottomMask.image=[UIImage getBundleImage:@"sz_video_mask2"];
+        [self.contentView addSubview:bottomMask];
         
         
         //Logo
@@ -121,27 +125,14 @@
         descLabel.lineBreakMode=NSLineBreakByTruncatingTail;
         descLabel.textColor=HW_GRAY_WORD_1;
         descLabel.userInteractionEnabled=YES;
-        descLabel.preferredMaxLayoutWidth = SCREEN_WIDTH-42;
+        descLabel.preferredMaxLayoutWidth = SCREEN_WIDTH-100;
         [self addSubview:descLabel];
         [descLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.left.mas_equalTo(21);
-            make.width.mas_equalTo(SCREEN_WIDTH-42);
-            make.bottom.mas_equalTo(-COMMENT_BAR_HEIGHT-16);
+            make.left.mas_equalTo(17);
+            make.width.mas_equalTo(SCREEN_WIDTH-100);
+            make.bottom.mas_equalTo(-BOTTOM_SAFEAREA_HEIGHT-48);
         }];
-        
-        //滚动通知
-        rollingNoticeView = [[GYRollingNoticeView alloc]init];
-        rollingNoticeView.delegate = self;
-        rollingNoticeView.dataSource = self;
-        [self addSubview:rollingNoticeView];
-        [rollingNoticeView registerClass:[GYNoticeCell class] forCellReuseIdentifier:@"gynoticecellid"];
-        [rollingNoticeView mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.left.mas_equalTo(descLabel.mas_left).offset(-3);
-            make.bottom.mas_equalTo(descLabel.mas_top).offset(-13);
-            make.width.mas_equalTo(descLabel.mas_width);
-            make.height.mas_equalTo(46);//36
-        }];
-        
+
         
         //作者bg
         authorBG = [[UIView alloc]init];
@@ -176,7 +167,7 @@
         [authorName addGestureRecognizer:tap1];
         [self addSubview:authorName];
         [authorName mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.left.mas_equalTo(avatar.mas_right).offset(5);
+            make.left.mas_equalTo(avatar.mas_right).offset(6.5);
             make.centerY.mas_equalTo(authorBG);
             make.width.mas_lessThanOrEqualTo(140);
         }];
@@ -186,8 +177,8 @@
         levelIcon = [[UIImageView alloc]init];
         [self addSubview:levelIcon];
         [levelIcon mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.left.mas_equalTo(authorName.mas_right).offset(7);
-            make.centerY.mas_equalTo(authorName);
+            make.right.mas_equalTo(avatar.mas_right).offset(3);
+            make.bottom.mas_equalTo(avatar);
             make.width.height.mas_equalTo(13);
         }];
         
@@ -204,10 +195,24 @@
         [followBtn addTarget:self action:@selector(followBtnAction) forControlEvents:UIControlEventTouchUpInside];
         [self addSubview:followBtn];
         [followBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.left.mas_equalTo(levelIcon.mas_right).offset(7);
+            make.left.mas_equalTo(authorName.mas_right).offset(5);
             make.height.mas_equalTo(22);
-            make.centerY.mas_equalTo(levelIcon);
+            make.centerY.mas_equalTo(authorName);
             make.width.mas_equalTo(40);
+        }];
+        
+        
+        //滚动通知
+        rollingNoticeView = [[GYRollingNoticeView alloc]init];
+        rollingNoticeView.delegate = self;
+        rollingNoticeView.dataSource = self;
+        [self addSubview:rollingNoticeView];
+        [rollingNoticeView registerClass:[GYNoticeCell class] forCellReuseIdentifier:@"gynoticecellid"];
+        [rollingNoticeView mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.left.mas_equalTo(descLabel.mas_left).offset(-3);
+            make.bottom.mas_equalTo(authorBG.mas_top).offset(-12);
+            make.width.mas_equalTo(descLabel.mas_width);
+            make.height.mas_equalTo(46);//36
         }];
         
         
@@ -216,12 +221,26 @@
         viewCountLabel.textColor=HW_WHITE;
         viewCountLabel.font=FONT(12);
         [self addSubview:viewCountLabel];
-        [viewCountLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.right.mas_equalTo(-16);
-            make.centerY.mas_equalTo(avatar);
+        
+        
+        //底部遮罩
+        [bottomMask mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.left.mas_equalTo(0);
+            make.bottom.mas_equalTo(0);
+            make.width.mas_equalTo(SCREEN_WIDTH);
+            make.top.mas_equalTo(viewCountLabel.mas_top).offset(-50);
         }];
         
         
+        //侧边栏
+        sideBar = [[SZSideBar alloc]init];
+        [self addSubview:sideBar];
+        [sideBar mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.right.mas_equalTo(0);
+            make.bottom.mas_equalTo(descLabel.mas_bottom);
+            make.width.mas_equalTo(20+20+30);
+            make.height.mas_equalTo(290);
+        }];
         
         //数据监听
         [self addDataBinding];
@@ -234,10 +253,14 @@
 
 
 #pragma mark - SetCellData
--(void)setCellData:(ContentModel*)objc enableFollow:(BOOL)isUGC albumnName:(NSString *)albumnName
+-(void)setCellData:(ContentModel*)objc isUGC:(BOOL)isUGC albumnName:(NSString *)albumnName simpleMode:(BOOL)simple
 {
     //model
     dataModel = objc;
+    
+    //简版模式
+    sideBar.hidden=simple;
+    viewCountLabel.hidden=simple;
     
     //PGC视频，则不允许关注和点击
     if (dataModel.issuerId.length==0)
@@ -258,19 +281,21 @@
     {
         videoWHSize = 0;
 
-        //如果是刘海屏，则平铺，裁剪
+        //如果是刘海屏
         if ([UIApplication sharedApplication].statusBarFrame.size.height>20)
         {
             [videoCoverImage mas_remakeConstraints:^(MASConstraintMaker *make) {
                 make.left.mas_equalTo(0);
                 make.top.mas_equalTo(0);
                 make.width.mas_equalTo(SCREEN_WIDTH);
-                make.bottom.mas_equalTo(-COMMENT_BAR_HEIGHT);
+                make.bottom.mas_equalTo(0);
             }];
         }
+        
+        
+        //非刘海屏
         else
         {
-
             [videoCoverImage mas_remakeConstraints:^(MASConstraintMaker *make) {
                 make.left.mas_equalTo(0);
                 make.top.mas_equalTo(0);
@@ -292,7 +317,7 @@
     
     
     
-    //16:9  1.77左右     居中
+    //16:9  (1.77)左右     居中
     else if(WHRate<1.80 && WHRate >1.70)
     {
         videoWHSize = 1;
@@ -300,7 +325,7 @@
         CGFloat videoH = SCREEN_WIDTH / WHRate;
         [videoCoverImage mas_remakeConstraints:^(MASConstraintMaker *make) {
             make.left.mas_equalTo(0);
-            make.centerY.mas_equalTo(self).offset(-22);
+            make.centerY.mas_equalTo(self);
             make.width.mas_equalTo(SCREEN_WIDTH);
             make.height.mas_equalTo(videoH);
         }];
@@ -314,7 +339,7 @@
     }
     
     
-    //其他
+    //其他比例的视频
     else
     {
         videoWHSize = 2;
@@ -322,7 +347,7 @@
         CGFloat videoH = SCREEN_WIDTH / WHRate;
         [videoCoverImage mas_remakeConstraints:^(MASConstraintMaker *make) {
             make.left.mas_equalTo(0);
-            make.centerY.mas_equalTo(self).offset(-22);
+            make.centerY.mas_equalTo(self);
             make.width.mas_equalTo(SCREEN_WIDTH);
             make.height.mas_equalTo(videoH);
         }];
@@ -345,7 +370,10 @@
     //观看数
     NSString * viewsStr = [NSString converToViewCountStr:dataModel.viewCountShow];
     viewCountLabel.text = [NSString stringWithFormat:@"%@人看过",viewsStr];
-    
+    [viewCountLabel mas_remakeConstraints:^(MASConstraintMaker *make) {
+        make.left.mas_equalTo(descLabel.mas_left).offset(3);
+        make.bottom.mas_equalTo(authorBG.mas_top).offset(-10);
+    }];
     
     //如果是视频详情且有合集名称
     if (albumName.length)
@@ -426,18 +454,12 @@
     [avatar sd_setImageWithURL:[NSURL URLWithString:dataModel.issuerImageUrl]];
     
     
-    
     //蓝V认证
     if ([dataModel.creatorCertMark isEqualToString:@"blue-v"])
     {
         levelIcon.image = [UIImage getBundleImage:@"sz_level_blue"];
         levelIcon.hidden=NO;
-        [followBtn mas_remakeConstraints:^(MASConstraintMaker *make) {
-            make.left.mas_equalTo(levelIcon.mas_right).offset(7);
-            make.height.mas_equalTo(22);
-            make.centerY.mas_equalTo(levelIcon);
-            make.width.mas_equalTo(40);
-        }];
+
     }
     
     //黄V认证
@@ -445,12 +467,6 @@
     {
         levelIcon.image = [UIImage getBundleImage:@"sz_level_yellow"];
         levelIcon.hidden=NO;
-        [followBtn mas_remakeConstraints:^(MASConstraintMaker *make) {
-            make.left.mas_equalTo(levelIcon.mas_right).offset(7);
-            make.height.mas_equalTo(22);
-            make.centerY.mas_equalTo(levelIcon);
-            make.width.mas_equalTo(40);
-        }];
     }
     
     //普通用户
@@ -458,25 +474,12 @@
     {
         levelIcon.image = nil;
         levelIcon.hidden=YES;
-        [followBtn mas_remakeConstraints:^(MASConstraintMaker *make) {
-            make.left.mas_equalTo(authorName.mas_right).offset(7);
-            make.height.mas_equalTo(22);
-            make.centerY.mas_equalTo(authorName);
-            make.width.mas_equalTo(40);
-        }];
     }
     
     
     
     //默认隐藏通知条
     rollingNoticeView.hidden=YES;
-    [authorBG mas_remakeConstraints:^(MASConstraintMaker *make) {
-        make.bottom.mas_equalTo(descLabel.mas_top).offset(-13);
-        make.left.mas_equalTo(descLabel.mas_left);
-        make.height.mas_equalTo(28);
-        make.width.greaterThanOrEqualTo(@55);
-    }];
-    
     
     
     //是否是UGC系统
@@ -485,27 +488,25 @@
         //如果当前登录用户是自己
         if ([[SZGlobalInfo sharedManager].userId isEqualToString:dataModel.createBy])
         {
-            levelIcon.hidden = NO;
             followBtn.hidden=YES;
             avatar.userInteractionEnabled = YES;
             authorName.userInteractionEnabled = YES;
             
             [authorBG mas_remakeConstraints:^(MASConstraintMaker *make) {
-                make.bottom.mas_equalTo(descLabel.mas_top).offset(-13);
+                make.bottom.mas_equalTo(descLabel.mas_top).offset(-10);
                 make.left.mas_equalTo(descLabel.mas_left);
                 make.height.mas_equalTo(28);
-                make.right.mas_equalTo(levelIcon.mas_right).offset(8);
+                make.right.mas_equalTo(authorName.mas_right).offset(10);
             }];
         }
         else
         {
-            levelIcon.hidden = NO;
             followBtn.hidden = NO;
             avatar.userInteractionEnabled = YES;
             authorName.userInteractionEnabled = YES;
             
             [authorBG mas_remakeConstraints:^(MASConstraintMaker *make) {
-                make.bottom.mas_equalTo(descLabel.mas_top).offset(-13);
+                make.bottom.mas_equalTo(descLabel.mas_top).offset(-10);
                 make.left.mas_equalTo(descLabel.mas_left);
                 make.height.mas_equalTo(28);
                 make.right.mas_equalTo(followBtn.mas_right).offset(5);
@@ -517,14 +518,13 @@
     //PGC系统
     else
     {
-        levelIcon.hidden = YES;
         followBtn.hidden = YES;
         
         avatar.userInteractionEnabled = NO;
         authorName.userInteractionEnabled = NO;
         
         [authorBG mas_remakeConstraints:^(MASConstraintMaker *make) {
-            make.bottom.mas_equalTo(descLabel.mas_top).offset(-13);
+            make.bottom.mas_equalTo(descLabel.mas_top).offset(-10);
             make.left.mas_equalTo(descLabel.mas_left);
             make.height.mas_equalTo(28);
             make.right.mas_equalTo(authorName.mas_right).offset(10);
@@ -545,7 +545,7 @@
     
     __weak typeof (self) weakSelf = self;
     self.observe(@"contentRelateUpdateTime",^(id value){
-        [weakSelf updateVideoRelate];
+        [weakSelf updateRollingNoticeView];
     }).observe(@"currentContentId",^(id value){
         [weakSelf currentContentIdDidChange:value];
     }).observe(@"contentCreateFollowTime",^(id value){
@@ -560,7 +560,7 @@
 
 
 //视频相关新闻
--(void)updateVideoRelate
+-(void)updateRollingNoticeView
 {
     NSString * contentId = [SZData sharedSZData].currentContentId;
     
@@ -588,18 +588,19 @@
         else
         {
             rollingNoticeView.hidden=NO;
-            [authorBG mas_updateConstraints:^(MASConstraintMaker *make) {
-                make.bottom.mas_equalTo(descLabel.mas_top).offset(-58);
-            }];
             [rollingNoticeView reloadDataAndStartRoll];
             
+            [viewCountLabel mas_remakeConstraints:^(MASConstraintMaker *make) {
+                make.left.mas_equalTo(descLabel.mas_left).offset(3);
+                make.bottom.mas_equalTo(rollingNoticeView.mas_top).offset(-1);
+            }];
         }
 
     }
 }
 
 
-
+//视频相关合集
 -(void)updateVideoRelateAlbum
 {
     NSString * contentId = [SZData sharedSZData].currentContentId;
@@ -607,11 +608,11 @@
     if ([dataModel.id isEqualToString:contentId])
     {
         SZData * szdata = [SZData sharedSZData];
-        ContentListModel * listM = [szdata.contentBelongAlbumsDic valueForKey:contentId];
+        RelateAlbumsModel * relateAlbums = [szdata.contentBelongAlbumsDic valueForKey:contentId];
         
-        if (listM.dataArr.count>0)
+        if (relateAlbums.dataArr.count>0)
         {
-            belongAlbumArr = listM.dataArr;
+            belongAlbumArr = relateAlbums.dataArr;
     
             
             //合辑图标
@@ -647,7 +648,7 @@
 
                 }
                 
-                //拼标题
+                //拼合集名
                 NSMutableAttributedString * attstr_album = [[NSMutableAttributedString alloc]initWithString:album.title];
                 [attstr appendAttributedString:attstr_album];
             }
@@ -659,6 +660,26 @@
             NSMutableAttributedString * tempattstr2 = [NSMutableAttributedString yy_attachmentStringWithContent:space2 contentMode:UIViewContentModeScaleAspectFit attachmentSize:space2.size alignToFont:[UIFont systemFontOfSize:24] alignment:YYTextVerticalAlignmentCenter];
             [attstr appendAttributedString:tempattstr2];
             
+            //插入话题
+            if (relateAlbums.topicName.length)
+            {
+                //插入话题名称
+                NSString * topicstr = [NSString stringWithFormat:@"#%@",relateAlbums.topicName];
+                NSMutableAttributedString * attstr_topic = [[NSMutableAttributedString alloc]initWithString:topicstr];
+                [attstr appendAttributedString:attstr_topic];
+                NSRange range = [attstr.string rangeOfString:topicstr];
+                [attstr yy_setTextHighlightRange:range color:[UIColor whiteColor] backgroundColor:[UIColor clearColor] tapAction:^(UIView * _Nonnull containerView, NSAttributedString * _Nonnull text, NSRange range, CGRect rect) {
+                    
+                }];
+                [attstr yy_setFont:[UIFont systemFontOfSize:15] range:range];
+                
+                
+                //插一个space
+                UIView * space2 = [[UIView alloc]init];
+                [space2 setSize:CGSizeMake(6, 0)];
+                NSMutableAttributedString * tempattstr2 = [NSMutableAttributedString yy_attachmentStringWithContent:space2 contentMode:UIViewContentModeScaleAspectFit attachmentSize:space2.size alignToFont:[UIFont systemFontOfSize:24] alignment:YYTextVerticalAlignmentCenter];
+                [attstr appendAttributedString:tempattstr2];
+            }
             
             //拼简介
             NSString * finalDesc = dataModel.brief.length>0 ? dataModel.brief:dataModel.title;
@@ -674,7 +695,7 @@
             }];
             [attstr yy_setFont:[UIFont systemFontOfSize:14] range:range1];
             
-
+            
             //分别设置每个合集标题的点击事件和样式
             for (int i = 0; i<belongAlbumArr.count; i++)
             {
@@ -686,11 +707,12 @@
                 }];
                 [attstr yy_setFont:[UIFont systemFontOfSize:15] range:range3];
             }
-
+            
+            
             //设置整体行间距
             [attstr yy_setLineSpacing:4 range:NSMakeRange(0,attstr.string.length)];
-
-
+            
+            
             descLabel.attributedText = attstr;
             descLabel.lineBreakMode=NSLineBreakByTruncatingTail;
             
@@ -764,38 +786,28 @@
     //获取进度条
     SPDefaultControlView * controlView =  (SPDefaultControlView*)[MJVideoManager videoPlayer].controlView;
     videoSlider = controlView.externalSlider;
+    videoSlider.hidden=NO;
     [self insertSubview:videoSlider belowSubview:descLabel];
 
-    //全屏视频
-    if (videoWHSize==0 || videoWHSize==2)
-    {
-        [videoSlider mas_remakeConstraints:^(MASConstraintMaker *make) {
-            make.left.mas_equalTo(0);
-            make.height.mas_equalTo(30);
-            make.right.mas_equalTo(0);
-            make.bottom.mas_equalTo(avatar.mas_top).offset(-3);
-        }];
-    }
-    else
-    {
-        [videoSlider mas_remakeConstraints:^(MASConstraintMaker *make) {
-            make.left.mas_equalTo(0);
-            make.height.mas_equalTo(30);
-            make.right.mas_equalTo(0);
-            make.top.mas_equalTo(videoCoverImage.mas_bottom).offset(10);
-        }];
-    }
+    //进度条改成永远在下方
+    [videoSlider mas_remakeConstraints:^(MASConstraintMaker *make) {
+        make.left.mas_equalTo(0);
+        make.height.mas_equalTo(30);
+        make.right.mas_equalTo(0);
+        make.bottom.mas_equalTo(-BOTTOM_SAFEAREA_HEIGHT-10);
+    }];
 
 
-    //获取全屏按钮
+    //全屏播放按钮
     [self insertSubview:controlView.externalFullScreenBtn belowSubview:descLabel];
+    controlView.externalFullScreenBtn.hidden=NO;
     if (videoWHSize==0 || videoWHSize==2)
     {
         [controlView.externalFullScreenBtn mas_remakeConstraints:^(MASConstraintMaker *make) {
             make.centerX.mas_equalTo(videoCoverImage);
             make.height.mas_equalTo(0);
             make.width.mas_equalTo(0);
-            make.top.mas_equalTo(videoCoverImage.mas_bottom).offset(44);
+            make.top.mas_equalTo(videoCoverImage.mas_bottom).offset(20);
         }];
     }
     else
@@ -804,31 +816,14 @@
             make.centerX.mas_equalTo(videoCoverImage);
             make.height.mas_equalTo(29);
             make.width.mas_equalTo(82);
-            make.top.mas_equalTo(videoCoverImage.mas_bottom).offset(44);
+            make.top.mas_equalTo(videoCoverImage.mas_bottom).offset(20);
         }];
     }
     
 }
 
 
-#pragma mark - Request
--(void)requestVideoCollection
-{
-    VideoCollectModel * model = [VideoCollectModel model];
-    __weak typeof (self) weakSelf = self;
-    [model GETRequestInView:self.window WithUrl:APPEND_COMPONENT(BASE_URL, API_URL_VIDEO_COLLECTION, dataModel.pid) Params:nil Success:^(id responseObject) {
-        [weakSelf requestDone:model];
-        } Error:^(id responseObject) {
-        } Fail:^(NSError *error) {
-        }];
-}
 
--(void)requestDone:(VideoCollectModel*)model
-{
-    collectModel = model;
-    
-    [self showSelectionView];
-}
 
 
 #pragma mark - Btn Action
@@ -912,7 +907,6 @@
             [nav pushViewController:vc animated:YES];
         }
     }
-
 }
 
 -(void)fullScreenBtnAction
@@ -921,36 +915,7 @@
     [[NSNotificationCenter defaultCenter]postNotificationName:@"MJRemoteEnterFullScreen" object:num];
 }
 
-#pragma mark - Other
--(void)showSelectionView
-{
-    //show
-    __weak typeof (self) weakSelf = self;
-    
-    NSInteger idx = -1;
-    for (int i = 0; i<collectModel.dataArr.count; i++)
-    {
-        ContentModel * model = collectModel.dataArr[i];
-        if ([model.id isEqualToString: dataModel.id])
-        {
-            idx = i;
-        }
-    }
-    
-    [MJHUD_Selection showEpisodeSelectionView:self.superview currenIdx:idx episode:collectModel.dataArr.count clickAction:^(id objc) {
-        NSNumber * idex = objc;
-        [weakSelf reloadDataWithIndex:[idex integerValue]];
-        
-    }];
-}
 
--(void)reloadDataWithIndex:(NSInteger)idx
-{
-//    ContentModel * newContentModel = collectModel.dataArr[idx];
-//    [self setCellData:newContentModel enableFollow:NO];
-//    [self.delegate didSelectVideo:newContentModel];
-//    [self playingVideo];
-}
 
 
 #pragma mark - GYScroll Delegate
@@ -974,10 +939,6 @@
     
     //保存不喜欢
     [[SZData sharedSZData].contentRelateContentDislikeDic setValue:@"1" forKey:dataModel.id];
-    
-    [authorBG mas_updateConstraints:^(MASConstraintMaker *make) {
-        make.bottom.mas_equalTo(descLabel.mas_top).offset(-13);
-    }];
 }
 
 

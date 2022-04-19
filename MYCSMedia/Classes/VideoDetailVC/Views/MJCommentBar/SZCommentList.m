@@ -29,7 +29,7 @@
 #import "ReplyModel.h"
 
 @interface SZCommentList ()<UICollectionViewDataSource,UICollectionViewDelegate,UIGestureRecognizerDelegate>
-
+@property(strong,nonatomic)NSString * contentId;
 @end
 
 @implementation SZCommentList
@@ -38,7 +38,7 @@
     CommentDataModel * dataModel;
     
     CGFloat topspace;
-    
+    UILabel * placeholderLabel;
     UILabel * countLabel;
     UIView * BGView;
     
@@ -137,7 +137,7 @@
     sendBtn = [[MJButton alloc]init];
     [sendBtn setImage:[UIImage getBundleImage:@"sz_write_black"] forState:UIControlStateNormal];
     sendBtn.imageFrame=CGRectMake(13, 9, 12.5, 13);
-    sendBtn.titleFrame=CGRectMake(32, 8, 100, 15);
+    sendBtn.titleFrame=CGRectMake(32, 8, 130, 15);
     sendBtn.mj_text=@"写评论...";
     sendBtn.mj_font=FONT(13);
     sendBtn.mj_textColor=HW_BLACK;
@@ -165,13 +165,13 @@
     
     
     //没有评论
-    UILabel * nocommentLabel = [[UILabel alloc]init];
-    nocommentLabel.text=@"暂无任何评论，快来抢沙发吧!";
-    nocommentLabel.textColor=HW_GRAY_WORD_1;
-    nocommentLabel.font = FONT(12);
-    nocommentLabel.textAlignment=NSTextAlignmentCenter;
-    [BGView addSubview:nocommentLabel];
-    [nocommentLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+    placeholderLabel = [[UILabel alloc]init];
+    placeholderLabel.text=@"暂无任何评论，快来抢沙发吧!";
+    placeholderLabel.textColor=HW_GRAY_WORD_1;
+    placeholderLabel.font = FONT(12);
+    placeholderLabel.textAlignment=NSTextAlignmentCenter;
+    [BGView addSubview:placeholderLabel];
+    [placeholderLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerX.mas_equalTo(BGView.mas_centerX);
         make.top.mas_equalTo(nocommentImg.mas_bottom).offset(12);
         make.width.mas_equalTo(200);
@@ -203,12 +203,15 @@
     
     
     
+    
 }
 
 
 
 
-#pragma mark - 展开/收起
+
+
+
 -(void)showCommentList:(BOOL)show
 {
     if (show)
@@ -301,15 +304,20 @@
 
 -(void)updateContentInfo
 {
+    //禁止评论
     ContentModel * contenM = [[SZData sharedSZData].contentDic valueForKey:self.contentId];
     
     if(contenM.disableComment.boolValue)
     {
-        sendBtn.mj_text=@"该内容禁止评论";
+        sendBtn.enabled=NO;
+        sendBtn.mj_text=@"当前评论功能已关闭";
+        placeholderLabel.text = @"当前评论功能已关闭";
     }
     else
     {
+        sendBtn.enabled=YES;
         sendBtn.mj_text=@"写评论...";
+        placeholderLabel.text=@"暂无任何评论，快来抢沙发吧!";
     }
 }
 
@@ -446,7 +454,6 @@
     [SZInputView callInputView:TypeSendComment contentModel:model replyId:nil placeHolder:@"发表您的评论" completion:^(id responseObject) {
         [MJHUD_Notice showSuccessView:@"评论已提交，请等待审核通过！" inView:weakSelf.window hideAfterDelay:2];
     }];
-    
 }
 
 -(void)panGestureAction:(UIPanGestureRecognizer*)pan

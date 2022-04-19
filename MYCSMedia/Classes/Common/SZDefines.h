@@ -221,6 +221,7 @@
 #define HW_GRAY_BG_White            [UIColor colorWithHexString:@"F3F4F5"]
 #define HW_GRAY_BORDER              [UIColor colorWithHexString:@"E8E8E8"]
 #define HW_GRAY_BORDER_2            [UIColor colorWithHexString:@"A3A3A3"]
+#define HW_GRAY_BORDER_3            [UIColor colorWithHexString:@"EDEDED"]
 
 #define HW_GRAY_WORD_1              [UIColor colorWithHexString:@"999999"]
 #define HW_GRAY_WORD_2              [UIColor colorWithHexString:@"D4D4D4"]

@@ -1,5 +1,5 @@
 //
-//  SZUploadingVC.h
+//  SZVideoUploadVC.h
 //  MYCSMedia
 //
 //  Created by 马佳 on 2021/8/21.
@@ -9,7 +9,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface SZUploadingVC : UIViewController
+@interface SZVideoUploadVC : UIViewController
 
 @end
 

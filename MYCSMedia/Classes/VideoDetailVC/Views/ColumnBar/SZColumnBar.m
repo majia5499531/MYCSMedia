@@ -92,10 +92,11 @@
         newsbtn.mj_textColor=[UIColor colorWithWhite:1 alpha:0.5];
         newsbtn.mj_alpha_sel = 1;
         newsbtn.mj_textColor_sel=HW_WHITE;
-        newsbtn.mj_font=FONT(14);
-        newsbtn.mj_font_sel=BOLD_FONT(15);
+        newsbtn.mj_font=BOLD_FONT(16);
         [newsbtn sizeToFit];
         newsbtn.width += 10;
+        newsbtn.mj_font=FONT(14);
+        newsbtn.mj_font_sel=BOLD_FONT(16);
 
         //设置按钮Frame
         CGFloat targetWidth = 0;

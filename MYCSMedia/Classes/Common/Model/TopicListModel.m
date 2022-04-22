@@ -13,7 +13,7 @@
 
 -(void)parseData:(id)data
 {
-    NSArray * arr = [data mj_valueForKey:@"records"];
+    NSArray * arr = [data mj_arrayValue];
     
     for (int i = 0; i<arr.count; i++)
     {

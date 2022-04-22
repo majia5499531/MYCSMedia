@@ -33,6 +33,7 @@
 +(instancetype)sharedSZData;
 
 
+-(void)requestShortViewZan;
 -(void)requestZan;
 -(void)requestCollect;
 -(void)requestFollowUser:(NSString*)userId;

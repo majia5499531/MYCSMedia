@@ -24,7 +24,9 @@
 -(void)DeleteRequestInView:(UIView*)view WithUrl:(NSString *)url Params:(NSDictionary *)params Success:(SuccessBlock)successblock Error:(ErrorBlock)errorblock Fail:(FailBlock)failblock;
 -(void)PutRequestInView:(UIView*)view WithUrl:(NSString *)url Params:(NSDictionary *)params Success:(SuccessBlock)successblock Error:(ErrorBlock)errorblock Fail:(FailBlock)failblock;
 
--(void)requestMultipartFileUpload:(NSString *)url model:(NSDictionary *)model fileDataArray:(NSArray*)array fileNameArray:(NSArray*)names success:(SuccessBlock)successblock error:(ErrorBlock)errorBLock fail:(FailBlock)failblock progress:(ProgressBlock)progressBlock;
+-(void)requestMultipartVideoUpload:(NSString *)url model:(NSDictionary *)model fileDataArray:(NSArray*)array fileNameArray:(NSArray*)names success:(SuccessBlock)successblock error:(ErrorBlock)errorBLock fail:(FailBlock)failblock progress:(ProgressBlock)progressBlock;
+
+-(void)requestMultipartImageUpload:(NSString *)url model:(NSDictionary *)model fileDataArray:(NSArray*)array fileNameArray:(NSArray*)names success:(SuccessBlock)successblock error:(ErrorBlock)errorBLock fail:(FailBlock)failblock progress:(ProgressBlock)progressBlock;
 
 -(void)parseData:(id)data;
 -(void)parseDataFromDic:(NSDictionary*)dic;

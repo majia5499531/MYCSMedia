@@ -29,25 +29,25 @@
 #import "UploadModel.h"
 #import "SZUserTracker.h"
 
+
 @interface SZVideoUploadVC ()
 {
     UIScrollView * bgscroll;
-    
-    FSTextView * inputview;
+
     MJButton * uploadBtn;
     UIProgressView * progress;
     MJButton * deleteBtn;
     UIImageView * coverImage;
-    UILabel * successLabel;
+    UILabel * coverLabel;
+    UIView * topicTagsBG;
     
     
+    NSMutableArray * topicBtnArr;
     
-    NSMutableArray * btsArr;
-    
-    NSString * currentDesc;
-    
+    TopicListModel * topicsModel;
     FileUploadModel * uploadModel;
 }
+@property(strong,nonatomic)FSTextView * inputview;
 @end
 
 @implementation SZVideoUploadVC
@@ -59,6 +59,8 @@
     [super viewDidLoad];
     
     [self MJInitSubviews];
+    
+    [self requestTopicLists];
 }
 
 -(void)viewDidAppear:(BOOL)animated
@@ -170,10 +172,14 @@
     coverImage.userInteractionEnabled=YES;
     coverImage.layer.cornerRadius=6;
     coverImage.layer.masksToBounds=YES;
+    coverImage.contentMode=UIViewContentModeScaleAspectFill;
     coverImage.hidden=YES;
-    [uploadBtn addSubview:coverImage];
+    [bgscroll addSubview:coverImage];
+    UITapGestureRecognizer * covertap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(coverImageTapAction)];
+    [coverImage addGestureRecognizer:covertap];
     [coverImage mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.edges.mas_equalTo(UIEdgeInsetsZero);
+        make.left.top.mas_equalTo(uploadBtn);
+        make.width.height.mas_equalTo(uploadBtn);
     }];
     
     
@@ -193,16 +199,18 @@
     
     
     //成功label
-    successLabel = [[UILabel alloc]init];
-    successLabel.text = @"上传成功";
-    successLabel.font=FONT(11);
-    successLabel.hidden=YES;
-    successLabel.textAlignment=NSTextAlignmentCenter;
-    successLabel.textColor = HW_GRAY_WORD_1;
-    [self.view addSubview:successLabel];
-    [successLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.centerX.mas_equalTo(uploadBtn);
-        make.top.mas_equalTo(uploadBtn.mas_bottom).offset(5);
+    coverLabel = [[UILabel alloc]init];
+    coverLabel.text = @"选封面";
+    coverLabel.font=FONT(13);
+    coverLabel.textAlignment=NSTextAlignmentCenter;
+    coverLabel.textColor = HW_WHITE;
+    coverLabel.backgroundColor=[UIColor colorWithRed:0 green:0 blue:0 alpha:0.5];
+    [coverImage addSubview:coverLabel];
+    [coverLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.centerX.mas_equalTo(coverImage);
+        make.width.mas_equalTo(coverImage.mas_width);
+        make.height.mas_equalTo(24);
+        make.bottom.mas_equalTo(0);
     }];
     
     
@@ -219,28 +227,27 @@
     
     
     //输入框
-    inputview = [[FSTextView alloc]init];
-    inputview.placeholder=@"填写视频介绍，让更多人了解你的作品，最多120个字符";
-    inputview.placeholderColor=HW_GRAY_BG_9;
-    inputview.font=FONT(15);
-    inputview.maxLength=120;
-    inputview.backgroundColor=HW_WHITE;
-    inputview.textColor=HW_BLACK;
-    inputview.maxLength=120;
-    [inputview addTextDidChangeHandler:^(FSTextView *textView) {
-        self->currentDesc = textView.text;
-        [inputview mas_updateConstraints:^(MASConstraintMaker *make) {
-            make.height.mas_equalTo(inputview.contentSize.height);
+    _inputview = [[FSTextView alloc]init];
+    _inputview.placeholder=@"填写视频介绍，让更多人了解你的作品，最多120个字符";
+    _inputview.placeholderColor=HW_GRAY_BG_9;
+    _inputview.font=FONT(15);
+    _inputview.maxLength=120;
+    _inputview.backgroundColor=HW_WHITE;
+    _inputview.textColor=HW_BLACK;
+    _inputview.maxLength=120;
+    __weak typeof (self) weakSelf = self;
+    [_inputview addTextDidChangeHandler:^(FSTextView *textView) {
+        [weakSelf.inputview mas_updateConstraints:^(MASConstraintMaker *make) {
+            make.height.mas_equalTo(weakSelf.inputview.contentSize.height);
         }];
     }];
-    [bgscroll addSubview:inputview];
-    [inputview mas_makeConstraints:^(MASConstraintMaker *make) {
+    [bgscroll addSubview:_inputview];
+    [_inputview mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_equalTo(12);
         make.top.mas_equalTo(secTitle2.mas_bottom).offset(8);
         make.width.mas_equalTo(SCREEN_WIDTH-24);
         
     }];
-    inputview.backgroundColor=[UIColor redColor];
     
     //话题选择
     UILabel * secTitle3 = [[UILabel alloc]init];
@@ -250,12 +257,12 @@
     [bgscroll addSubview:secTitle3];
     [secTitle3 mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_equalTo(16);
-        make.top.mas_equalTo(inputview.mas_bottom).offset(55);
+        make.top.mas_equalTo(_inputview.mas_bottom).offset(55);
     }];
     
     //话题选择desc
     UILabel * desc3 = [[UILabel alloc]init];
-    desc3.text=@"非必选，最多选择3个标签";
+    desc3.text=@"非必选";
     desc3.textColor=HW_GRAY_BG_9;
     desc3.font=FONT(13);
     [bgscroll addSubview:desc3];
@@ -264,6 +271,54 @@
         make.bottom.mas_equalTo(secTitle3.mas_bottom);
     }];
     
+    //话题标签组
+    topicTagsBG = [[UIView alloc]init];
+    [topicTagsBG setWidth:SCREEN_WIDTH];
+    [bgscroll addSubview:topicTagsBG];
+    [topicTagsBG mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.mas_equalTo(0);
+        make.top.mas_equalTo(secTitle3.mas_bottom).offset(20);
+        make.width.mas_equalTo(SCREEN_WIDTH);
+        make.height.mas_equalTo(55);
+    }];
+    
+    //保存按钮
+    MJButton * saveBtn = [[MJButton alloc]init];
+    saveBtn.mj_text = @"保存草稿";
+    saveBtn.mj_font=FONT(17);
+    saveBtn.mj_textColor=HW_BLACK;
+    saveBtn.layer.cornerRadius=22;
+    saveBtn.layer.borderWidth=MINIMUM_PX;
+    saveBtn.layer.borderColor=HW_GRAY_BG_9.CGColor;
+    [bgscroll addSubview:saveBtn];
+    [saveBtn addTarget:self action:@selector(saveBtnAction) forControlEvents:UIControlEventTouchUpInside];
+    CGFloat btnw = (SCREEN_WIDTH - (3*16) )/2;
+    [saveBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.mas_equalTo(16);
+        make.top.mas_equalTo(topicTagsBG.mas_bottom).offset(90);
+        make.width.mas_equalTo( btnw );
+        make.height.mas_equalTo(44);
+    }];
+    
+    //提交按钮
+    MJButton * commitBtn = [[MJButton alloc]init];
+    commitBtn.mj_text = @"提交发布";
+    commitBtn.mj_font=FONT(17);
+    commitBtn.mj_textColor=HW_WHITE;
+    commitBtn.layer.cornerRadius=22;
+    commitBtn.layer.borderWidth=0;
+    commitBtn.backgroundColor=HW_RED_WORD_1;
+    [bgscroll addSubview:commitBtn];
+    [commitBtn addTarget:self action:@selector(commitBtnAction) forControlEvents:UIControlEventTouchUpInside];
+    [commitBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.mas_equalTo(saveBtn.mas_right).offset(16);
+        make.top.mas_equalTo(saveBtn.mas_top);
+        make.width.mas_equalTo( saveBtn);
+        make.height.mas_equalTo(saveBtn);
+    }];
+    
+    
+    //提交按钮
 }
 
 -(void)showProtocol
@@ -289,8 +344,98 @@
     }];
 }
 
+-(void)createTopicItems
+{
+    CGFloat marginX = 16;
+    CGFloat marginY = 10;
+    CGFloat btnH = 26;
+    CGFloat originX=16;
+    CGFloat originY=0;
+    
+    topicBtnArr = [NSMutableArray array];
+    for (int i = 0; i<topicsModel.dataArr.count; i++)
+    {
+        ContentModel * model = topicsModel.dataArr[i];
+        MJButton * btn = [[MJButton alloc]init];
+        btn.mj_text = [NSString stringWithFormat:@"#%@",model.title];
+        btn.mj_font = FONT(13);
+        btn.mj_textColor=HW_BLACK;
+        btn.mj_textColor_sel = HW_WHITE;
+        btn.mj_bgColor=[UIColor colorWithHexString:@"F5F5F5"];
+        btn.mj_bgColor_sel = HW_RED_WORD_1;
+        btn.layer.cornerRadius=5;
+        [btn addTarget:self action:@selector(topicBtnAction:) forControlEvents:UIControlEventTouchUpInside];
+        btn.tag = i;
+        [btn sizeToFit];
+        [btn setSize:CGSizeMake(btn.width+20, btnH)];
+        
+        
+        //如果当前行放得下
+        if (originX + btn.width + marginX <= SCREEN_WIDTH)
+        {
+            [btn setOrigin:CGPointMake(originX, originY)];
+            
+            originX = btn.right+marginX;
+            originY = btn.top;
+        }
+        else
+        {
+            [btn setOrigin:CGPointMake(marginX, originY+marginY+btnH)];
+            
+            originX = btn.right+marginX;
+            originY = btn.top;
+        }
+        
+        
+        
+        [topicTagsBG addSubview:btn];
+        [topicBtnArr addObject:btn];
+    }
+    
+    
+    [self.view layoutIfNeeded];
+    [topicTagsBG mas_updateConstraints:^(MASConstraintMaker *make) {
+        make.height.mas_equalTo(originY+btnH);
+    }];
+    
+    
+}
+
 
 #pragma mark - Request
+-(void)requestVideoDraft
+{
+    NSString * url = APPEND_SUBURL(BASE_URL, API_URL_UGC_CONTENT);
+    url = APPEND_SUBURL(url, self.drafId);
+    __weak typeof (self) weakSelf = self;
+    ContentModel * model = [ContentModel model];
+    [model GETRequestInView:self.view WithUrl:url Params:nil Success:^(id responseObject) {
+        [weakSelf requestVideoDraftDone:model];
+        } Error:^(id responseObject) {
+            
+        } Fail:^(NSError *error) {
+            
+        }];
+}
+
+
+-(void)requestTopicLists
+{
+    TopicListModel * model =[TopicListModel model];
+    model.isJSON=YES;
+    
+    NSMutableDictionary * param=[NSMutableDictionary dictionary];
+    
+    __weak typeof (self) weakSelf = self;
+    [model GETRequestInView:self.view WithUrl:APPEND_SUBURL(BASE_URL, API_URL_TOPICS) Params:param Success:^(id responseObject) {
+        [weakSelf requestTopicsDone:model];
+        } Error:^(id responseObject) {
+            
+        } Fail:^(NSError *error) {
+            
+        }];
+}
+
 -(void)requestUploadData:(NSURL*)dataUrl
 {
     FileUploadModel * model = [FileUploadModel model];
@@ -301,7 +446,7 @@
     NSArray * nameArr = [NSArray arrayWithObject:@"mjvideo"];
     
     __weak typeof (self) weakSelf = self;
-    [model requestMultipartFileUpload:APPEND_SUBURL(BASE_URL, API_URL_VIDEO_UPLOAD) model:nil fileDataArray:dataArr fileNameArray:nameArr success:^(id responseObject) {
+    [model requestMultipartVideoUpload:APPEND_SUBURL(BASE_URL, API_URL_VIDEO_UPLOAD) model:nil fileDataArray:dataArr fileNameArray:nameArr success:^(id responseObject) {
            [weakSelf requestUploadDone:model];
         } error:^(id responseObject) {
             
@@ -318,15 +463,64 @@
 }
 
 
+-(void)requestUploadImage:(UIImage*)img
+{
+    FileUploadModel * model = [FileUploadModel model];
+    
+    NSData * imgData = UIImageJPEGRepresentation(img , 1.0);
+    
+    NSArray * dataArr = [NSArray arrayWithObject:imgData];
+    NSArray * nameArr = [NSArray arrayWithObject:@"mjvideo"];
+    
+    __weak typeof (self) weakSelf = self;
+    [model requestMultipartImageUpload:APPEND_SUBURL(BASE_URL, API_URL_IMAGE_UPLOAD) model:nil fileDataArray:dataArr fileNameArray:nameArr success:^(id responseObject) {
+        [weakSelf requestImageUploadDone:model];
+        } error:^(id responseObject) {
+            
+        } fail:^(NSError *error) {
+            
+        } progress:^(NSProgress *progress) {
+            
+            long long current = progress.completedUnitCount;
+            long long total = progress.totalUnitCount;
+            CGFloat value = current * 1.0/total;
+            [weakSelf uploadProgressDidChange:value];
+            
+        }];
+}
 
--(void)requestCommitVideo:(FileUploadModel*)upmodel
+
+-(void)requestCommitVideo:(FileUploadModel*)upmodel isPublish:(BOOL)ispub
 {
     NSMutableDictionary * param=[NSMutableDictionary dictionary];
     [param setValue:upmodel.url forKey:@"playUrl"];
     [param setValue:upmodel.coverImageUrl forKey:@"imagesUrl"];
     [param setValue:upmodel.width forKey:@"width"];
     [param setValue:upmodel.height forKey:@"height"];
+    [param setValue:@"activity.works" forKey:@"type"];
+    [param setValue:upmodel.duration forKey:@"playDuration"];
+    [param setValue:_inputview.text forKey:@"title"];
     
+    //所选话题
+    NSString * tagstr = [self getSelectedTagString];
+    if (tagstr.length)
+    {
+        [param setValue:tagstr forKey:@"belongTopicId"];
+    }
+    
+    //是发布
+    if (ispub)
+    {
+        [param setValue:@"1" forKey:@"ugcUploadWay"];
+    }
+    //是草稿
+    else
+    {
+        [param setValue:@"0" forKey:@"ugcUploadWay"];
+    }
+    
+    
+    //方向
     if ([upmodel.orientation isEqualToString:@"Portrait"])
     {
         [param setValue:@"2" forKey:@"orientation"];
@@ -337,15 +531,74 @@
     }
     
     
-    [param setValue:upmodel.duration forKey:@"playDuration"];
-    [param setValue:currentDesc forKey:@"title"];
+    
     
     __weak typeof (self) weakSelf = self;
     UploadModel * model = [UploadModel model];
     model.size = upmodel.size;
     model.isJSON = YES;
-    [model PostRequestInView:self.view WithUrl:APPEND_SUBURL(BASE_URL, API_URL_VIDEO_COMMIT) Params:param Success:^(id responseObject) {
-        [weakSelf requestCommitDone:model];
+    [model PostRequestInView:self.view WithUrl:APPEND_SUBURL(BASE_URL, API_URL_ARTICLE_CREATE) Params:param Success:^(id responseObject) {
+        [weakSelf requestCommitDone:model ispublish:ispub];
+        } Error:^(id responseObject) {
+            
+        } Fail:^(NSError *error) {
+            
+        }];
+}
+
+
+-(void)requestUpdateVideo:(FileUploadModel*)upmodel ispublish:(BOOL)ispub
+{
+    NSMutableDictionary * param=[NSMutableDictionary dictionary];
+    [param setValue:upmodel.url forKey:@"playUrl"];
+    [param setValue:upmodel.coverImageUrl forKey:@"imagesUrl"];
+    [param setValue:upmodel.width forKey:@"width"];
+    [param setValue:upmodel.height forKey:@"height"];
+    [param setValue:@"activity.works" forKey:@"type"];
+    [param setValue:upmodel.duration forKey:@"playDuration"];
+    [param setValue:_inputview.text forKey:@"title"];
+    
+    //草稿ID
+    [param setValue:self.drafId forKey:@"id"];
+    
+    //所选话题
+    NSString * tagstr = [self getSelectedTagString];
+    if (tagstr.length)
+    {
+        [param setValue:tagstr forKey:@"belongTopicId"];
+    }
+    
+    //是发布
+    if (ispub)
+    {
+        [param setValue:@"1" forKey:@"ugcUploadWay"];
+    }
+    //是草稿
+    else
+    {
+        [param setValue:@"0" forKey:@"ugcUploadWay"];
+    }
+    
+    
+    //方向
+    if ([upmodel.orientation isEqualToString:@"Portrait"])
+    {
+        [param setValue:@"2" forKey:@"orientation"];
+    }
+    else
+    {
+        [param setValue:@"1" forKey:@"orientation"];
+    }
+    
+    
+    
+    
+    __weak typeof (self) weakSelf = self;
+    UploadModel * model = [UploadModel model];
+    model.size = upmodel.size;
+    model.isJSON = YES;
+    [model PostRequestInView:self.view WithUrl:APPEND_SUBURL(BASE_URL, API_URL_ARTICLE_UPDATE) Params:param Success:^(id responseObject) {
+        [weakSelf requestCommitDone:model ispublish:ispub];
         } Error:^(id responseObject) {
             
         } Fail:^(NSError *error) {
@@ -356,12 +609,48 @@
 
 
 #pragma mark - Rquest Done
+-(void)requestVideoDraftDone:(ContentModel*)draftContent
+{
+    //草稿的标题
+    _inputview.text = draftContent.title;
+    
+    //草稿的视频信息
+    FileUploadModel * uploadM = [FileUploadModel model];
+    uploadM.coverImageUrl = draftContent.imagesUrl;
+    uploadM.url = draftContent.playUrl;
+    uploadM.width = draftContent.width;
+    uploadM.height = draftContent.height;
+    uploadM.duration = draftContent.playDuration;
+    uploadM.orientation = draftContent.orientation;
+    
+    [self requestUploadDone:uploadM];
+    
+    //草稿的话题
+    if (draftContent.belongTopicId.length)
+    {
+        [self setDraftSelectedTopicItem:draftContent.belongTopicId];
+    }
+}
+
+
+-(void)requestTopicsDone:(TopicListModel*)model
+{
+    topicsModel = model;
+    
+    [self createTopicItems];
+    
+    if (self.drafId.length)
+    {
+        [self requestVideoDraft];
+    }
+}
+
 -(void)requestUploadDone:(FileUploadModel*)model
 {
     //显示封面图，删除按钮
+    uploadBtn.hidden=YES;
     coverImage.hidden=NO;
     deleteBtn.hidden=NO;
-    successLabel.hidden=NO;
     [coverImage sd_setImageWithURL:[NSURL URLWithString:model.coverImageUrl]];
     
     
@@ -370,6 +659,23 @@
     
     //保存数据
     uploadModel = model;
+}
+
+
+-(void)requestImageUploadDone:(FileUploadModel*)model
+{
+    //显示封面图，删除按钮
+    uploadBtn.hidden=YES;
+    coverImage.hidden=NO;
+    deleteBtn.hidden=NO;
+    [coverImage sd_setImageWithURL:[NSURL URLWithString:model.url]];
+    
+    
+    //隐藏进度条
+    progress.hidden=YES;
+    
+    //保存数据
+    uploadModel.coverImageUrl = model.url;
 }
 
 -(void)uploadProgressDidChange:(CGFloat)value
@@ -392,11 +698,17 @@
     progress.progress = value;
 }
 
--(void)requestCommitDone:(UploadModel*)model
+
+-(void)requestCommitDone:(UploadModel*)model ispublish:(BOOL)ispub
 {
-    [MJHUD_Notice showSuccessView:@"你的作品发布成功，正在等待审核" inView:self.view hideAfterDelay:2];
-    
-    [self performSelector:@selector(dissmissVC) withObject:nil afterDelay:2];
+    if (ispub)
+    {
+        [MJHUD_Notice showSuccessView:@"提交成功" inView:self.view hideAfterDelay:2];
+    }
+    else
+    {
+        [MJHUD_Notice showSuccessView:@"保存成功" inView:self.view hideAfterDelay:2];
+    }
     
     
     //行为埋点
@@ -406,6 +718,16 @@
     [param setValue:model.playDuration forKey:@"works_duration"];
     [param setValue:model.size forKey:@"works_size"];
     [SZUserTracker trackingButtonEventName:@"short_video_submit" param:param];
+    
+    
+    [self performSelector:@selector(dissmissVC) withObject:nil afterDelay:1];
+    
+    dispatch_time_t time=dispatch_time(DISPATCH_TIME_NOW, 1.5*NSEC_PER_SEC);
+        dispatch_after(time, dispatch_get_main_queue(), ^{
+            NSString * h5url = APPEND_SUBURL(BASE_H5_URL, @"act/xksh/#/me");
+            [[SZManager sharedManager].delegate onOpenWebview:h5url param:nil];
+        });
+    
 }
 
 
@@ -423,7 +745,7 @@
 
 -(void)commitBtnAction
 {
-    if (currentDesc.length==0)
+    if (_inputview.text.length==0)
     {
         [MJHUD_Notice showNoticeView:@"请输入视频简介" inView:self.view hideAfterDelay:2];
     }
@@ -433,13 +755,64 @@
     }
     else
     {
-        [self requestCommitVideo:uploadModel];
+        if (self.drafId.length)
+        {
+            [self requestUpdateVideo:uploadModel ispublish:YES];
+        }
+        else
+        {
+            [self requestCommitVideo:uploadModel isPublish:YES];
+        }
+        
     }
+}
+-(void)saveBtnAction
+{
+    if (_inputview.text.length==0)
+    {
+        [MJHUD_Notice showNoticeView:@"请输入视频简介" inView:self.view hideAfterDelay:2];
+    }
+    else if (uploadModel.url.length==0)
+    {
+        [MJHUD_Notice showNoticeView:@"视频还未上传完成" inView:self.view hideAfterDelay:2];
+    }
+    else
+    {
+        if (self.drafId.length)
+        {
+            [self requestUpdateVideo:uploadModel ispublish:NO];
+        }
+        else
+        {
+            [self requestCommitVideo:uploadModel isPublish:NO];
+        }
+        
+    }
+}
+
+-(void)coverImageTapAction
+{
+    [[HDPhotoHelper creatWithSourceType:MJImagePickerSourceTypeAlbumImageOnly]showMediaSelectionViewFromVC:self completion:^(id data) {
+        [self requestUploadImage:data];
+    }];
 }
 
 -(void)closeKeyboardAction
 {
     [self.view.window endEditing:YES];
+}
+
+-(void)topicBtnAction:(MJButton*)sender
+{
+    for (MJButton * btn in topicBtnArr)
+    {
+        if (btn != sender)
+        {
+            btn.MJSelectState = NO;
+        }
+    }
+    
+    sender.MJSelectState=!sender.MJSelectState;
 }
 
 -(void)uploadBtnAction
@@ -453,9 +826,40 @@
 
 -(void)deleteBtnAction
 {
+    uploadBtn.hidden=NO;
     coverImage.hidden=YES;
     deleteBtn.hidden=YES;
-    successLabel.hidden=YES;
+}
+
+#pragma mark - Other
+-(NSString*)getSelectedTagString
+{
+    for (int i = 0; i<topicBtnArr.count; i++)
+    {
+        MJButton * btn = topicBtnArr[i];
+        if (btn.MJSelectState)
+        {
+            ContentModel * model = topicsModel.dataArr [i];
+            return model.id;
+            
+        }
+    }
+    
+    
+        return nil;
+}
+
+-(void)setDraftSelectedTopicItem:(NSString*)topicId
+{
+    for (int i =0; i<topicsModel.dataArr.count; i++)
+    {
+        ContentModel * topic = topicsModel.dataArr[i];
+        if ([topic.id isEqualToString:topicId])
+        {
+            MJButton * btn = topicBtnArr[i];
+            [self topicBtnAction:btn];
+        }
+    }
 }
 
 

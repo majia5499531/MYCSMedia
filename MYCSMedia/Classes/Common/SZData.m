@@ -149,6 +149,20 @@
         }];
 }
 
+
+//小视频手势点赞
+-(void)requestShortViewZan
+{
+    //如果当前已经点赞则不请求
+    ContentStateModel * stateM = [self.contentStateDic valueForKey:self.currentContentId];
+    if(stateM.whetherLike)
+    {
+        return;
+    }
+    
+    [self requestZan];
+}
+
 //点赞+1
 -(void)requestZan
 {

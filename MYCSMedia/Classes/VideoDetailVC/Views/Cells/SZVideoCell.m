@@ -41,7 +41,7 @@
 #import "SZHomeVC.h"
 #import "SZSideBar.h"
 #import "RelateAlbumsModel.h"
-
+#import "YPDouYinLikeAnimation.h"
 
 @interface SZVideoCell ()<GYRollingNoticeViewDelegate,GYRollingNoticeViewDataSource>
 
@@ -244,6 +244,12 @@
         
         //数据监听
         [self addDataBinding];
+        
+        //双击(播放/暂停)
+        UITapGestureRecognizer * doubleTap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(doubleTapAction:)];
+        doubleTap.numberOfTouchesRequired = 1; //手指数
+        doubleTap.numberOfTapsRequired    = 2;
+        [self addGestureRecognizer:doubleTap];
         
     }
     return self;
@@ -823,6 +829,14 @@
 }
 
 
+
+#pragma mark - Double Tap
+-(void)doubleTapAction:(UITapGestureRecognizer*)gest
+{
+    [[SZData sharedSZData]requestShortViewZan];
+    [[YPDouYinLikeAnimation shareInstance]createAnimationWithTap:gest];
+    
+}
 
 
 

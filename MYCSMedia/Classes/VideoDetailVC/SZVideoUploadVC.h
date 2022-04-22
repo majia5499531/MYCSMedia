@@ -10,7 +10,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface SZVideoUploadVC : UIViewController
-
+@property(strong,nonatomic)NSString * drafId;
 @end
 
 NS_ASSUME_NONNULL_END

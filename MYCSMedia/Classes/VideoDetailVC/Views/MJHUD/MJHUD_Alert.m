@@ -13,6 +13,9 @@
 #import <SDWebImage/SDWebImage.h>
 #import "NSAttributedString+MJCategory.h"
 #import "MJButton.h"
+#import "UIImage+MJCategory.h"
+#import <WebKit/WebKit.h>
+
 
 @implementation MJHUD_Alert
 
@@ -323,19 +326,27 @@
     titleLabel.font=BOLD_FONT(17);
     titleLabel.textAlignment=NSTextAlignmentCenter;
     titleLabel.textColor=HW_BLACK;
-    titleLabel.text=@"内容合作协议";
+    titleLabel.text=@"用户内容发布协议";
     [hud.contentView addSubview:titleLabel];
      
-    NSString * noticewords = @"1.第一条协议范围内,双方的关系确定为合作关系。为拓展市场更好地、更规范地服务消费者,根据公司的规划,甲方根据乙方的申请和对乙方的经营能力的审核,同意乙方加入公司的销售网络。.第二条订立本协议的目的在于确保甲、乙双方忠实地履行本协议规定的双方的职责和权利。乙方作为单独的企业法人或经营者进行经济活动。因此,他必须遵守对所有企业法人或经营者共同的法律要求,特别是有关资格的规则以及社会的、财务的商业合作协议因此,他必须遵守对所有企业法人或经营者共同的法律要求,特别是有关资格的规则以及社会的、财务的商业合作协合作协合作1.第一条协议范围内,双方的关系确定为合作关系。为拓展市场更好地、更规范地服务消费者,根据公司的规划,甲方根据乙方的申请和对乙方的经营能力的审核,同意乙方加入公司的销售网络。2.第二条订立本协议的目的在于确保甲、乙双方忠实地履行本协议规定的双方的职责和权利。乙方作为单独的企业法人或经营者进行经济活动。因此,他必须遵守对所有企业法人或经营者共同的法律要求,特别是有关资格的规则以及社会的、财务的商业合作协议因此,他必须遵守对所有企业法人或经营者共同的法律要求,特别是有关资格的规则以及社会的、财务的商业合作协合作协合作";
     
-    //text
-    UITextView * descview = [[UITextView alloc]init];
-    descview.editable=NO;
+    
+    //webview
+    NSURL *url = [UIImage getBundleImageURL:@"ugc.html"];
+    WKWebView *descview = [[WKWebView alloc] init];
     [descview setFrame:CGRectMake(27, titleLabel.bottom+12, hud.contentView.width-54, hud.contentView.width-40)];
-    descview.font=FONT(13);
-    descview.text = noticewords;
-    descview.textColor=HW_GRAY_BG_6;
+    descview.backgroundColor = [UIColor whiteColor];
     [hud.contentView addSubview:descview];
+    [descview loadFileURL:url allowingReadAccessToURL:[url URLByDeletingLastPathComponent]];
+    
+    
+//    //text
+//    UITextView * descview = [[UITextView alloc]init];
+//    descview.editable=NO;
+//    [descview setFrame:CGRectMake(27, titleLabel.bottom+12, hud.contentView.width-54, hud.contentView.width-40)];
+//    descview.font=FONT(13);
+//    descview.textColor=HW_GRAY_BG_6;
+//    [hud.contentView addSubview:descview];
     
     //lineH
     UIView * line1 = [[UIView alloc]initWithFrame:CGRectMake(0, descview.bottom+20, hud.contentView.width, MINIMUM_PX)];

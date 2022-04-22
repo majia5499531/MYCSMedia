@@ -1,5 +1,5 @@
 //
-//  SZNewsUploadVC.h
+//  CoverSelectVC.h
 //  MYCSMedia
 //
 //  Created by 马佳 on 2022/4/19.
@@ -9,7 +9,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface SZNewsUploadVC : UIViewController
+@interface SZCoverSelectVC : UIViewController
 
 @end
 

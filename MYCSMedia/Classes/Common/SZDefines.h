@@ -54,10 +54,15 @@
 #define API_URL_RELATED_CONTENT     @"api/cms/client/content/recommend"
 #define API_URL_FOLLOW_USER         @"api/sys/user/me/follow"
 #define API_URL_UNFOLLOW_USER       @"api/sys/user/me/unfollow"
-#define API_URL_TOPICS              @"api/cms/client/content/page"
+#define API_URL_TOPICS              @"api/cms/client/content/topics"
 #define API_URL_VIDEO_UPLOAD        @"api/media/file/upload?isPublic=1&generateCoverImage=1"
+#define API_URL_IMAGE_UPLOAD        @"api/media/file/upload?isPublic=1"
+#define API_URL_UGC_CONTENT         @"api/cms/client/content/ugc"
 //#define API_URL_VIDEO_COMMIT        @"api/cms/client/content/activity/works/create"
-#define API_URL_VIDEO_COMMIT        @"api/cms/client/content/activity/works/create/v2"
+//#define API_URL_VIDEO_COMMIT        @"api/cms/client/content/activity/works/create/v2"
+#define API_URL_ARTICLE_CREATE      @"api/cms/client/content/createArticle"
+#define API_URL_ARTICLE_UPDATE      @"api/cms/client/content/updateArticle"
+
 
 #define API_URL_PANEL_ACTIVITY      @"api/cms/client/panel/info"
 #define API_URL_CONTENT_TRACKING    @"api/cms/client/tracking/upload"

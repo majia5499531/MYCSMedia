@@ -69,7 +69,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property(strong,nonatomic) NSString               * creatorGender;
 @property(strong,nonatomic) NSString               * creatorCertMark;
 @property(strong,nonatomic) NSString               * creatorCertDomain;
-
+@property(strong,nonatomic) NSString                * orientation;
 
 @property(strong,nonatomic) NSString               * issuerName;
 @property(strong,nonatomic) NSString               * issuerImageUrl;

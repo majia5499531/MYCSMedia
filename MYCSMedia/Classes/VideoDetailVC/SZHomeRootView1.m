@@ -32,7 +32,8 @@
 #import "SDWebImage.h"
 #import "SZUserTracker.h"
 #import <MJRefresh/MJRefresh.h>
-
+#import "UIResponder+MJCategory.h"
+#import "SZHomeVC.h"
 
 
 
@@ -43,6 +44,7 @@
 @implementation SZHomeRootView1
 {
     //data
+    ContentModel * singleVideo;
     ContentListModel * dataModel;
     BOOL isRandomMode;
     NSString * panelCode;
@@ -73,12 +75,23 @@
 
 -(void)viewWillAppear
 {
+    //如果没有数据，则请求数据
     if (dataModel==nil)
     {
-        [self requestVideos];
+        //如果是单条视频，则先请求单条视频
+        if (self.contentId)
+        {
+            [self requestSingleVideo];
+        }
+        else
+        {
+            [self requestVideoList];
+        }
     }
+    
+    //如果有数据则play
     else
-    {        
+    {
         [self needUpdateCurrentContentId_now:NO];
     }
 }
@@ -126,7 +139,26 @@
 
 
 #pragma mark - Request
--(void)requestVideos
+
+-(void)requestSingleVideo
+{
+    NSString * url = APPEND_SUBURL(BASE_URL, API_URL_VIDEO);
+    url = APPEND_SUBURL(url, self.contentId);
+    
+    ContentModel * contentM = [ContentModel model];
+    __weak typeof (self) weakSelf = self;
+    [contentM GETRequestInView:nil WithUrl:url Params:nil Success:^(id responseObject) {
+        
+        [weakSelf requestSingleVideoDone:contentM];
+        
+        } Error:^(id responseObject) {
+            [weakSelf requestFailed];
+        } Fail:^(NSError *error) {
+            [weakSelf requestFailed];
+        }];
+}
+
+-(void)requestVideoList
 {
     NSString * ssid = [[SZManager sharedManager].delegate onGetUserDevice];
     NSString * pagesize = [NSString stringWithFormat:@"%d",VIDEO_PAGE_SIZE];
@@ -141,7 +173,7 @@
     ContentListModel * dataModel = [ContentListModel model];
     __weak typeof (self) weakSelf = self;
     [dataModel GETRequestInView:self WithUrl:APPEND_SUBURL(BASE_URL, API_URL_VIDEO_LIST) Params:param Success:^(id responseObject){
-        [weakSelf requestDone:dataModel];
+        [weakSelf requestVideoListDone:dataModel];
         } Error:^(id responseObject) {
             [weakSelf requestFailed];
         } Fail:^(NSError *error) {
@@ -185,12 +217,26 @@
 
 
 #pragma mark - Request Done
--(void)requestDone:(ContentListModel*)model
+-(void)requestSingleVideoDone:(ContentModel*)model
+{
+    SZHomeVC * home = (SZHomeVC*)[self getCurrentViewController];
+    singleVideo = model;
+    model.isManualPlay=YES;
+    model.volcCategory = home.category_name;
+    [self requestVideoList];
+}
+
+-(void)requestVideoListDone:(ContentListModel*)model
 {
     [collectionView.mj_footer endRefreshing];
     [collectionView.mj_header endRefreshing];
     
     dataModel = model;
+    
+    if (singleVideo)
+    {
+        [dataModel.dataArr insertObject:singleVideo atIndex:0];
+    }
     
     [collectionView reloadData];
     
@@ -277,7 +323,7 @@
 #pragma mark - 下拉/上拉
 -(void)pulldownRefreshAction:(MJRefreshHeader*)refreshHeader
 {
-    [self requestVideos];
+    [self requestVideoList];
 }
 
 -(void)pullupLoadAction:(MJRefreshFooter*)footer

@@ -19,7 +19,7 @@
 #import "SZUserTracker.h"
 #import "SZContentTracker.h"
 #import "SZUserTracker.h"
-
+#import "YPDouYinLikeAnimation.h"
 
 static UISlider * _volumeSlider;
 
@@ -457,7 +457,11 @@ static UISlider * _volumeSlider;
     }
     else
     {
-        [self TapAction1:gesture];
+        //动画
+        UITapGestureRecognizer * tap = (UITapGestureRecognizer*)gesture;
+        [[YPDouYinLikeAnimation shareInstance]createAnimationWithTap:tap];
+        
+        [[SZData sharedSZData]requestShortViewZan];
     }
 }
 

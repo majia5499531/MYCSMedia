@@ -112,8 +112,8 @@
 }
 
 
-#pragma mark - 文件上传
--(void)requestMultipartFileUpload:(NSString *)url model:(NSDictionary *)model fileDataArray:(NSArray*)array fileNameArray:(NSArray*)names success:(SuccessBlock)successblock error:(ErrorBlock)errorBLock fail:(FailBlock)failblock progress:(ProgressBlock)progressBlock
+#pragma mark - 多视频上传
+-(void)requestMultipartVideoUpload:(NSString *)url model:(NSDictionary *)model fileDataArray:(NSArray*)array fileNameArray:(NSArray*)names success:(SuccessBlock)successblock error:(ErrorBlock)errorBLock fail:(FailBlock)failblock progress:(ProgressBlock)progressBlock
 {
     AFHTTPSessionManager * httpManager = [AFHTTPSessionManager manager];
         
@@ -195,6 +195,91 @@
     }];
     
 }
+
+#pragma mark - 多视频上传
+-(void)requestMultipartImageUpload:(NSString *)url model:(NSDictionary *)model fileDataArray:(NSArray*)array fileNameArray:(NSArray*)names success:(SuccessBlock)successblock error:(ErrorBlock)errorBLock fail:(FailBlock)failblock progress:(ProgressBlock)progressBlock
+{
+    AFHTTPSessionManager * httpManager = [AFHTTPSessionManager manager];
+        
+    //使用multipart方式上传
+    [httpManager POST:url parameters:nil headers:nil constructingBodyWithBlock:^(id<AFMultipartFormData>  _Nonnull formData)
+    {
+        //文件数据
+        for (int i = 0; i<array.count; i++)
+        {
+            NSData * imageData = array[i];
+            
+            //文件名
+            NSString * fileName = @"iosPhoto.jpg";
+            if (names.count)
+            {
+                fileName = names[i];
+            }
+            
+            //拼数据
+            if (array.count>1)
+            {
+                [formData appendPartWithFileData:imageData name:@"files" fileName:fileName mimeType:@"image/jpg"];
+            }
+            else
+            {
+                [formData appendPartWithFileData:imageData name:@"file" fileName:fileName mimeType:@"image/jpg"];
+            }
+        }
+        
+        //模型数据
+        NSArray * keys = [model allKeys];
+        for (int i = 0; i<keys.count; i++)
+        {
+            NSString * key = keys[i];
+            id item = [model valueForKey:key];
+            
+            //字符串则UTF8编码
+            if ([item isKindOfClass:[NSString class]])
+            {
+                NSData * itemData =[item dataUsingEncoding:NSUTF8StringEncoding];
+                [formData appendPartWithFormData:itemData name:key];
+            }
+            
+            //字典则转JSON
+            else if ([item isKindOfClass:[NSDictionary class]])
+            {
+                NSData *jsonData = [NSJSONSerialization dataWithJSONObject:item options:NSJSONWritingPrettyPrinted error:nil];
+                [formData appendPartWithFormData:jsonData name:key];
+            }
+        }
+        
+    } progress:^(NSProgress * _Nonnull uploadProgress) {
+        
+//            NSLog(@"正在上传--------%@",uploadProgress);
+        
+        if (progressBlock)
+        {
+            progressBlock(uploadProgress);
+        }
+        
+        
+    } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        
+        //读取公共字段
+        self.resultcode = [responseObject mj_valueForKey:@"code"];
+        self.message = [responseObject mj_valueForKey:@"resultMessage"];
+        
+        NSLog(@"【上传】\nResp = %@",responseObject);
+
+        [self parseData:responseObject];
+        successblock(responseObject);
+
+        
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        
+        NSLog(@"上传接口错误%@",error);
+        failblock(error);
+
+    }];
+    
+}
+
 
 
 

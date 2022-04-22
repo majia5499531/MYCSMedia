@@ -156,12 +156,25 @@
     
     //视频
     rootview2 = [[SZHomeRootView2 alloc]initWithFrame:CGRectMake(scrollBG.width, 0, scrollBG.width, scrollBG.height)];
-    rootview2.contentId = self.contentId;
     [scrollBG addSubview:rootview2];
     
     //直播
     rootview3 = [[SZHomeRootView3 alloc]initWithFrame:CGRectMake(scrollBG.width*2, NAVI_HEIGHT, scrollBG.width, scrollBG.height-NAVI_HEIGHT)];
     [scrollBG addSubview:rootview3];
+    
+    
+    //带参数
+    if (self.contentId.length)
+    {
+        if (self.initialIndex==0)
+        {
+            rootview1.contentId = self.contentId;
+        }
+        else
+        {
+            rootview2.contentId = self.contentId;
+        }
+    }
     
     
     NSString * str = @"我的小康生活";

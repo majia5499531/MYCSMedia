@@ -108,7 +108,6 @@
     
     //bgscorll
     bgscroll  = [[UIScrollView alloc]init];
-    bgscroll.backgroundColor=[UIColor brownColor];
     bgscroll.keyboardDismissMode = UIScrollViewKeyboardDismissModeOnDrag;
     [self.view addSubview:bgscroll];
     [bgscroll mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -239,7 +238,7 @@
     _inputview.font=FONT(15);
     _inputview.backgroundColor=HW_WHITE;
     _inputview.textColor=HW_BLACK;
-//    _inputview.maxLength=120;
+    _inputview.maxLength=120;
     __weak typeof (self) weakSelf = self;
     [_inputview addTextDidChangeHandler:^(FSTextView *textView) {
         [weakSelf.inputview mas_updateConstraints:^(MASConstraintMaker *make) {

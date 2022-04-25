@@ -875,9 +875,10 @@
     [param setValue:dataModel.createBy forKey:@"user_id"];
     [SZUserTracker trackingButtonEventName:@"click_user" param:param];
     
+//    @"act/xksh/#/others"
     
     //拼接URL，打开webview
-    NSString * url = APPEND_SUBURL(BASE_H5_URL, @"act/xksh/#/others");
+    NSString * url = APPEND_SUBURL(BASE_H5_URL, @"act/xksh/index.html#/me");
     url = [url appenURLParam:@"id" value:dataModel.createBy];
     [[SZManager sharedManager].delegate onOpenWebview:url param:nil];
 }

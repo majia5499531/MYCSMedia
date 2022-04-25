@@ -455,8 +455,11 @@
         
     }
     
-    //头像、昵称
+    //昵称
     authorName.text = dataModel.issuerName;
+    
+    
+    //头像
     [avatar sd_setImageWithURL:[NSURL URLWithString:dataModel.issuerImageUrl]];
     
     

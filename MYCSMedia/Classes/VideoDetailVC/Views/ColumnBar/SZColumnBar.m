@@ -44,6 +44,7 @@
     self = [super initWithFrame:frame];
     if (self)
     {
+        
         //滑动条
         scrollbar = [[UIScrollView alloc]initWithFrame:CGRectMake(0, 0, self.width, self.height)];
         scrollbar.showsHorizontalScrollIndicator=NO;

@@ -505,6 +505,7 @@
     [param setValue:@"activity.works" forKey:@"type"];
     [param setValue:upmodel.duration forKey:@"playDuration"];
     [param setValue:_inputview.text forKey:@"title"];
+    [param setValue:@"video" forKey:@"subType"];
     
     //所选话题
     NSString * tagstr = [self getSelectedTagString];
@@ -563,6 +564,7 @@
     [param setValue:@"activity.works" forKey:@"type"];
     [param setValue:upmodel.duration forKey:@"playDuration"];
     [param setValue:_inputview.text forKey:@"title"];
+    [param setValue:@"video" forKey:@"subType"];
     
     //草稿ID
     [param setValue:self.drafId forKey:@"id"];
@@ -595,8 +597,6 @@
     {
         [param setValue:@"1" forKey:@"orientation"];
     }
-    
-    
     
     
     __weak typeof (self) weakSelf = self;

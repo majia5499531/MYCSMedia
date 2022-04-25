@@ -188,13 +188,13 @@
     }
     
     //SZColumnBar
-    columnbar = [[SZColumnBar alloc]initWithFrame:CGRectMake(70, STATUS_BAR_HEIGHT, 235, 36)];
+    columnbar = [[SZColumnBar alloc]initWithFrame:CGRectMake(0, STATUS_BAR_HEIGHT, 235, 36)];
     columnbar.columnDelegate=self;
     [self.view addSubview:columnbar];
     titleArr = @[str,@"视频",@"直播"];
     [columnbar setTopicTitles:titleArr relateScrollView:scrollBG originX:10 minWidth:50 itemMargin:12 initialIndex:self.initialIndex];
     [self.view addSubview:columnbar];
-    [columnbar setCenterX:self.view.width/2];
+    [columnbar setCenterX:self.view.width/2-25];
     
     //backbtn
     MJButton * backBtn = [[MJButton alloc]init];

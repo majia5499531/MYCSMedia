@@ -52,7 +52,7 @@
     //data
     ContentModel * dataModel;
     VideoRelateModel * relateModel;
-    NSString * albumName;
+    NSString * cellAlbumnName;
     NSInteger videoWHSize;                       //9:16 -- 0          16:9 -- 2        其他比例 -- 1
     BOOL simpleMode;
     
@@ -274,7 +274,7 @@
         isUGC = NO;
     }
     
-    albumName = albumnName;
+    cellAlbumnName = albumnName;
     
     //视频宽高比
     CGFloat imageWidth = objc.width.floatValue > 0 ? objc.width.floatValue : 1920;
@@ -382,7 +382,7 @@
     }];
     
     //如果是视频详情且有合集名称
-    if (albumName.length)
+    if (cellAlbumnName.length)
     {
         //合辑图标
         UIImage * img = [UIImage getBundleImage:@"sz_videoCollection"];
@@ -399,7 +399,7 @@
         [attstr appendAttributedString:tempattstr];
         
         //拼专辑
-        NSMutableAttributedString * attstr_album = [[NSMutableAttributedString alloc]initWithString:albumName];
+        NSMutableAttributedString * attstr_album = [[NSMutableAttributedString alloc]initWithString:cellAlbumnName];
         [attstr appendAttributedString:attstr_album];
         
         
@@ -416,7 +416,7 @@
         
         
         //设置合集标题样式
-        NSRange range3 = [attstr.string rangeOfString:albumName];
+        NSRange range3 = [attstr.string rangeOfString:cellAlbumnName];
         [attstr yy_setTextHighlightRange:range3 color:[UIColor whiteColor] backgroundColor:[UIColor clearColor] tapAction:^(UIView * _Nonnull containerView, NSAttributedString * _Nonnull text, NSRange range, CGRect rect) {
         }];
         [attstr yy_setFont:[UIFont systemFontOfSize:15] range:range3];

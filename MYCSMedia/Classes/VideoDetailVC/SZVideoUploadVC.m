@@ -20,7 +20,7 @@
 #import <FSTextView/FSTextView.h>
 #import "HDPhotoHelper.h"
 #import "IQDataBinding.h"
-#import "TopicListModel.h"
+#import "TopicModel.h"
 #import "FileUploadModel.h"
 #import <SDWebImage/SDWebImage.h>
 #import "ContentModel.h"
@@ -44,7 +44,7 @@
     
     NSMutableArray * topicBtnArr;
     
-    TopicListModel * topicsModel;
+    TopicModel * topicsModel;
     FileUploadModel * uploadModel;
 }
 @property(strong,nonatomic)FSTextView * inputview;
@@ -425,7 +425,7 @@
 
 -(void)requestTopicLists
 {
-    TopicListModel * model =[TopicListModel model];
+    TopicModel * model =[TopicModel model];
     model.isJSON=YES;
     
     NSMutableDictionary * param=[NSMutableDictionary dictionary];
@@ -639,7 +639,7 @@
 }
 
 
--(void)requestTopicsDone:(TopicListModel*)model
+-(void)requestTopicsDone:(TopicModel*)model
 {
     topicsModel = model;
     

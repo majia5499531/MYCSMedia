@@ -28,7 +28,7 @@
 #import "SZGlobalInfo.h"
 #import "SZVideoCell.h"
 #import <MJRefresh/MJRefresh.h>
-#import "TopicListModel.h"
+#import "VideoCollectModel.h"
 #import "SZHomeVC.h"
 
 @interface SZVideoDetailVC ()<UICollectionViewDelegate, UICollectionViewDataSource>
@@ -213,7 +213,7 @@
     [param setValue:@"1" forKey:@"pageIndex"];
     
     __weak typeof (self) weakSelf = self;
-    TopicListModel * model = [TopicListModel model];
+    VideoCollectModel * model = [VideoCollectModel model];
     [model GETRequestInView:self.view WithUrl:url Params:param Success:^(id responseObject) {
         [weakSelf requestDone:model.dataArr];
         } Error:^(id responseObject) {
@@ -240,10 +240,12 @@
     
     
     [collectionView reloadData];
+    [collectionView layoutIfNeeded];
+    [self needUpdateCurrentContentId_now:NO];
     
-    dispatch_async(dispatch_get_main_queue(),^{
-        [self needUpdateCurrentContentId_now:NO];
-    });
+//    dispatch_async(dispatch_get_main_queue(),^{
+//        [self needUpdateCurrentContentId_now:NO];
+//    });
     
 }
 

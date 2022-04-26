@@ -223,6 +223,7 @@
     singleVideo = model;
     model.isManualPlay=YES;
     model.volcCategory = home.category_name;
+    
     [self requestVideoList];
 }
 
@@ -239,10 +240,13 @@
     }
     
     [collectionView reloadData];
+    [collectionView layoutIfNeeded];
     
-    dispatch_async(dispatch_get_main_queue(),^{
-        [self needUpdateCurrentContentId_now:NO];
-    });
+    [self needUpdateCurrentContentId_now:NO];
+    
+//    dispatch_async(dispatch_get_main_queue(),^{
+//        [self needUpdateCurrentContentId_now:NO];
+//    });
     
 }
 

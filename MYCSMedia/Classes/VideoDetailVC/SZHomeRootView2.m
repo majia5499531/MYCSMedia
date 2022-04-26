@@ -211,6 +211,15 @@
 
 
 #pragma mark - Request Done
+-(void)requestSingleVideoDone:(ContentModel*)model
+{
+    SZHomeVC * home = (SZHomeVC*)[self getCurrentViewController];
+    singleVideo = model;
+    model.isManualPlay=YES;
+    model.volcCategory = home.category_name;
+    [self requestVideoList];
+}
+
 -(void)requestVideoListDone:(ContentListModel*)model
 {
     [collectionView.mj_footer endRefreshing];
@@ -223,22 +232,28 @@
         [dataModel.dataArr insertObject:singleVideo atIndex:0];
     }
     
+    
     [collectionView reloadData];
     
-    dispatch_async(dispatch_get_main_queue(),^{
-        [self needUpdateCurrentContentId_now:NO];
-    });
+    [collectionView layoutIfNeeded];
     
-}
+    [self needUpdateCurrentContentId_now:NO];
+    
+//    //立即切到主线程执行
+//    dispatch_async(dispatch_get_main_queue(),^{
+//        [self needUpdateCurrentContentId_now:NO];
+//    });
+    
+    
+//    //延时执行
+//    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t) (1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+//        [self needUpdateCurrentContentId_now: NO];
+//    });
+    
+    
+    
 
-
--(void)requestSingleVideoDone:(ContentModel*)model
-{
-    SZHomeVC * home = (SZHomeVC*)[self getCurrentViewController];
-    singleVideo = model;
-    model.isManualPlay=YES;
-    model.volcCategory = home.category_name;
-    [self requestVideoList];
+    
 }
 
 

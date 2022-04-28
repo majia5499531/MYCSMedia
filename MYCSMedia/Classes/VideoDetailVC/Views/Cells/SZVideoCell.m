@@ -871,14 +871,18 @@
 
 -(void)authorDetailBtnAction
 {
+    //如果是自己，则不触发
+    if ([dataModel.createBy isEqualToString:[SZGlobalInfo sharedManager].userId])
+    {
+        return;
+    }
+    
     //行为埋点
     NSMutableDictionary * param=[NSMutableDictionary dictionary];
     [param setValue:@"视频播放" forKey:@"module_source"];
     [param setValue:[NSNumber numberWithBool:dataModel.whetherFollow] forKey:@"is_notice"];
     [param setValue:dataModel.createBy forKey:@"user_id"];
     [SZUserTracker trackingButtonEventName:@"click_user" param:param];
-    
-//    @"act/xksh/#/others"
     
     //拼接URL，打开webview
     NSString * url = APPEND_SUBURL(BASE_H5_URL, @"act/xksh/index.html#/me");

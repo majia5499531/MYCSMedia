@@ -704,7 +704,7 @@
     progress.progress = value;
 }
 
-
+//发布成功
 -(void)requestCommitDone:(UploadModel*)model ispublish:(BOOL)ispub
 {
     if (ispub)
@@ -728,9 +728,17 @@
     
     [self performSelector:@selector(dissmissVC) withObject:nil afterDelay:1];
     
+
+    //H5 Profile URL
+    NSString * url = @"act/xksh/#/me";
+    if (!ispub)
+    {
+        url = @"act/xksh/#/me?tabsId=2";
+    }
+    
     dispatch_time_t time=dispatch_time(DISPATCH_TIME_NOW, 1.5*NSEC_PER_SEC);
         dispatch_after(time, dispatch_get_main_queue(), ^{
-            NSString * h5url = APPEND_SUBURL(BASE_H5_URL, @"act/xksh/#/me");
+            NSString * h5url = APPEND_SUBURL(BASE_H5_URL, url);
             [[SZManager sharedManager].delegate onOpenWebview:h5url param:nil];
         });
     

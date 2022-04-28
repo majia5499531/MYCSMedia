@@ -195,7 +195,7 @@
     [param setValue:panelCode forKey:@"panelCode"];
     [param setValue:lastContentId forKey:@"contentId"];
     [param setValue:pagesize forKey:@"pageSize"];
-    [param setValue:@"1" forKey:@"removeFirst"];
+    [param setValue:@"1 " forKey:@"removeFirst"];
     [param setValue:ssid forKey:@"ssid"];
     [param setValue:@"loadmore" forKey:@"refreshType"];
     

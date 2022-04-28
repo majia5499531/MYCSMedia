@@ -223,7 +223,6 @@
         } Fail:^(NSError *error) {
             
         }];
-    
 }
 
 -(void)requestFollowUser:(NSString*)userId
@@ -270,7 +269,7 @@
 #pragma mark - Request Done
 -(void)requestContentBelongedAlbumsDone:(RelateAlbumsModel*)albums
 {
-    if (albums.dataArr.count==0)
+    if (albums.dataArr.count==0 && albums.topicName.length==0)
     {
         return;
     }

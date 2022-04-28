@@ -381,6 +381,7 @@
         make.bottom.mas_equalTo(authorBG.mas_top).offset(-10);
     }];
     
+    
     //如果是视频详情且有合集名称
     if (cellAlbumnName.length)
     {
@@ -619,10 +620,11 @@
         SZData * szdata = [SZData sharedSZData];
         RelateAlbumsModel * relateAlbums = [szdata.contentBelongAlbumsDic valueForKey:contentId];
         
+        
         if (relateAlbums.dataArr.count>0)
         {
             belongAlbumArr = relateAlbums.dataArr;
-    
+            
             
             //合辑图标
             UIImage * img = [UIImage getBundleImage:@"sz_videoCollection"];
@@ -721,11 +723,55 @@
             //设置整体行间距
             [attstr yy_setLineSpacing:4 range:NSMakeRange(0,attstr.string.length)];
             
-            
+            //设置view
             descLabel.attributedText = attstr;
             descLabel.lineBreakMode=NSLineBreakByTruncatingTail;
             
         }
+        
+        else if (relateAlbums.topicName.length)
+        {
+            NSMutableAttributedString * attstr = [[NSMutableAttributedString alloc]init];
+            
+            //插入话题名称
+            NSString * topicstr = [NSString stringWithFormat:@"#%@",relateAlbums.topicName];
+            NSMutableAttributedString * attstr_topic = [[NSMutableAttributedString alloc]initWithString:topicstr];
+            [attstr appendAttributedString:attstr_topic];
+            NSRange range = [attstr.string rangeOfString:topicstr];
+            [attstr yy_setTextHighlightRange:range color:[UIColor whiteColor] backgroundColor:[UIColor clearColor] tapAction:^(UIView * _Nonnull containerView, NSAttributedString * _Nonnull text, NSRange range, CGRect rect) {
+                
+            }];
+            [attstr yy_setFont:[UIFont systemFontOfSize:15] range:range];
+            
+            
+            //插一个space
+            UIView * space2 = [[UIView alloc]init];
+            [space2 setSize:CGSizeMake(6, 0)];
+            NSMutableAttributedString * tempattstr2 = [NSMutableAttributedString yy_attachmentStringWithContent:space2 contentMode:UIViewContentModeScaleAspectFit attachmentSize:space2.size alignToFont:[UIFont systemFontOfSize:24] alignment:YYTextVerticalAlignmentCenter];
+            [attstr appendAttributedString:tempattstr2];
+            
+            //拼简介
+            NSString * finalDesc = dataModel.brief.length>0 ? dataModel.brief:dataModel.title;
+            NSMutableAttributedString * attstr_desc = [[NSMutableAttributedString alloc]initWithString:finalDesc];
+            [attstr appendAttributedString:attstr_desc];
+            
+
+            //设置简介点击事件和样式
+            __weak typeof (self) weakSelf = self;
+            NSRange range1 = [attstr.string rangeOfString:finalDesc];
+            [attstr yy_setTextHighlightRange:range1 color:[UIColor colorWithRed:1 green:1 blue:1 alpha:0.7] backgroundColor:[UIColor clearColor] tapAction:^(UIView * _Nonnull containerView, NSAttributedString * _Nonnull text, NSRange range, CGRect rect) {
+                [weakSelf descClickAction];
+            }];
+            [attstr yy_setFont:[UIFont systemFontOfSize:14] range:range1];
+            
+            //设置整体行间距
+            [attstr yy_setLineSpacing:4 range:NSMakeRange(0,attstr.string.length)];
+            
+            //设置view
+            descLabel.attributedText = attstr;
+            descLabel.lineBreakMode=NSLineBreakByTruncatingTail;
+        }
+        
     }
 }
 

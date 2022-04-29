@@ -116,7 +116,7 @@
 -(void)requestMultipartVideoUpload:(NSString *)url model:(NSDictionary *)model fileDataArray:(NSArray*)array fileNameArray:(NSArray*)names success:(SuccessBlock)successblock error:(ErrorBlock)errorBLock fail:(FailBlock)failblock progress:(ProgressBlock)progressBlock
 {
     AFHTTPSessionManager * httpManager = [AFHTTPSessionManager manager];
-        
+    
     //使用multipart方式上传
     [httpManager POST:url parameters:nil headers:nil constructingBodyWithBlock:^(id<AFMultipartFormData>  _Nonnull formData)
     {

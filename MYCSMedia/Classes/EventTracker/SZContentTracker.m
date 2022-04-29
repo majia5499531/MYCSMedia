@@ -428,6 +428,14 @@
 #pragma mark - Request
 -(void)requestForUploading:(NSDictionary*)bizParam eventKey:(NSString*)eventName contentModel:(ContentModel*)content
 {
+    //如果不同意隐私协议，则return
+    if (![[SZManager sharedManager].delegate applicationIsAgreePrivacy])
+    {
+        return;
+    }
+    
+    
+    
     if (content.thirdPartyId.length==0 || content.volcCategory.length==0)
     {
         return;
@@ -462,7 +470,6 @@
     } Fail:^(NSError *error) {
         
     }];
-    
     
 }
 

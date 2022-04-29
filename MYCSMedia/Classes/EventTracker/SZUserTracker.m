@@ -45,7 +45,7 @@
 
 
 
-+ (void)trackingButtonEventName:(NSString *)eventName param:(NSDictionary*)dic
++(void)trackingButtonEventName:(NSString *)eventName param:(NSDictionary*)dic
 {
     NSMutableDictionary * param=[NSMutableDictionary dictionary];
     [param setValue:eventName forKey:@"eventName"];

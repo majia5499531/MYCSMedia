@@ -28,6 +28,9 @@ typedef NS_ENUM(NSUInteger, SZ_ENV)
 //获取TGT
 -(NSString*)onGetTGT;
 
+//是否同意隐私协议;
+-(BOOL)applicationIsAgreePrivacy;
+
 //分享事件
 -(void)onShareAction:(SZ_SHARE_PLATFORM)platform title:(NSString*)title image:(NSString*)imgurl desc:(NSString*)desc URL:(NSString*)url;
 

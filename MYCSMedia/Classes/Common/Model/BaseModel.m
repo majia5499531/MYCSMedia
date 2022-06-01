@@ -64,6 +64,7 @@
             //业务成功
             if (self.resultcode.integerValue==200)
             {
+                
                 [self parseData:[responseObject mj_valueForKey:@"data"]];
                 successblock(responseObject);
             }

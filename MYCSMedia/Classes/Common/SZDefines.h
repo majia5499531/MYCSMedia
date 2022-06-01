@@ -70,6 +70,14 @@
 #define API_URL_CATEGORY_LIST       @"api/cms/client/category/getCategoryData"
 
 
+#define API_WANDA_GET_CATEGORY      @"api/cms/client/category/getCategoryData"
+#define API_WANDA_GET_CONTENTS      @"api/cms/client/category/getContentData"
+#define API_WANDA_GET_MORE_CONTENTS @"api/cms/client/content/getContentDate"
+#define API_WANDA_GET_TOP_VIDEO     @"api/cms/client/category/getCategoryCompositeData"
+#define API_WANDA_GET_TOP_NEWS      @"api/cms/client/category/getCategoryCompositeData"
+
+
+
 
 
 //业务

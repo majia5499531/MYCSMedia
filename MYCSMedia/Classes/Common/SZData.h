@@ -7,7 +7,7 @@
 
 #import <Foundation/Foundation.h>
 #import "IQDataBinding.h"
-
+#import "SZManager.h"
 
 @interface SZData : NSObject
 
@@ -39,6 +39,15 @@
 -(void)requestFollowUser:(NSString*)userId;
 -(void)requestUnFollowUser:(NSString*)userId;
 -(void)requestCommentListData;
+
+
+
+-(void)requestCategoryData:(NSDictionary*)param Success:(RMSuccessBlock)successblock Error:(RMErrorBlock)errorblock Fail:(RMFailBlock)failblock;
+-(void)requestContentData:(NSDictionary*)param Success:(RMSuccessBlock)successblock Error:(RMErrorBlock)errorblock Fail:(RMFailBlock)failblock;
+-(void)requestMoreContentData:(NSDictionary*)param Success:(RMSuccessBlock)successblock Error:(RMErrorBlock)errorblock Fail:(RMFailBlock)failblock;
+-(void)requestHomepageVideo:(NSDictionary*)param Success:(RMSuccessBlock)successblock Error:(RMErrorBlock)errorblock Fail:(RMFailBlock)failblock;
+-(void)requestHomepageNews:(NSDictionary*)param Success:(RMSuccessBlock)successblock Error:(RMErrorBlock)errorblock Fail:(RMFailBlock)failblock;
+
 
 
 @end

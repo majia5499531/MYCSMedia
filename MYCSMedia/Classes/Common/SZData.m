@@ -20,7 +20,7 @@
 #import "ContentListModel.h"
 #import "SZUserTracker.h"
 #import "RelateAlbumsModel.h"
-
+#import "RawModel.h"
 
 @implementation SZData
 
@@ -436,6 +436,75 @@
     NSNumber * currrentTime = [NSNumber numberWithInteger:[[NSDate date]timeIntervalSince1970]];
     self.contentCommentsUpdateTime = currrentTime;
 }
+
+
+
+#pragma mark - Request 万达
+-(void)requestCategoryData:(NSDictionary*)param Success:(RMSuccessBlock)successblock Error:(RMErrorBlock)errorblock Fail:(RMFailBlock)failblock
+{
+    RawModel * model = [RawModel model];
+    [model GETRequestInView:nil WithUrl:APPEND_SUBURL(BASE_URL, API_WANDA_GET_CATEGORY) Params:param Success:^(id responseObject) {
+        successblock(responseObject);
+        } Error:^(id responseObject) {
+            errorblock(responseObject);
+        } Fail:^(NSError *error) {
+            failblock(error);
+        }];
+}
+
+-(void)requestContentData:(NSDictionary*)param Success:(RMSuccessBlock)successblock Error:(RMErrorBlock)errorblock Fail:(RMFailBlock)failblock;
+{
+    RawModel * model = [RawModel model];
+    [model GETRequestInView:nil WithUrl:APPEND_SUBURL(BASE_URL, API_WANDA_GET_CONTENTS) Params:param Success:^(id responseObject) {
+        successblock(responseObject);
+        } Error:^(id responseObject) {
+            errorblock(responseObject);
+        } Fail:^(NSError *error) {
+            failblock(error);
+        }];
+}
+
+-(void)requestMoreContentData:(NSDictionary*)param Success:(RMSuccessBlock)successblock Error:(RMErrorBlock)errorblock Fail:(RMFailBlock)failblock
+{
+    RawModel * model = [RawModel model];
+    [model GETRequestInView:nil WithUrl:APPEND_SUBURL(BASE_URL, API_WANDA_GET_MORE_CONTENTS) Params:param Success:^(id responseObject) {
+        successblock(responseObject);
+        } Error:^(id responseObject) {
+            errorblock(responseObject);
+        } Fail:^(NSError *error) {
+            failblock(error);
+        }];
+}
+
+-(void)requestHomepageVideo:(NSDictionary*)param Success:(RMSuccessBlock)successblock Error:(RMErrorBlock)errorblock Fail:(RMFailBlock)failblock
+{
+    RawModel * model = [RawModel model];
+    [model GETRequestInView:nil WithUrl:APPEND_SUBURL(BASE_URL, API_WANDA_GET_TOP_VIDEO) Params:param Success:^(id responseObject) {
+        successblock(responseObject);
+        } Error:^(id responseObject) {
+            errorblock(responseObject);
+        } Fail:^(NSError *error) {
+            failblock(error);
+        }];
+}
+
+-(void)requestHomepageNews:(NSDictionary*)param Success:(RMSuccessBlock)successblock Error:(RMErrorBlock)errorblock Fail:(RMFailBlock)failblock;
+{
+    RawModel * model = [RawModel model];
+    [model GETRequestInView:nil WithUrl:APPEND_SUBURL(BASE_URL, API_WANDA_GET_TOP_NEWS) Params:param Success:^(id responseObject) {
+        successblock(responseObject);
+        } Error:^(id responseObject) {
+            errorblock(responseObject);
+        } Fail:^(NSError *error) {
+            failblock(error);
+        }];
+}
+
+
+
+
+
+
 
 
 #pragma mark - Getter

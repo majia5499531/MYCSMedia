@@ -11,6 +11,7 @@
 #import "SZDefines.h"
 #import "MJHud.h"
 #import "SZUserTracker.h"
+#import "SZData.h"
 
 @implementation SZManager
 
@@ -31,6 +32,29 @@
     return manager;
 }
 
+
+
++(void)requestCategoryData:(NSDictionary*)param Success:(RMSuccessBlock)successblock Error:(RMErrorBlock)errorblock Fail:(RMFailBlock)failblock
+{
+    [[SZData sharedSZData]requestCategoryData:param Success:successblock Error:errorblock Fail:failblock];
+}
+
++(void)requestContentData:(NSDictionary*)param Success:(RMSuccessBlock)successblock Error:(RMErrorBlock)errorblock Fail:(RMFailBlock)failblock
+{
+    [[SZData sharedSZData]requestContentData:param Success:successblock Error:errorblock Fail:failblock];
+}
++(void)requestMoreContentData:(NSDictionary*)param Success:(RMSuccessBlock)successblock Error:(RMErrorBlock)errorblock Fail:(RMFailBlock)failblock
+{
+    [[SZData sharedSZData]requestMoreContentData:param Success:successblock Error:errorblock Fail:failblock];
+}
++(void)requestHomepageVideo:(NSDictionary*)param Success:(RMSuccessBlock)successblock Error:(RMErrorBlock)errorblock Fail:(RMFailBlock)failblock
+{
+    [[SZData sharedSZData]requestHomepageVideo:param Success:successblock Error:errorblock Fail:failblock];
+}
++(void)requestHomepageNews:(NSDictionary*)param Success:(RMSuccessBlock)successblock Error:(RMErrorBlock)errorblock Fail:(RMFailBlock)failblock
+{
+    [[SZData sharedSZData]requestHomepageNews:param Success:successblock Error:errorblock Fail:failblock];
+}
 
 
 @end

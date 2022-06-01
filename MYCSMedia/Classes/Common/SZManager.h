@@ -51,8 +51,24 @@ typedef NS_ENUM(NSUInteger, SZ_ENV)
 
 
 
+
+typedef void (^RMSuccessBlock)(id responseObject);
+typedef void (^RMErrorBlock)(id responseObject);
+typedef void (^RMFailBlock)(NSError * error);
+
 @interface SZManager : NSObject
 @property(assign,nonatomic)SZ_ENV enviroment;
 @property(weak,nonatomic)id <SZDelegate> delegate;
 +(SZManager*)sharedManager;
+
+
+
++(void)requestCategoryData:(NSDictionary*)param Success:(RMSuccessBlock)successblock Error:(RMErrorBlock)errorblock Fail:(RMFailBlock)failblock;
++(void)requestContentData:(NSDictionary*)param Success:(RMSuccessBlock)successblock Error:(RMErrorBlock)errorblock Fail:(RMFailBlock)failblock;;
++(void)requestMoreContentData:(NSDictionary*)param Success:(RMSuccessBlock)successblock Error:(RMErrorBlock)errorblock Fail:(RMFailBlock)failblock;;
++(void)requestHomepageVideo:(NSDictionary*)param Success:(RMSuccessBlock)successblock Error:(RMErrorBlock)errorblock Fail:(RMFailBlock)failblock;;
++(void)requestHomepageNews:(NSDictionary*)param Success:(RMSuccessBlock)successblock Error:(RMErrorBlock)errorblock Fail:(RMFailBlock)failblock;;
+
+
+
 @end

@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>智慧长沙.ipa</key>
+	<array>
+		<dict>
+			<key>architectures</key>
+			<array>
+				<string>armv7</string>
+				<string>arm64</string>
+			</array>
+			<key>buildNumber</key>
+			<string>9</string>
+			<key>certificate</key>
+			<dict>
+				<key>SHA1</key>
+				<string>A47BB4B30BB8D90D4CD5D1C13F906BB1638D8869</string>
+				<key>dateExpires</key>
+				<string>2023/4/11</string>
+				<key>type</key>
+				<string>Apple Distribution</string>
+			</dict>
+			<key>entitlements</key>
+			<dict>
+				<key>application-identifier</key>
+				<string>667JGFJ8JG.com.gd.zhihuichangsha</string>
+				<key>aps-environment</key>
+				<string>production</string>
+				<key>beta-reports-active</key>
+				<true/>
+				<key>com.apple.developer.applesignin</key>
+				<array>
+					<string>Default</string>
+				</array>
+				<key>com.apple.developer.associated-domains</key>
+				<array>
+					<string>applinks:0tmqv1.xinstall.top</string>
+				</array>
+				<key>com.apple.developer.team-identifier</key>
+				<string>667JGFJ8JG</string>
+				<key>get-task-allow</key>
+				<false/>
+			</dict>
+			<key>name</key>
+			<string>智慧长沙.app</string>
+			<key>profile</key>
+			<dict>
+				<key>UUID</key>
+				<string>a92ef526-6703-4281-bac0-f3186f3d89d1</string>
+				<key>dateExpires</key>
+				<string>2023/5/9</string>
+				<key>name</key>
+				<string>iOS Team Store Provisioning Profile: com.gd.zhihuichangsha</string>
+			</dict>
+			<key>symbols</key>
+			<true/>
+			<key>team</key>
+			<dict>
+				<key>id</key>
+				<string>667JGFJ8JG</string>
+				<key>name</key>
+				<string>Changsha Broadcasting Group</string>
+			</dict>
+			<key>versionNumber</key>
+			<string>4.4.5</string>
+		</dict>
+	</array>
+</dict>
+</plist>

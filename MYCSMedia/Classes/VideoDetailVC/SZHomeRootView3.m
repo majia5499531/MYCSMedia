@@ -129,14 +129,36 @@
 }
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    //未登录则跳转登录
-    if (![SZGlobalInfo sharedManager].SZRMToken.length)
-    {
-        [SZGlobalInfo mjshowLoginAlert];
-        return;
-    }
+    __weak typeof (self) weakSelf = self;
+    ContentModel * model =  dataModel.dataArr[indexPath.row];
+    [SZGlobalInfo checkLoginStatus:^(BOOL suc) {
+        if (suc)
+        {
+            [weakSelf routeToLiveWebview:model];
+        }
+        else
+        {
+            [SZGlobalInfo mjshowLoginAlert];
+        }
+    }];
     
-    ContentModel * model = dataModel.dataArr[indexPath.row];
+}
+
+
+#pragma mark - 下拉上拉
+-(void)pulldownRefreshAction:(MJRefreshHeader*)header
+{
+    [self requestContentList];
+}
+-(void)pullupLoadAction:(MJRefreshFooter*)footer
+{
+    [self requestMoreContents];
+}
+
+
+
+-(void)routeToLiveWebview:(ContentModel*)model
+{
     NSString * H5URL = model.shareUrl;
     
     
@@ -163,19 +185,6 @@
     
     [[SZManager sharedManager].delegate onOpenWebview:H5URL param:param];
 }
-
-
-#pragma mark - 下拉上拉
--(void)pulldownRefreshAction:(MJRefreshHeader*)header
-{
-    [self requestContentList];
-}
--(void)pullupLoadAction:(MJRefreshFooter*)footer
-{
-    [self requestMoreContents];
-}
-
-
 
 
 #pragma mark - Request

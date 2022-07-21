@@ -139,7 +139,6 @@
 
 
 #pragma mark - Request
-
 -(void)requestSingleVideo
 {
     NSString * url = APPEND_SUBURL(BASE_URL, API_URL_VIDEO);

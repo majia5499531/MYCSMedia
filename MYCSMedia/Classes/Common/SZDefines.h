@@ -62,7 +62,7 @@
 //#define API_URL_VIDEO_COMMIT        @"api/cms/client/content/activity/works/create/v2"
 #define API_URL_ARTICLE_CREATE      @"api/cms/client/content/createArticle"
 #define API_URL_ARTICLE_UPDATE      @"api/cms/client/content/updateArticle"
-
+#define API_URL_GDY_TOKEN           @"api/sys/getTokenGdyByTgt"
 
 #define API_URL_PANEL_ACTIVITY      @"api/cms/client/panel/info"
 #define API_URL_CONTENT_TRACKING    @"api/cms/client/tracking/upload"

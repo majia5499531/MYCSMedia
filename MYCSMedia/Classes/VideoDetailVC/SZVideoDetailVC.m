@@ -85,7 +85,7 @@
     self.navigationController.navigationBar.hidden=YES;
     
     //检查登录
-    [SZGlobalInfo checkLoginStatus:nil];
+    [SZGlobalInfo checkRMLoginStatus:nil];
 }
 
 -(void)viewWillDisappear:(BOOL)animated

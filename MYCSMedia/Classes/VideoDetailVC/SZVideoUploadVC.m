@@ -75,7 +75,7 @@
     [super viewWillAppear:animated];
     
     //检查登录状态
-    [SZGlobalInfo checkLoginStatus:nil];
+    [SZGlobalInfo checkRMLoginStatus:nil];
 }
 
 #pragma mark - 界面&布局

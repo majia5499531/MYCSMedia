@@ -10,7 +10,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface UploadModel : BaseModel
+@interface CreateArticleModel : BaseModel
 
 @property(strong,nonatomic)NSString * id;
 @property(strong,nonatomic)NSString * title;
@@ -22,7 +22,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property(strong,nonatomic)NSString * createTime;
 @property(strong,nonatomic)NSString * imagesUrl;
 @property(strong,nonatomic)NSString * thumbnailUrl;
-
 
 @end
 

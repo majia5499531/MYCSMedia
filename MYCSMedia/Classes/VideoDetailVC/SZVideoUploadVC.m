@@ -26,7 +26,7 @@
 #import "ContentModel.h"
 #import "UIScrollView+MJCategory.h"
 #import "StatusModel.h"
-#import "UploadModel.h"
+#import "CreateArticleModel.h"
 #import "SZUserTracker.h"
 
 
@@ -540,11 +540,11 @@
     
     
     __weak typeof (self) weakSelf = self;
-    UploadModel * model = [UploadModel model];
-    model.size = upmodel.size;
-    model.isJSON = YES;
-    [model PostRequestInView:self.view WithUrl:APPEND_SUBURL(BASE_URL, API_URL_ARTICLE_CREATE) Params:param Success:^(id responseObject) {
-        [weakSelf requestCommitDone:model ispublish:ispub];
+    CreateArticleModel * commitModel = [CreateArticleModel model];
+    commitModel.size = upmodel.size;
+    commitModel.isJSON = YES;
+    [commitModel PostRequestInView:self.view WithUrl:APPEND_SUBURL(BASE_URL, API_URL_ARTICLE_CREATE) Params:param Success:^(id responseObject) {
+        [weakSelf requestCommitDone:commitModel ispublish:ispub];
         } Error:^(id responseObject) {
             
         } Fail:^(NSError *error) {
@@ -600,7 +600,7 @@
     
     
     __weak typeof (self) weakSelf = self;
-    UploadModel * model = [UploadModel model];
+    CreateArticleModel * model = [CreateArticleModel model];
     model.size = upmodel.size;
     model.isJSON = YES;
     [model PostRequestInView:self.view WithUrl:APPEND_SUBURL(BASE_URL, API_URL_ARTICLE_UPDATE) Params:param Success:^(id responseObject) {
@@ -705,7 +705,7 @@
 }
 
 //发布成功
--(void)requestCommitDone:(UploadModel*)model ispublish:(BOOL)ispub
+-(void)requestCommitDone:(CreateArticleModel*)model ispublish:(BOOL)ispub
 {
     if (ispub)
     {

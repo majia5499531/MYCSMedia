@@ -5,10 +5,9 @@
 //  Created by 马佳 on 2022/3/8.
 //
 
-#import "UploadModel.h"
+#import "CreateArticleModel.h"
 
-@implementation UploadModel
-
+@implementation CreateArticleModel
 
 
 @end

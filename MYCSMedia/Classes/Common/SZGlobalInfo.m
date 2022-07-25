@@ -131,6 +131,7 @@
     
     NSMutableDictionary * param=[NSMutableDictionary dictionary];
     [param setValue:tgt forKey:@"token"];
+    [param setValue:@1 forKey:@"ignoreGdy"];
     
     __weak typeof (self) weakSelf = self;
     [model PostRequestInView:MJ_KEY_WINDOW WithUrl:APPEND_SUBURL(BASE_URL, API_URL_TOKEN_EXCHANGE) Params:param Success:^(id responseObject) {

@@ -541,10 +541,10 @@
     
     __weak typeof (self) weakSelf = self;
     CreateArticleModel * commitModel = [CreateArticleModel model];
-    commitModel.size = upmodel.size;
+    NSString * articletitle = _inputview.text;
     commitModel.isJSON = YES;
     [commitModel PostRequestInView:self.view WithUrl:APPEND_SUBURL(BASE_URL, API_URL_ARTICLE_CREATE) Params:param Success:^(id responseObject) {
-        [weakSelf requestCommitDone:commitModel ispublish:ispub];
+        [weakSelf requestCommitDone:commitModel fileModel:upmodel title:articletitle ispublish:ispub];
         } Error:^(id responseObject) {
             
         } Fail:^(NSError *error) {
@@ -601,10 +601,11 @@
     
     __weak typeof (self) weakSelf = self;
     CreateArticleModel * model = [CreateArticleModel model];
-    model.size = upmodel.size;
+    
     model.isJSON = YES;
+    NSString * articletitle = _inputview.text;
     [model PostRequestInView:self.view WithUrl:APPEND_SUBURL(BASE_URL, API_URL_ARTICLE_UPDATE) Params:param Success:^(id responseObject) {
-        [weakSelf requestCommitDone:model ispublish:ispub];
+        [weakSelf requestCommitDone:model fileModel:upmodel title:articletitle ispublish:ispub];
         } Error:^(id responseObject) {
             
         } Fail:^(NSError *error) {
@@ -705,7 +706,7 @@
 }
 
 //发布成功
--(void)requestCommitDone:(CreateArticleModel*)model ispublish:(BOOL)ispub
+-(void)requestCommitDone:(CreateArticleModel*)model fileModel:(FileUploadModel*)file title:(NSString*)title ispublish:(BOOL)ispub
 {
     if (ispub)
     {
@@ -719,12 +720,12 @@
     
     //行为埋点
     NSMutableDictionary * param=[NSMutableDictionary dictionary];
-    [param setValue:model.title forKey:@"content_name"];
-    [param setValue:model.id forKey:@"content_id"];
-    [param setValue:model.playDuration forKey:@"works_duration"];
-    [param setValue:model.size forKey:@"works_size"];
+    [param setValue:title forKey:@"content_name"];
+    [param setValue:model.contentId forKey:@"content_id"];
+    [param setValue:file.duration forKey:@"works_duration"];
+    [param setValue:file.size forKey:@"works_size"];
     [SZUserTracker trackingButtonEventName:@"short_video_submit" param:param];
-    
+
     
     [self performSelector:@selector(dissmissVC) withObject:nil afterDelay:1];
     

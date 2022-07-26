@@ -179,11 +179,22 @@
     model.isJSON=YES;
     __weak typeof (self) weakSelf = self;
     [model PostRequestInView:nil WithUrl:APPEND_SUBURL(BASE_URL, API_URL_GDY_TOKEN) Params:param Success:^(id responseObject) {
-        [weakSelf requestGdyTokenDone:model.JSON];
         
-        if (callback)
+        if (model.JSON.length)
         {
-            callback(YES);
+            [weakSelf requestGdyTokenDone:model.JSON];
+            
+            if (callback)
+            {
+                callback(YES);
+            }
+        }
+        else
+        {
+            if (callback)
+            {
+                callback(NO);
+            }
         }
         
         } Error:^(id responseObject) {

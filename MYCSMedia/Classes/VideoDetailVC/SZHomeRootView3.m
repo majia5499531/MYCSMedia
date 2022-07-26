@@ -134,6 +134,9 @@
     [SZGlobalInfo checkLoginStatus:^(BOOL suc) {
         if (suc)
         {
+            
+            NSString * token = [SZGlobalInfo sharedManager].gdyToken;
+            
             [weakSelf routeToLiveWebview:model];
         }
         else

@@ -12,16 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface CreateArticleModel : BaseModel
 
-@property(strong,nonatomic)NSString * id;
-@property(strong,nonatomic)NSString * title;
-@property(strong,nonatomic)NSString * playDuration;
-@property(strong,nonatomic)NSNumber * size;
-@property(strong,nonatomic)NSString * height;
-@property(strong,nonatomic)NSString * width;
-@property(strong,nonatomic)NSString * playUrl;
-@property(strong,nonatomic)NSString * createTime;
-@property(strong,nonatomic)NSString * imagesUrl;
-@property(strong,nonatomic)NSString * thumbnailUrl;
+@property(strong,nonatomic)NSString * contentId;
 
 @end
 

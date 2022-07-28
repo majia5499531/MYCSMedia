@@ -11,6 +11,7 @@
 @interface BaseModel : RootModel
 
 @property(assign,nonatomic)BOOL isJSON;
+@property(assign,nonatomic)BOOL needCache;
 @property(assign,nonatomic)BOOL hideLoading;
 @property(assign,nonatomic)BOOL hideErrorMsg;
 @property(strong,nonatomic)NSString * resultcode;
@@ -30,5 +31,7 @@
 
 -(void)parseData:(id)data;
 -(void)parseDataFromDic:(NSDictionary*)dic;
+
+
 
 @end

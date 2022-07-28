@@ -443,6 +443,7 @@
 -(void)requestCategoryData:(NSDictionary*)param Success:(RMSuccessBlock)successblock Error:(RMErrorBlock)errorblock Fail:(RMFailBlock)failblock
 {
     RawModel * model = [RawModel model];
+    model.needCache = YES;
     [model GETRequestInView:nil WithUrl:APPEND_SUBURL(BASE_URL, API_WANDA_GET_CATEGORY) Params:param Success:^(id responseObject) {
         successblock(responseObject);
         } Error:^(id responseObject) {
@@ -455,6 +456,7 @@
 -(void)requestContentData:(NSDictionary*)param Success:(RMSuccessBlock)successblock Error:(RMErrorBlock)errorblock Fail:(RMFailBlock)failblock;
 {
     RawModel * model = [RawModel model];
+    model.needCache = YES;
     [model GETRequestInView:nil WithUrl:APPEND_SUBURL(BASE_URL, API_WANDA_GET_CONTENTS) Params:param Success:^(id responseObject) {
         successblock(responseObject);
         } Error:^(id responseObject) {
@@ -467,6 +469,7 @@
 -(void)requestMoreContentData:(NSDictionary*)param Success:(RMSuccessBlock)successblock Error:(RMErrorBlock)errorblock Fail:(RMFailBlock)failblock
 {
     RawModel * model = [RawModel model];
+    
     [model GETRequestInView:nil WithUrl:APPEND_SUBURL(BASE_URL, API_WANDA_GET_MORE_CONTENTS) Params:param Success:^(id responseObject) {
         successblock(responseObject);
         } Error:^(id responseObject) {
@@ -479,6 +482,7 @@
 -(void)requestHomepageVideo:(NSDictionary*)param Success:(RMSuccessBlock)successblock Error:(RMErrorBlock)errorblock Fail:(RMFailBlock)failblock
 {
     RawModel * model = [RawModel model];
+    model.needCache = YES;
     [model GETRequestInView:nil WithUrl:APPEND_SUBURL(BASE_URL, API_WANDA_GET_TOP_VIDEO) Params:param Success:^(id responseObject) {
         successblock(responseObject);
         } Error:^(id responseObject) {
@@ -491,6 +495,7 @@
 -(void)requestHomepageNews:(NSDictionary*)param Success:(RMSuccessBlock)successblock Error:(RMErrorBlock)errorblock Fail:(RMFailBlock)failblock;
 {
     RawModel * model = [RawModel model];
+    model.needCache = YES;
     [model GETRequestInView:nil WithUrl:APPEND_SUBURL(BASE_URL, API_WANDA_GET_TOP_NEWS) Params:param Success:^(id responseObject) {
         successblock(responseObject);
         } Error:^(id responseObject) {

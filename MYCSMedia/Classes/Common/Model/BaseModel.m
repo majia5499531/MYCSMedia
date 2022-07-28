@@ -11,8 +11,23 @@
 #import "NSObject+MJCategory.h"
 #import "SZGlobalInfo.h"
 #import "YYModel.h"
+#import "YYCache.h"
 
 @implementation BaseModel
+
+//YYCache
+-(YYCache*)sharedYYCache
+{
+    static YYCache * yycached = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        if (yycached == nil)
+        {
+            yycached = [YYCache cacheWithName:@"szrm"];
+        }
+        });
+    return yycached;
+}
 
 //GET
 -(void)GETRequestInView:(UIView*)view WithUrl:(NSString *)url Params:(NSDictionary *)params Success:(SuccessBlock)successblock Error:(ErrorBlock)errorblock Fail:(FailBlock)failblock
@@ -55,6 +70,9 @@
             }
     
             NSLog(@"\n【HTTP响应】 \n URL = %@ \n respObjc = \n %@",task.currentRequest.URL.absoluteString,responseObject);
+        
+            
+        
     
             //读取公共字段
             self.resultcode = [responseObject mj_valueForKey:@"code"];
@@ -64,7 +82,21 @@
             //业务成功
             if (self.resultcode.integerValue==200)
             {
+                //如果需要缓存
+                if (self.needCache && [responseObject isKindOfClass:[NSDictionary class]])
+                {
+                    
+                    NSMutableDictionary * cacheDic = [NSMutableDictionary dictionaryWithDictionary:(NSDictionary*)responseObject];
+                    [cacheDic setValue:@"1" forKey:@"cacheData"];
+                    YYCache * sharecache = [self sharedYYCache];
+                    NSString * cacheKey = task.currentRequest.URL.absoluteString;
+                    [sharecache setObject:cacheDic forKey:cacheKey withBlock:^{
+                        
+                    }];
+                    
+                }
                 
+                //解析
                 [self parseData:[responseObject mj_valueForKey:@"data"]];
                 successblock(responseObject);
             }
@@ -98,6 +130,22 @@
             [SZGlobalInfo mjclearLoginInfo];
             [SZGlobalInfo mjshowLoginAlert];
             return;
+        }
+        
+        
+        
+        //如果需要读缓存
+        if (self.needCache)
+        {
+            YYCache * sharecache = [self sharedYYCache];
+            NSString * cacheKey = task.currentRequest.URL.absoluteString;
+            id rawresp = [sharecache objectForKey:cacheKey];
+            if (rawresp)
+            {
+                successblock(rawresp);
+                return;
+            }
+            
         }
         
         

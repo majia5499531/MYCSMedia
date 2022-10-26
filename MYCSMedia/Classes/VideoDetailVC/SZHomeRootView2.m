@@ -18,7 +18,6 @@
 #import "SZManager.h"
 #import "UIView+MJCategory.h"
 #import "SZInputView.h"
-#import "SZCommentBar.h"
 #import "MJHUD.h"
 #import "BaseModel.h"
 #import "ContentListModel.h"
@@ -48,7 +47,6 @@
     
     //UI
     UICollectionView * collectionView;
-    SZCommentBar * commentBar;
     UIImageView * activityIcon_simple;
     UIImageView * activityIcon_full;
 }
@@ -307,7 +305,7 @@
 {
     //collectionview
     UICollectionViewFlowLayout *flowLayout = [[UICollectionViewFlowLayout alloc] init];
-    collectionView = [[UICollectionView alloc] initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH,SCREEN_HEIGHT) collectionViewLayout:flowLayout];
+    collectionView = [[UICollectionView alloc] initWithFrame:CGRectMake(0, 0, self.width,self.height) collectionViewLayout:flowLayout];
     [collectionView setNoContentInset];
     collectionView.showsHorizontalScrollIndicator = NO;
     collectionView.backgroundColor=HW_BLACK;
@@ -320,11 +318,6 @@
     collectionView.showsVerticalScrollIndicator=NO;
     [self addSubview:collectionView];
     
-    
-//    //commentview
-//    commentBar = [[SZCommentBar alloc]init];
-//    [self addSubview:commentBar];
-//    [commentBar setCommentBarStyle:0 type:1];
 }
 
 #pragma mark - Btn Action
@@ -422,7 +415,7 @@
 -(UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
     SZVideoCell * cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"shortSZVideoCell" forIndexPath:indexPath];
-    [cell setCellData:dataModel.dataArr[indexPath.row] isUGC:YES albumnName:nil simpleMode:NO];
+    [cell setVideoCellData:dataModel.dataArr[indexPath.row] albumnName:nil simpleMode:NO];
     return  cell;
 }
 - (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath
@@ -439,7 +432,7 @@
 }
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    return CGSizeMake(SCREEN_WIDTH,SCREEN_HEIGHT);
+    return CGSizeMake(self.width,self.height);
 }
 - (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout minimumLineSpacingForSectionAtIndex:(NSInteger)section
 {

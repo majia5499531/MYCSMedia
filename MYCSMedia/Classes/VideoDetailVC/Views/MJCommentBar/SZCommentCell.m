@@ -21,10 +21,11 @@
 #import "UIView+MJCategory.h"
 #import "SZInputView.h"
 #import "SZData.h"
-
+#import "CommentModel.h"
 
 @implementation SZCommentCell
 {
+    CommentModel * commentModel;
     ReplyModel * dataModel;
     
     YYLabel * contentLabel;
@@ -33,6 +34,9 @@
     
     UILabel * istopLabel;
     UILabel * ispendingLabel;
+    
+    MJButton * zanBtn;
+    UILabel * zanCount;
 }
 -(instancetype)initWithFrame:(CGRect)frame
 {
@@ -76,7 +80,32 @@
             make.centerY.mas_equalTo(date);
         }];
         
+        //点赞按钮
+        zanCount = [[UILabel alloc]init];
+        zanCount.font=FONT(11);
+        zanCount.textColor=HW_GRAY_WORD_1;
+        [self addSubview:zanCount];
+        UITapGestureRecognizer * tap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(commentZanBtnAction)];
+        zanCount.userInteractionEnabled=YES;
+        [zanCount addGestureRecognizer:tap];
+        [zanCount mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.right.mas_equalTo(-20);
+            make.centerY.mas_equalTo(replyBtn);
+        }];
         
+        //点赞数
+        zanBtn = [[MJButton alloc]init];
+        zanBtn.mj_imageObjec=[UIImage getBundleImage:@"comment_zan"];
+        zanBtn.mj_imageObject_sel = [UIImage getBundleImage:@"comment_zan_sel"];
+        zanBtn.imageFrame=CGRectMake(30, 2.5, 15, 15);
+        zanBtn.ScaleUpBounce=YES;
+        [zanBtn addTarget:self action:@selector(commentZanBtnAction) forControlEvents:UIControlEventTouchUpInside];
+        [self addSubview:zanBtn];
+        [zanBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.right.mas_equalTo(zanCount.mas_left).offset(0);
+            make.centerY.mas_equalTo(zanCount);
+            make.width.mas_equalTo(50);
+        }];
         
         
     }
@@ -84,20 +113,45 @@
 }
 
 
--(void)setCellData:(ReplyModel*)data
+-(void)setCommentData:(CommentModel*)commentM replyData:(ReplyModel*)replyM
 {
-    dataModel = data;
+    dataModel = replyM;
+    commentModel = commentM;
         
     date.text = [NSString converUTCDateStr:dataModel.createTime];
     
-    //如果是对话
-    if (data.rnikeName.length)
+    //点赞数
+    if (dataModel.likeCount>0)
     {
-        NSString * content = [NSString stringWithFormat:@"%@ 回复 %@: %@",data.nickname,data.rnikeName,data.content];
+        zanCount.text = [NSString stringWithFormat:@"%d",(int)dataModel.likeCount];
+    }
+    else
+    {
+        zanCount.text = @"";
+    }
+    
+    
+    //是否点赞
+    zanBtn.MJSelectState=dataModel.whetherLike;
+    if (dataModel.whetherLike)
+    {
+        zanCount.textColor=HW_RED_WORD_1;
+        zanBtn.MJSelectState=YES;
+    }
+    else
+    {
+        zanCount.textColor=HW_GRAY_WORD_1;
+        zanBtn.MJSelectState=NO;
+    }
+    
+    //如果是对话
+    if (dataModel.rnikeName.length)
+    {
+        NSString * content = [NSString stringWithFormat:@"%@ 回复 %@: %@",dataModel.nickname,dataModel.rnikeName,dataModel.content];
         NSMutableAttributedString *attString = [[NSMutableAttributedString alloc] initWithString:content];
         
-        [attString yy_setFont:[UIFont boldSystemFontOfSize:13] range:NSMakeRange(0, data.nickname.length)];
-        [attString yy_setFont:[UIFont boldSystemFontOfSize:13] range:NSMakeRange(data.nickname.length+4, data.rnikeName.length+1)];
+        [attString yy_setFont:[UIFont boldSystemFontOfSize:13] range:NSMakeRange(0, dataModel.nickname.length)];
+        [attString yy_setFont:[UIFont boldSystemFontOfSize:13] range:NSMakeRange(dataModel.nickname.length+4, dataModel.rnikeName.length+1)];
         
         contentLabel.attributedText = attString;
     }
@@ -106,20 +160,20 @@
     else
     {
         //如果是官方回复
-        if (data.official)
+        if (dataModel.official)
         {
-            NSString * content = [NSString stringWithFormat:@"%@: %@",data.nickname,data.content];
+            NSString * content = [NSString stringWithFormat:@"%@: %@",dataModel.nickname,dataModel.content];
             NSMutableAttributedString *attString = [[NSMutableAttributedString alloc] initWithString:content];
-            [attString yy_setFont:[UIFont boldSystemFontOfSize:13] range:NSMakeRange(0, data.nickname.length+1)];
-            [attString yy_setColor:HW_RED_WORD_1 range:NSMakeRange(0, data.nickname.length+1)];
+            [attString yy_setFont:[UIFont boldSystemFontOfSize:13] range:NSMakeRange(0, dataModel.nickname.length+1)];
+            [attString yy_setColor:HW_RED_WORD_1 range:NSMakeRange(0, dataModel.nickname.length+1)];
             contentLabel.attributedText = attString;
         }
         
         else
         {
-            NSString * content = [NSString stringWithFormat:@"%@: %@",data.nickname,data.content];
+            NSString * content = [NSString stringWithFormat:@"%@: %@",dataModel.nickname,dataModel.content];
             NSMutableAttributedString *attString = [[NSMutableAttributedString alloc] initWithString:content];
-            [attString yy_setFont:[UIFont boldSystemFontOfSize:13] range:NSMakeRange(0, data.nickname.length+1)];
+            [attString yy_setFont:[UIFont boldSystemFontOfSize:13] range:NSMakeRange(0, dataModel.nickname.length+1)];
             contentLabel.attributedText = attString;
         }
     }
@@ -142,6 +196,10 @@
     return CGSizeMake(SCREEN_WIDTH, bottom);
 }
 
+-(void)commentZanBtnAction
+{
+    [[SZData sharedSZData]requestCommentZan:commentModel.id replyId:dataModel.id];
+}
 
 @end
 

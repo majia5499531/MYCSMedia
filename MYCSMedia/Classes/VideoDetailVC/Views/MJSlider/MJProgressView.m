@@ -18,7 +18,6 @@
 #import "SZManager.h"
 #import "UIView+MJCategory.h"
 #import "SZInputView.h"
-#import "SZCommentBar.h"
 #import "MJHUD.h"
 #import "BaseModel.h"
 #import "ContentListModel.h"

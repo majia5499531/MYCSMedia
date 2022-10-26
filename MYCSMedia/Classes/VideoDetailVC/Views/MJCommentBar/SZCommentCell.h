@@ -11,7 +11,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface SZCommentCell : UICollectionViewCell
 
--(void)setCellData:(id)data;
+-(void)setCommentData:(id)commentM replyData:(id)replyM;
 
 -(CGSize)getCellSize;
 

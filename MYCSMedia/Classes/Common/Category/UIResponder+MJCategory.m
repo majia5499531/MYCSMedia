@@ -9,6 +9,23 @@
 
 @implementation UIResponder (MJCategory)
 
+
+-(UIViewController*)getCurrentViewController
+{
+    UIResponder * resp = self;
+    while (resp.nextResponder)
+    {
+        resp = resp.nextResponder;
+        
+        if ([resp isKindOfClass:[UIViewController class]])
+        {
+            return (UIViewController*)resp;
+        }
+    }
+    
+    return nil;
+}
+
 -(UINavigationController*)getCurrentNavigationController
 {
     UIResponder * resp = self;
@@ -26,21 +43,5 @@
     return nil;
 }
 
--(UIViewController*)getCurrentViewController
-{
-    UIResponder * resp = self;
-    while (resp.nextResponder)
-    {
-        resp = resp.nextResponder;
-        
-        
-        if ([resp isKindOfClass:[UIViewController class]])
-        {
-            return (UIViewController*)resp;
-        }
-    }
-    
-    return nil;
-}
 
 @end

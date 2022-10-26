@@ -60,7 +60,7 @@
     
     [[SZContentTracker shareTracker]requestForUploading:bizparam eventKey:eventName contentModel:model];
         
-    NSLog(@"MJContentTracker_once_事件:%@_新闻:%@_cateName:%@",eventName,groupId,model.volcCategory);
+//    NSLog(@"MJContentTracker_once_事件:%@_新闻:%@_cateName:%@",eventName,groupId,model.volcCategory);
 }
 
 
@@ -164,7 +164,7 @@
             
             
 
-            NSLog(@"MJContentTracker_end_auto_时长:%@_新闻:%@_百分比:%@_cateName:%@",[NSNumber numberWithInteger:duration],groupId,progressNumber,model.classification);
+//            NSLog(@"MJContentTracker_end_auto_时长:%@_新闻:%@_百分比:%@_cateName:%@",[NSNumber numberWithInteger:duration],groupId,progressNumber,model.volcCategory);
             
         }
         
@@ -270,7 +270,7 @@
             [SZUserTracker trackingButtonEventName:@"content_video_duration" param:param];
             
             
-            NSLog(@"MJContentTracker_end_manual_时长:%@_新闻:%@_百分比:%@_cateName:%@",[NSNumber numberWithInteger:duration],groupId,progressNumber,model.volcCategory);
+//            NSLog(@"MJContentTracker_end_manual_时长:%@_新闻:%@_百分比:%@_cateName:%@",[NSNumber numberWithInteger:duration],groupId,progressNumber,model.volcCategory);
             
         }
         

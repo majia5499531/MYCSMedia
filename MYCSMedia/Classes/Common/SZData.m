@@ -38,7 +38,7 @@
         });
     return manager;
 }
-                  
+
 
 
 #pragma mark - Binding
@@ -163,7 +163,7 @@
     [self requestZan];
 }
 
-//点赞+1
+//给内容点赞
 -(void)requestZan
 {
     StatusModel * model = [StatusModel model];
@@ -176,6 +176,27 @@
     __weak typeof (self) weakSelf = self;
     [model PostRequestInView:nil WithUrl:APPEND_SUBURL(BASE_URL, API_URL_ZAN) Params:param Success:^(id responseObject) {
             [weakSelf requestZanDone:model];
+        } Error:^(id responseObject) {
+            
+        } Fail:^(NSError *error) {
+            
+        }];
+}
+
+//给评论点赞
+-(void)requestCommentZan:(NSString*)commentId replyId:(NSString*)replyId;
+{
+    NSString * targetId = replyId.length==0 ?commentId:replyId;
+    
+    StatusModel * model = [StatusModel model];
+    model.isJSON=YES;
+    NSMutableDictionary * param=[NSMutableDictionary dictionary];
+    [param setValue:targetId forKey:@"targetId"];
+    [param setValue:@"comment" forKey:@"type"];
+    
+    __weak typeof (self) weakSelf = self;
+    [model PostRequestInView:nil WithUrl:APPEND_SUBURL(BASE_URL, API_URL_ZAN) Params:param Success:^(id responseObject) {
+            [weakSelf requestCommentZanDone:commentId replyId:replyId state:model];
         } Error:^(id responseObject) {
             
         } Fail:^(NSError *error) {
@@ -225,6 +246,7 @@
         }];
 }
 
+//请求关注用户
 -(void)requestFollowUser:(NSString*)userId
 {
     StatusModel * model = [StatusModel model];
@@ -235,7 +257,7 @@
     url = APPEND_SUBURL(url, userId);
     __weak typeof (self) weakSelf = self;
     [model PostRequestInView:nil WithUrl:url Params:param Success:^(id responseObject) {
-        [weakSelf requestFollowCreatorDone:YES];
+        [weakSelf requestFollowCreatorDone:YES userId:userId];
         } Error:^(id responseObject) {
             
         } Fail:^(NSError *error) {
@@ -243,7 +265,7 @@
         }];
 }
 
-
+//请求取消关注用户
 -(void)requestUnFollowUser:(NSString*)userId
 {
     StatusModel * model = [StatusModel model];
@@ -254,7 +276,7 @@
     url = APPEND_SUBURL(url, userId);
     __weak typeof (self) weakSelf = self;
     [model PostRequestInView:nil WithUrl:url Params:param Success:^(id responseObject) {
-        [weakSelf requestFollowCreatorDone:NO];
+        [weakSelf requestFollowCreatorDone:NO userId:userId];
         } Error:^(id responseObject) {
             
         } Fail:^(NSError *error) {
@@ -345,6 +367,75 @@
     self.contentCollectTime = currrentTime;
 }
 
+
+-(void)requestCommentZanDone:(NSString*)commentId replyId:(NSString*)replyId state:(StatusModel*)statusM
+{
+    //如果是评论点赞
+    CommentDataModel * comment = [self.contentCommentDic valueForKey:self.currentContentId];
+    if (replyId.length==0)
+    {
+        for (CommentModel * M in comment.dataArr)
+        {
+            if ([M.id isEqualToString:commentId])
+            {
+                
+                if (statusM.data.boolValue)
+                {
+                    M.whetherLike=statusM.data.boolValue;
+                    M.likeCount = M.likeCount+1;
+                }
+                else
+                {
+                    M.whetherLike=statusM.data.boolValue;
+                    M.likeCount = M.likeCount-1;
+                }
+            }
+        }
+    }
+    
+    //如果是对回复点赞
+    else
+    {
+        for (CommentModel * M in comment.dataArr)
+        {
+            if ([M.id isEqualToString:commentId])
+            {
+                for (ReplyModel * replyM in M.dataArr)
+                {
+                    if ([replyM.id isEqualToString:replyId])
+                    {
+                        if (statusM.data.boolValue)
+                        {
+                            replyM.whetherLike=statusM.data.boolValue;
+                            replyM.likeCount = replyM.likeCount+1;
+                        }
+                        else
+                        {
+                            replyM.whetherLike=statusM.data.boolValue;
+                            replyM.likeCount = replyM.likeCount-1;
+                        }
+                        
+                    }
+                }
+                
+            }
+        }
+    }
+    
+    
+    //保存
+    
+    
+    //手动修改点赞状态
+    
+    
+    //更新时间，刷新列表UI
+    //更新time
+    NSNumber * currrentTime = [NSNumber numberWithInteger:[[NSDate date]timeIntervalSince1970]];
+    self.contentCommentsUpdateTime = currrentTime;
+}
+
+
 -(void)requestZanDone:(StatusModel*)model
 {
     //取model
@@ -391,6 +482,7 @@
     
 }
 
+
 -(void)requestVideoRelateContentDone:(VideoRelateModel*)model
 {
     //保存
@@ -401,8 +493,17 @@
     self.contentRelateUpdateTime = currrentTime;
 }
 
--(void)requestFollowCreatorDone:(BOOL)isFollow
+-(void)requestFollowCreatorDone:(BOOL)isFollow userId:(NSString*)userId
 {
+    //行为埋点
+    if (isFollow)
+    {
+        NSMutableDictionary * param=[NSMutableDictionary dictionary];
+        [param setValue:userId forKey:@"user_id"];
+        [SZUserTracker trackingButtonEventName:@"notice_user" param:param];
+    }
+    
+    
     //取model
     ContentStateModel * stateM = [self.contentStateDic valueForKey:self.currentContentId];
     
@@ -413,30 +514,6 @@
     NSNumber * currrentTime = [NSNumber numberWithInteger:[[NSDate date]timeIntervalSince1970]];
     self.contentCreateFollowTime = currrentTime;
 }
-
--(void)requestReplyListDone:(NSArray*)replys commentID:(NSString*)commentID
-{
-    //找到这条评论，并将回复数据插入
-    CommentDataModel * commentDataM = [self.contentCommentDic valueForKey:self.currentContentId];
-    
-    for (CommentModel * M in commentDataM.dataArr)
-    {
-        if ([M.id isEqualToString:commentID])
-        {
-            //评论数据保存起来
-            [M.dataArr removeAllObjects];
-            [M.dataArr addObjectsFromArray:replys];
-            
-            
-        }
-    }
-    
-    
-    //更新time
-    NSNumber * currrentTime = [NSNumber numberWithInteger:[[NSDate date]timeIntervalSince1970]];
-    self.contentCommentsUpdateTime = currrentTime;
-}
-
 
 
 #pragma mark - Request 万达

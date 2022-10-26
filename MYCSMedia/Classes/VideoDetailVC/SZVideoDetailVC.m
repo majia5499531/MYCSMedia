@@ -17,7 +17,6 @@
 #import "SZManager.h"
 #import "UIView+MJCategory.h"
 #import "SZInputView.h"
-#import "SZCommentBar.h"
 #import "MJHUD.h"
 #import "BaseModel.h"
 #import "ContentListModel.h"
@@ -45,7 +44,6 @@
     
     //UI
     UICollectionView * collectionView;
-    SZCommentBar * commentBar;
 }
 
 
@@ -180,6 +178,7 @@
 
 
 #pragma mark - Request
+//查询单条视频
 -(void)requestSingleVideo
 {
     NSString * url = APPEND_SUBURL(BASE_URL, API_URL_VIDEO);
@@ -203,6 +202,7 @@
         }];
 }
 
+//查询视频合集
 -(void)requestVideosInCollection
 {
     NSString * url = APPEND_SUBURL(BASE_URL, API_URL_VIDEOCOLLECT);
@@ -372,7 +372,7 @@
 -(UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
     SZVideoCell * cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"fullVideoCell" forIndexPath:indexPath];
-    [cell setCellData:self.dataArr[indexPath.row] isUGC:NO albumnName:self.albumName simpleMode:self.isPreview];
+    [cell setVideoCellData:self.dataArr[indexPath.row] albumnName:self.albumName simpleMode:self.isPreview];
     return  cell;
 }
 - (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath

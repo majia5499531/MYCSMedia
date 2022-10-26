@@ -26,6 +26,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic , assign) BOOL               onShelve;
 @property (nonatomic , assign) BOOL                isTop;
 @property(assign,nonatomic)BOOL                 official;
+@property (nonatomic , assign) BOOL                whetherLike;
+@property (nonatomic , assign) NSInteger            likeCount;
 
 @end
 

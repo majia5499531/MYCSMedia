@@ -148,6 +148,8 @@
     if (manager.MJVideoView.isLoaded)
     {
         [manager.MJVideoView pause];
+        manager.MJVideoView.playerState=StateIntoBackground;
+        
     }
     else
     {

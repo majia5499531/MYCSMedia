@@ -34,6 +34,9 @@
     MJButton * replyBtn;
     
     UILabel * istopLabel;
+    
+    MJButton * zanBtn;
+    UILabel * zanCount;
 }
 
 
@@ -119,6 +122,34 @@
             make.height.mas_equalTo(15);
         }];
         
+        //点赞按钮
+        zanCount = [[UILabel alloc]init];
+        zanCount.font=FONT(11);
+        zanCount.textColor=HW_GRAY_WORD_1;
+        [self addSubview:zanCount];
+        UITapGestureRecognizer * tap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(commentZanBtnAction)];
+        zanCount.userInteractionEnabled=YES;
+        [zanCount addGestureRecognizer:tap];
+        [zanCount mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.right.mas_equalTo(-20);
+            make.centerY.mas_equalTo(replyBtn);
+            
+        }];
+        
+        //点赞数
+        zanBtn = [[MJButton alloc]init];
+        zanBtn.mj_imageObjec=[UIImage getBundleImage:@"comment_zan"];
+        zanBtn.mj_imageObject_sel = [UIImage getBundleImage:@"comment_zan_sel"];
+        zanBtn.imageFrame=CGRectMake(30, 2.5, 15, 15);
+        zanBtn.ScaleUpBounce=YES;
+        [zanBtn addTarget:self action:@selector(commentZanBtnAction) forControlEvents:UIControlEventTouchUpInside];
+        [self addSubview:zanBtn];
+        [zanBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.right.mas_equalTo(zanCount.mas_left).offset(0);
+            make.centerY.mas_equalTo(zanCount);
+            make.width.mas_equalTo(50);
+        }];
+        
     }
     return self;
 }
@@ -142,6 +173,31 @@
     //评论内容
     contentLabel.text = dataModel.content;
     
+    //点赞数
+    if (data.likeCount>0)
+    {
+        zanCount.text = [NSString stringWithFormat:@"%d",(int)data.likeCount];
+    }
+    else
+    {
+        zanCount.text = @"";
+    }
+    
+    
+    //是否点赞
+    zanBtn.MJSelectState=data.whetherLike;
+    if (data.whetherLike)
+    {
+        zanCount.textColor=HW_RED_WORD_1;
+        zanBtn.MJSelectState=YES;
+    }
+    else
+    {
+        zanCount.textColor=HW_GRAY_WORD_1;
+        zanBtn.MJSelectState=NO;
+    }
+    
+    
     //如果是置顶
     if (data.isTop)
     {
@@ -151,7 +207,6 @@
     {
         istopLabel.hidden=YES;
     }
-    
 }
 
 
@@ -174,6 +229,11 @@
     return CGSizeMake(SCREEN_WIDTH, bottom);
 }
 
+
+-(void)commentZanBtnAction
+{
+    [[SZData sharedSZData]requestCommentZan:dataModel.id replyId:nil];
+}
 
 @end
 

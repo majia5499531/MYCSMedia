@@ -29,7 +29,7 @@
 #import "UIResponder+MJCategory.h"
 #import "SZUserTracker.h"
 #import "SZHomeVC.h"
-
+#import "UIResponder+MJCategory.h"
 
 
 @interface SZSideBar ()
@@ -38,10 +38,7 @@
 
 @implementation SZSideBar
 {
-    
-    
     SZCommentList * commentListView;
-    
     
     UILabel * commentCount;
     
@@ -244,11 +241,22 @@
     commentListView = [[SZCommentList alloc]init];
     [commentListView setFrame:CGRectMake(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT)];
     
+    
+    
 }
 
-
-
-
+-(void)layoutSubviews
+{
+    [super layoutSubviews];
+    
+    //判断是否当前vc嵌入tabbar
+    UIViewController * currentvc = [self getCurrentViewController];
+    UINavigationController * currentnav = [self getCurrentNavigationController];
+    if (currentvc==currentnav.viewControllers.firstObject)
+    {
+        [commentListView setSepelineOffsetY:55];
+    }
+}
 
 
 #pragma mark - 数据绑定回调
@@ -360,7 +368,12 @@
 -(void)shotBtnAction
 {
     //行为埋点
-    [SZUserTracker trackingButtonEventName:@"short_video_start_make" param:nil];
+    NSMutableDictionary * param=[NSMutableDictionary dictionary];
+    [param setValue:[SZData sharedSZData].currentVideoTab forKey:@"module_title"];
+    [param setValue:[SZData sharedSZData].currentVideoTab forKey:@"module_source"];
+    
+    
+    [SZUserTracker trackingButtonEventName:@"short_video_start_make" param:param];
     
     
     //未登录则跳转登录

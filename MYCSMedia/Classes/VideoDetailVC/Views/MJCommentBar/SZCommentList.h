@@ -6,7 +6,6 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "SZCommentBar.h"
 #import "CommentDataModel.h"
 
 
@@ -16,6 +15,7 @@
 
 @interface SZCommentList : UIView
 
+-(void)setSepelineOffsetY:(CGFloat)offset;
 -(void)showCommentList:(BOOL)show;
 
 @end

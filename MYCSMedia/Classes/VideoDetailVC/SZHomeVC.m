@@ -18,7 +18,6 @@
 #import "SZManager.h"
 #import "UIView+MJCategory.h"
 #import "SZInputView.h"
-#import "SZCommentBar.h"
 #import "MJHUD.h"
 #import "BaseModel.h"
 #import "ContentListModel.h"
@@ -37,9 +36,12 @@
 #import "SZUserTracker.h"
 #import "CategoryListModel.h"
 #import "CategoryModel.h"
+#import "UIResponder+MJCategory.h"
 
 @interface SZHomeVC ()<UIScrollViewDelegate,NewsColumnDelegate>
 {
+    BOOL isOnTabbar;
+    
     CategoryListModel * cateList;
     UIScrollView * scrollBG;
     SZColumnBar * columnbar;
@@ -92,6 +94,13 @@
     [SZGlobalInfo checkRMLoginStatus:nil];
 }
 
+-(void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+    
+    [self subviewDidAppear];
+}
+
 -(void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
@@ -101,12 +110,23 @@
     [MJVideoManager pauseWindowVideo];
 }
 
--(void)viewDidAppear:(BOOL)animated
+-(void)viewDidDisappear:(BOOL)animated
 {
-    [super viewDidAppear:animated];
+    [super viewDidDisappear:animated];
     
-    [self subviewDidAppear];
+    //如果是嵌入tabbar里，则需要停止播放
+    if (isOnTabbar)
+    {
+        [MJVideoManager destroyVideoPlayer];
+
+        [[SZData sharedSZData]setCurrentContentId:@""];
+    }
+    else
+    {
+        
+    }
 }
+
 
 -(void)subviewDidAppear
 {
@@ -131,6 +151,15 @@
 #pragma mark - 界面&布局
 -(void)MJInitSubviews
 {
+    //判断是否是嵌在tabbar里
+    UINavigationController * nav = [self getCurrentNavigationController];
+    if (self==nav.viewControllers.firstObject)
+    {
+        isOnTabbar=YES;
+    }
+    
+    
+    
     //整体滑动
     scrollBG = [[UIScrollView alloc]init];
     scrollBG.backgroundColor=[UIColor blackColor];
@@ -143,7 +172,15 @@
         self.automaticallyAdjustsScrollViewInsets = NO;
     }
     scrollBG.delegate=self;
-    [scrollBG setFrame:CGRectMake(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT)];
+    if (isOnTabbar)
+    {
+        [scrollBG setFrame:CGRectMake(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT-self.navigationController.tabBarController.tabBar.height)];
+    }
+    else
+    {
+        [scrollBG setFrame:CGRectMake(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT)];
+    }
+    
     scrollBG.contentSize=CGSizeMake(SCREEN_WIDTH*3, 0);
     scrollBG.pagingEnabled=YES;
     scrollBG.bounces=NO;
@@ -207,6 +244,10 @@
         make.width.mas_equalTo(50);
         make.height.mas_equalTo(50);
     }];
+    if (isOnTabbar)
+    {
+        backBtn.hidden=YES;
+    }
     
     //profile
     MJButton * profileBtn = [[MJButton alloc]initWithFrame:CGRectMake(0, STATUS_BAR_HEIGHT-7, 50, 50)];
@@ -409,7 +450,7 @@
         
         [rootview1 viewWillAppear];
         _currentSelectIdx = 0;
-        
+        [SZData sharedSZData].currentVideoTab = @"小康生活";
         
         
     }
@@ -420,6 +461,7 @@
         
         [rootview2 viewWillAppear];
         _currentSelectIdx = 1;
+        [SZData sharedSZData].currentVideoTab = @"视频";
         
     }
     else
@@ -429,6 +471,7 @@
         
         [rootview3 viewWillAppear];
         _currentSelectIdx = 2;
+        [SZData sharedSZData].currentVideoTab = @"直播";
         
     }
 }

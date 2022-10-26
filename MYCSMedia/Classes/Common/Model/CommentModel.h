@@ -24,6 +24,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic , copy) NSString              * content;
 @property (nonatomic , assign) BOOL               onShelve;
 @property (nonatomic , assign) BOOL                isTop;
+@property (nonatomic , assign) BOOL                whetherLike;
+@property (nonatomic , assign) NSInteger            likeCount;
+
 
 @property(strong,nonatomic)NSString * lastReplyName;
 @property(strong,nonatomic)NSString * totalReplyCount;

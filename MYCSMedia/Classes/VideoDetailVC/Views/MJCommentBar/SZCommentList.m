@@ -42,6 +42,8 @@
     UILabel * countLabel;
     UIView * BGView;
     
+    UIView * sepeline;
+    
     UICollectionView * collectionView;
     
     MJButton * sendBtn;
@@ -79,7 +81,7 @@
     
     //BG
     BGView = [[UIView alloc]init];
-    [BGView setFrame:CGRectMake(0, SCREEN_HEIGHT, SCREEN_WIDTH, SCREEN_HEIGHT-self->topspace)];
+    [BGView setFrame:CGRectMake(0, SCREEN_HEIGHT, SCREEN_WIDTH, SCREEN_HEIGHT-topspace)];
     BGView.backgroundColor=HW_WHITE;
     [self addSubview:BGView];
     [BGView MJSetPartRadius:8 RoundingCorners:UIRectCornerTopLeft|UIRectCornerTopRight];
@@ -87,6 +89,12 @@
     //平移手势
     UIPanGestureRecognizer * pangest = [[UIPanGestureRecognizer alloc]initWithTarget:self action:@selector(panGestureAction:)];
     [BGView addGestureRecognizer:pangest];
+    
+    //双击(播放/暂停)
+    UITapGestureRecognizer * doubleTap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(doubleTapAction)];
+    doubleTap.numberOfTouchesRequired = 1; //手指数
+    doubleTap.numberOfTapsRequired    = 2;
+    [BGView addGestureRecognizer:doubleTap];
     
     //评论
     UILabel * titleLabel = [[UILabel alloc]init];
@@ -122,8 +130,9 @@
         make.height.mas_equalTo(44);
     }];
     
+    
     //line
-    UIView * sepeline = [[UIView alloc]init];
+    sepeline = [[UIView alloc]init];
     sepeline.backgroundColor=HW_GRAY_BG_White;
     [BGView addSubview:sepeline];
     [sepeline mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -193,6 +202,7 @@
     [collectionView registerClass:[SZCommentFooter class] forSupplementaryViewOfKind:UICollectionElementKindSectionFooter withReuseIdentifier:@"szcommentfooter"];
     collectionView.delegate = self;
     collectionView.dataSource = self;
+    collectionView.bounces=NO;
     [BGView addSubview:collectionView];
     [collectionView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_equalTo(0);
@@ -200,9 +210,6 @@
         make.width.mas_equalTo(SCREEN_WIDTH);
         make.bottom.mas_equalTo(sepeline.mas_top);
     }];
-    
-    
-    
     
 }
 
@@ -261,6 +268,15 @@
     }
     
     isDragging = NO;
+}
+
+-(void)setSepelineOffsetY:(CGFloat)offset
+{
+    [sepeline mas_remakeConstraints:^(MASConstraintMaker *make) {
+        make.height.mas_equalTo(1);
+        make.width.mas_equalTo(SCREEN_WIDTH);
+        make.bottom.mas_equalTo(-44-BOTTOM_SAFEAREA_HEIGHT-offset);
+    }];
 }
 
 
@@ -326,11 +342,11 @@
 #pragma mark - CollectionView Datasource & Delegate
 -(UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    CommentModel * model = dataModel.dataArr[indexPath.section];
-    ReplyModel * reply = model.dataArr[indexPath.row];
+    CommentModel * commentM = dataModel.dataArr[indexPath.section];
+    ReplyModel * replyM = commentM.dataArr[indexPath.row];
     
     SZCommentCell * cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"commentCell" forIndexPath:indexPath];
-    [cell setCellData:reply];
+    [cell setCommentData:commentM replyData:replyM];
     return  cell;
 }
 - (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath
@@ -393,7 +409,7 @@
     SZCommentCell * cell = [[SZCommentCell alloc]initWithFrame:CGRectZero];
     CommentModel * model = dataModel.dataArr[indexPath.section];
     ReplyModel * reply = model.dataArr[indexPath.row];
-    [cell setCellData:reply];
+    [cell setCommentData:model replyData:reply];
     CGSize cellsize = [cell getCellSize];
     return cellsize;
 }
@@ -434,7 +450,7 @@
 
 
 
-#pragma mark - btn action
+#pragma mark - Btn action
 -(void)listViewBGTapAction
 {
     [self showCommentList:NO];
@@ -477,7 +493,10 @@
     }
 }
 
-
+-(void)doubleTapAction
+{
+    
+}
 
 
 

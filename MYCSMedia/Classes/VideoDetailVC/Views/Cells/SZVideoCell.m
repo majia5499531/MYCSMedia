@@ -52,7 +52,7 @@
     //data
     ContentModel * dataModel;
     VideoRelateModel * relateModel;
-    NSString * cellAlbumnName;
+    NSString * cellAlbumnName;  //合集名称
     NSInteger videoWHSize;                       //9:16 -- 0          16:9 -- 2        其他比例 -- 1
     BOOL simpleMode;
     
@@ -259,7 +259,7 @@
 
 
 #pragma mark - SetCellData
--(void)setCellData:(ContentModel*)objc isUGC:(BOOL)isUGC albumnName:(NSString *)albumnName simpleMode:(BOOL)simple
+-(void)setVideoCellData:(ContentModel*)objc albumnName:(NSString *)albumnName simpleMode:(BOOL)simple
 {
     //model
     dataModel = objc;
@@ -268,12 +268,7 @@
     sideBar.hidden=simple;
     viewCountLabel.hidden=simple;
     
-    //PGC视频，则不允许关注和点击
-    if (dataModel.issuerId.length==0)
-    {
-        isUGC = NO;
-    }
-    
+    //合集名（视频详情，且是合集类型时，用到该字段）
     cellAlbumnName = albumnName;
     
     //视频宽高比
@@ -374,8 +369,16 @@
     
     
     //观看数
-    NSString * viewsStr = [NSString converToViewCountStr:dataModel.viewCountShow];
-    viewCountLabel.text = [NSString stringWithFormat:@"%@人看过",viewsStr];
+    if (dataModel.viewCountShow)
+    {
+        NSString * viewsStr = [NSString converToViewCountStr:dataModel.viewCountShow];
+        viewCountLabel.text = [NSString stringWithFormat:@"%@人看过",viewsStr];
+    }
+    else
+    {
+        viewCountLabel.text = @"";
+    }
+    
     [viewCountLabel mas_remakeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_equalTo(descLabel.mas_left).offset(3);
         make.bottom.mas_equalTo(authorBG.mas_top).offset(-10);
@@ -493,7 +496,7 @@
     
     
     //是否是UGC系统
-    if (isUGC)
+    if (dataModel.issuerId.length>0)
     {
         //如果当前登录用户是自己
         if ([[SZGlobalInfo sharedManager].userId isEqualToString:dataModel.createBy])
@@ -884,7 +887,6 @@
 {
     [[SZData sharedSZData]requestShortViewZan];
     [[YPDouYinLikeAnimation shareInstance]createAnimationWithTap:gest];
-    
 }
 
 

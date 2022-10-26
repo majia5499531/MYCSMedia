@@ -31,7 +31,8 @@
 {
     self = [super initWithFrame:frame];
     if (self)
-    {        
+    {
+        //是否已展开全部回复
         descLabel = [[YYLabel alloc]init];
         descLabel.font=FONT(13);
         descLabel.textColor=HW_BLACK;
@@ -42,6 +43,7 @@
             make.left.mas_equalTo(65);
         }];
         
+        //分界线
         line = [[UIView alloc]init];
         line.backgroundColor=HW_GRAY_BORDER;
         [self addSubview:line];
@@ -70,9 +72,12 @@
             make.top.mas_equalTo(descLabel.mas_bottom).offset(10);
         }];
         
+        
         //已显示数小于总数
         if (data.replyShowCount == data.replyInitialCount)
         {
+            
+            
             NSString * str = [NSString stringWithFormat:@"%@ 等人共%@条回复  展开",data.lastReplyName,data.totalReplyCount];
             NSMutableAttributedString *attString = [[NSMutableAttributedString alloc] initWithString:str];
             [attString yy_setFont:[UIFont boldSystemFontOfSize:13] range:NSMakeRange(0, data.lastReplyName.length)];
@@ -84,6 +89,8 @@
             
             descLabel.attributedText = attString;
         }
+        
+        
         //展开过一次后，显示“继续展开”
         else if (data.replyShowCount<data.totalReplyCount.integerValue)
         {
@@ -96,6 +103,7 @@
             
             descLabel.attributedText = attString;
         }
+        
         
         //全部已显示
         else

@@ -507,12 +507,16 @@
     [param setValue:_inputview.text forKey:@"title"];
     [param setValue:@"video" forKey:@"subType"];
     
-    //所选话题
-    NSString * tagstr = [self getSelectedTagString];
-    if (tagstr.length)
+    //所选话题ID
+    NSString * topicId = [self getSelectedTopicId];
+    NSString * topicName = [self getSelectedTopicName];
+    if (topicId.length)
     {
-        [param setValue:tagstr forKey:@"belongTopicId"];
+        [param setValue:topicId forKey:@"belongTopicId"];
     }
+    
+    //所选话题名
+    
     
     //是发布
     if (ispub)
@@ -544,7 +548,7 @@
     NSString * articletitle = _inputview.text;
     commitModel.isJSON = YES;
     [commitModel PostRequestInView:self.view WithUrl:APPEND_SUBURL(BASE_URL, API_URL_ARTICLE_CREATE) Params:param Success:^(id responseObject) {
-        [weakSelf requestCommitDone:commitModel fileModel:upmodel title:articletitle ispublish:ispub];
+        [weakSelf requestCommitDone:commitModel fileModel:upmodel title:articletitle topicName:topicName ispublish:ispub];
         } Error:^(id responseObject) {
             
         } Fail:^(NSError *error) {
@@ -570,10 +574,11 @@
     [param setValue:self.drafId forKey:@"id"];
     
     //所选话题
-    NSString * tagstr = [self getSelectedTagString];
-    if (tagstr.length)
+    NSString * topicId = [self getSelectedTopicId];
+    NSString * topicName = [self getSelectedTopicName];
+    if (topicId.length)
     {
-        [param setValue:tagstr forKey:@"belongTopicId"];
+        [param setValue:topicId forKey:@"belongTopicId"];
     }
     
     //是发布
@@ -605,7 +610,7 @@
     model.isJSON = YES;
     NSString * articletitle = _inputview.text;
     [model PostRequestInView:self.view WithUrl:APPEND_SUBURL(BASE_URL, API_URL_ARTICLE_UPDATE) Params:param Success:^(id responseObject) {
-        [weakSelf requestCommitDone:model fileModel:upmodel title:articletitle ispublish:ispub];
+        [weakSelf requestCommitDone:model fileModel:upmodel title:articletitle topicName:topicName ispublish:ispub];
         } Error:^(id responseObject) {
             
         } Fail:^(NSError *error) {
@@ -706,7 +711,7 @@
 }
 
 //发布成功
--(void)requestCommitDone:(CreateArticleModel*)model fileModel:(FileUploadModel*)file title:(NSString*)title ispublish:(BOOL)ispub
+-(void)requestCommitDone:(CreateArticleModel*)model fileModel:(FileUploadModel*)file title:(NSString*)title topicName:(NSString*)tagstr ispublish:(BOOL)ispub
 {
     if (ispub)
     {
@@ -724,6 +729,8 @@
     [param setValue:model.contentId forKey:@"content_id"];
     [param setValue:file.duration forKey:@"works_duration"];
     [param setValue:file.size forKey:@"works_size"];
+    [param setValue:tagstr forKey:@"topic_name"];
+    [param setValue:title forKey:@"works_brief"];
     [SZUserTracker trackingButtonEventName:@"short_video_submit" param:param];
 
     
@@ -845,7 +852,7 @@
 }
 
 #pragma mark - Other
--(NSString*)getSelectedTagString
+-(NSString*)getSelectedTopicId
 {
     for (int i = 0; i<topicBtnArr.count; i++)
     {
@@ -857,8 +864,21 @@
             
         }
     }
-    
-    
+        return nil;
+}
+
+-(NSString*)getSelectedTopicName
+{
+    for (int i = 0; i<topicBtnArr.count; i++)
+    {
+        MJButton * btn = topicBtnArr[i];
+        if (btn.MJSelectState)
+        {
+            ContentModel * model = topicsModel.dataArr [i];
+            return model.title;
+            
+        }
+    }
         return nil;
 }
 

@@ -29,12 +29,14 @@
 @property(strong,nonatomic)NSMutableDictionary * contentRelateContentDic;
 @property(strong,nonatomic)NSMutableDictionary * contentRelateContentDislikeDic;
 @property(strong,nonatomic)NSMutableDictionary * contentBelongAlbumsDic;;
+@property(strong,nonatomic)NSString * currentVideoTab;
 
 +(instancetype)sharedSZData;
 
 
 -(void)requestShortViewZan;
 -(void)requestZan;
+-(void)requestCommentZan:(NSString*)commentId replyId:(NSString*)replyId;
 -(void)requestCollect;
 -(void)requestFollowUser:(NSString*)userId;
 -(void)requestUnFollowUser:(NSString*)userId;

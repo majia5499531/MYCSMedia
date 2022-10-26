@@ -64,7 +64,7 @@
 -(void)initSubviews
 {
 
-    tableview = [[UITableView alloc]initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH, self.height) style:UITableViewStyleGrouped];
+    tableview = [[UITableView alloc]initWithFrame:CGRectMake(0, 0, self.width, self.height) style:UITableViewStyleGrouped];
     tableview.dataSource=self;
     [tableview setNoContentInset];
     tableview.backgroundColor=HW_CLEAR;

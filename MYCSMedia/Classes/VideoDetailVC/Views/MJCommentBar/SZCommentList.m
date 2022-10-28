@@ -190,7 +190,7 @@
     
     //collectionview
     UICollectionViewFlowLayout *flowLayout = [[UICollectionViewFlowLayout alloc] init];
-    collectionView = [[UICollectionView alloc] initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH,SCREEN_HEIGHT) collectionViewLayout:flowLayout];
+    collectionView = [[UICollectionView alloc] initWithFrame:CGRectMake(0, 0, 0,0) collectionViewLayout:flowLayout];
     if (@available(iOS 11.0, *))
     {
         collectionView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
@@ -202,7 +202,7 @@
     [collectionView registerClass:[SZCommentFooter class] forSupplementaryViewOfKind:UICollectionElementKindSectionFooter withReuseIdentifier:@"szcommentfooter"];
     collectionView.delegate = self;
     collectionView.dataSource = self;
-    collectionView.bounces=NO;
+    
     [BGView addSubview:collectionView];
     [collectionView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_equalTo(0);
@@ -270,14 +270,6 @@
     isDragging = NO;
 }
 
--(void)setSepelineOffsetY:(CGFloat)offset
-{
-    [sepeline mas_remakeConstraints:^(MASConstraintMaker *make) {
-        make.height.mas_equalTo(1);
-        make.width.mas_equalTo(SCREEN_WIDTH);
-        make.bottom.mas_equalTo(-44-BOTTOM_SAFEAREA_HEIGHT-offset);
-    }];
-}
 
 
 #pragma mark - 数据绑定
@@ -423,6 +415,7 @@
 
 -(void)scrollViewDidScroll:(UIScrollView *)scrollView
 {
+    
     if (scrollView.contentOffset.y<0)
     {
         [scrollView setContentOffset:CGPointMake(0, 0)];

@@ -15,7 +15,6 @@
 
 @interface SZCommentList : UIView
 
--(void)setSepelineOffsetY:(CGFloat)offset;
 -(void)showCommentList:(BOOL)show;
 
 @end

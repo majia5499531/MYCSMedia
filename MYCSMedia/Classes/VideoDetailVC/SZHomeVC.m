@@ -72,6 +72,8 @@
 {
     [super viewDidLoad];
     
+    self.view.backgroundColor=[UIColor whiteColor];
+    
     [self requestCategoryList];
 }
 
@@ -157,8 +159,6 @@
     {
         isOnTabbar=YES;
     }
-    
-    
     
     //整体滑动
     scrollBG = [[UIScrollView alloc]init];

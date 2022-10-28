@@ -28,7 +28,7 @@
 #define MODEL_TAG_BEGIN 20
 #define BOTTOM_IMAGE_VIEW_HEIGHT 50
 
-@interface SPDefaultControlView () <UIGestureRecognizerDelegate, PlayerSliderDelegate>
+@interface SPDefaultControlView () <UIGestureRecognizerDelegate, PlayerSliderDelegate,MJSliderDelegate>
 
 @end
 
@@ -605,9 +605,7 @@
     {
         _externalSlider = [[MJProgressView alloc]init];
         _externalSlider.hidden=YES;
-        [_externalSlider.slider addTarget:self action:@selector(progressSliderTouchBegan:) forControlEvents:UIControlEventTouchDown];
-        [_externalSlider.slider addTarget:self action:@selector(progressSliderValueChanged:) forControlEvents:UIControlEventValueChanged];
-        [_externalSlider.slider addTarget:self action:@selector(progressSliderTouchEnded:) forControlEvents:UIControlEventTouchUpInside | UIControlEventTouchUpOutside];
+        _externalSlider.delegate=self;
         
     }
     return _externalSlider;
@@ -912,6 +910,20 @@
         return NO;
     }
     return YES;
+}
+
+#pragma mark - Slider Delegate
+-(void)MJSliderWillChange
+{
+    self.isDragging=YES;
+}
+-(void)MJSliderDidChange:(CGFloat)value
+{
+    [self.delegate controlViewSeek:self where:value];
+}
+-(void)MJSliderEndChange
+{
+    self.isDragging=NO;
 }
 
 #pragma mark - 播放状态更新

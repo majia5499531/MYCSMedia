@@ -119,6 +119,8 @@
         [self.contentView addSubview:logoImage];
         
         
+        CGFloat SafeAreaOffset = self.height==SCREEN_HEIGHT?  (-BOTTOM_SAFEAREA_HEIGHT) : 0;
+        
         //简述(包含话题)
         descLabel = [[YYLabel alloc]init];
         descLabel.numberOfLines=2;
@@ -130,7 +132,7 @@
         [descLabel mas_makeConstraints:^(MASConstraintMaker *make) {
             make.left.mas_equalTo(17);
             make.width.mas_equalTo(SCREEN_WIDTH-100);
-            make.bottom.mas_equalTo(-BOTTOM_SAFEAREA_HEIGHT-48);
+            make.bottom.mas_equalTo(SafeAreaOffset-48);
         }];
 
         
@@ -237,13 +239,15 @@
         [self addSubview:sideBar];
         [sideBar mas_makeConstraints:^(MASConstraintMaker *make) {
             make.right.mas_equalTo(0);
-            make.bottom.mas_equalTo(descLabel.mas_bottom);
+            make.bottom.mas_equalTo(descLabel.mas_bottom).offset(6);
             make.width.mas_equalTo(20+20+30);
             make.height.mas_equalTo(290);
         }];
         
+        
         //数据监听
         [self addDataBinding];
+        
         
         //双击(播放/暂停)
         UITapGestureRecognizer * doubleTap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(doubleTapAction:)];
@@ -847,12 +851,15 @@
     videoSlider.hidden=NO;
     [self insertSubview:videoSlider belowSubview:descLabel];
 
+    
+    CGFloat sliderOffset = self.height==SCREEN_HEIGHT?  (-BOTTOM_SAFEAREA_HEIGHT) : 0;
+    
     //进度条改成永远在下方
     [videoSlider mas_remakeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_equalTo(0);
-        make.height.mas_equalTo(30);
+        make.height.mas_equalTo(40);
         make.right.mas_equalTo(0);
-        make.bottom.mas_equalTo(-BOTTOM_SAFEAREA_HEIGHT-10);
+        make.bottom.mas_equalTo(sliderOffset);
     }];
 
 

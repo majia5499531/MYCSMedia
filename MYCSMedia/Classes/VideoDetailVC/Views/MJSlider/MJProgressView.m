@@ -33,9 +33,6 @@
 @implementation MJProgressView
 {
     UIView * trackBG;
-    
-    UILabel * timeLabel;
-    UILabel * totalTimeLabel;
 }
 
 
@@ -44,9 +41,14 @@
     self = [super initWithFrame:frame];
     if (self)
     {
+        //监听平移手势
+        UIPanGestureRecognizer * pan = [[UIPanGestureRecognizer alloc]initWithTarget:self action:@selector(panGestureAction:)];
+        [self addGestureRecognizer:pan];
+        
         //滑动条
         _slider = [[MJSlider alloc]init];
         _slider.layer.masksToBounds=YES;
+        _slider.enabled=NO;
         _slider.minimumTrackTintColor=[UIColor colorWithRed:1 green:1 blue:1 alpha:0.2];;
         _slider.maximumTrackTintColor=[UIColor colorWithRed:1 green:1 blue:1 alpha:0.1];
         UIImage * dot = [UIImage getBundleImage:@"sz_slider_whiteDot"];
@@ -56,36 +58,14 @@
             make.left.mas_equalTo(0);
             make.centerY.mas_equalTo(self);
             make.right.mas_equalTo(0);
-            make.height.mas_equalTo(self);
+            make.height.mas_equalTo(30);
         }];
-        
-        //当前时长
-//        timeLabel = [[UILabel alloc]init];
-//        timeLabel.font=[UIFont systemFontOfSize:14];
-//        timeLabel.textColor=[UIColor whiteColor];
-//        timeLabel.alpha=0.4;
-//        timeLabel.textAlignment=NSTextAlignmentCenter;
-//        [self addSubview:timeLabel];
-//        [timeLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-//            make.left.mas_equalTo(17);
-//            make.centerY.mas_equalTo(self);
-//        }];
-//
-//        //总时长
-//        totalTimeLabel = [[UILabel alloc]init];
-//        totalTimeLabel.font = [UIFont systemFontOfSize:14];
-//        totalTimeLabel.textColor = [UIColor whiteColor];
-//        totalTimeLabel.alpha=0.4;
-//        timeLabel.textAlignment = NSTextAlignmentCenter;
-//        [self addSubview:totalTimeLabel];
-//        [totalTimeLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-//            make.right.mas_equalTo(-17);
-//            make.centerY.mas_equalTo(self);
-//        }];
         
     }
     return self;
 }
+
+
 
 -(void)setCurrentTime:(NSInteger)time totalTime:(NSInteger)totalTime progress:(CGFloat)progress isDragging:(BOOL)isDragging;
 {
@@ -100,6 +80,43 @@
 
 
 
+
+#pragma mark - 平移手势
+-(void)panGestureAction:(UIPanGestureRecognizer*)pan
+{
+    CGPoint locationPoint = [pan locationInView:self];
+        
+    static CGFloat originX = 0;
+    static CGFloat originPercent = 0;
+    static CGFloat endPercent = 0;
+    if (pan.state==UIGestureRecognizerStateBegan)
+    {
+        originX = locationPoint.x;
+        originPercent = self.slider.value;
+        [self.delegate MJSliderWillChange];
+        
+        UIImage * dot = [UIImage getBundleImage:@"sz_slider_whiteDot_big"];
+        [_slider setThumbImage:dot forState:UIControlStateNormal];
+        
+    }
+    else if (pan.state==UIGestureRecognizerStateChanged)
+    {
+        CGFloat offsetx = locationPoint.x-originX;
+        CGFloat dragPercent = offsetx/self.width;
+        self.slider.value = originPercent+dragPercent;
+        
+        endPercent=self.slider.value;
+    }
+    else
+    {
+        [self.delegate MJSliderDidChange:(endPercent)];
+        [self.delegate MJSliderEndChange];
+        
+        
+        UIImage * dot = [UIImage getBundleImage:@"sz_slider_whiteDot"];
+        [_slider setThumbImage:dot forState:UIControlStateNormal];
+    }
+}
 
 #pragma mark - 转换
 - (NSString *)timeFormat:(NSInteger)totalTime

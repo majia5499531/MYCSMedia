@@ -241,23 +241,7 @@
     commentListView = [[SZCommentList alloc]init];
     [commentListView setFrame:CGRectMake(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT)];
     
-    
-    
 }
-
--(void)layoutSubviews
-{
-    [super layoutSubviews];
-    
-    //判断是否当前vc嵌入tabbar
-    UIViewController * currentvc = [self getCurrentViewController];
-    UINavigationController * currentnav = [self getCurrentNavigationController];
-    if (currentvc==currentnav.viewControllers.firstObject)
-    {
-        [commentListView setSepelineOffsetY:55];
-    }
-}
-
 
 #pragma mark - 数据绑定回调
 -(void)updateContentStateData
@@ -319,7 +303,7 @@
     if (commentListView.superview==nil)
     {
         //listview
-        [self.superview addSubview:commentListView];
+        [self.window addSubview:commentListView];
         
         [commentListView showCommentList:YES];
     }

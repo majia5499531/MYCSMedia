@@ -223,6 +223,7 @@
 {
     if (show)
     {
+        [SZData sharedSZData].isShowCommentBG = @"1";
         BGView.hidden=NO;
         [UIView animateWithDuration:0.1 animations:^{
             [self->BGView setFrame:CGRectMake(0, self->topspace, SCREEN_WIDTH, SCREEN_HEIGHT-self->topspace)];
@@ -230,6 +231,7 @@
     }
     else
     {
+        [SZData sharedSZData].isShowCommentBG = @"0";
         [UIView animateWithDuration:0.1 animations:^{
             [self->BGView setFrame:CGRectMake(0, SCREEN_HEIGHT, SCREEN_WIDTH, SCREEN_HEIGHT-self->topspace)];
                 } completion:^(BOOL finished) {

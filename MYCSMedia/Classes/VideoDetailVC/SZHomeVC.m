@@ -492,7 +492,7 @@
 -(void)profileBtnAction
 {
     //行为埋点
-    [SZUserTracker trackingButtonEventName:@"short_video_page_click" param:@{@"button_name":@"视频个人中心"}];
+    [SZUserTracker trackingButtonEventName:@"short_video_page_click" param:@{@"button_name":@"个人作品中心"}];
     
     //未登录则跳转登录
     if (![SZGlobalInfo sharedManager].SZRMToken.length)

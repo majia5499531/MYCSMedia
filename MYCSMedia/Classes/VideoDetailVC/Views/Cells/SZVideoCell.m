@@ -268,103 +268,15 @@
     //model
     dataModel = objc;
     
+    //合集名（视频详情，且是合集类型时，用到该字段）
+    cellAlbumnName = albumnName;
+    
     //简版模式
     sideBar.hidden=simple;
     viewCountLabel.hidden=simple;
     
-    //合集名（视频详情，且是合集类型时，用到该字段）
-    cellAlbumnName = albumnName;
     
-    //视频宽高比
-    CGFloat imageWidth = objc.width.floatValue > 0 ? objc.width.floatValue : 1920;
-    CGFloat imageHeight = objc.height.floatValue > 0 ? objc.height.floatValue : 1080;
-    CGFloat WHRate = imageWidth / imageHeight;
-    
-    
-    //9:16  0.562左右   撑满
-    if (WHRate<0.57)
-    {
-        videoWHSize = 0;
-
-        //如果是刘海屏
-        if ([UIApplication sharedApplication].statusBarFrame.size.height>20)
-        {
-            [videoCoverImage mas_remakeConstraints:^(MASConstraintMaker *make) {
-                make.left.mas_equalTo(0);
-                make.top.mas_equalTo(0);
-                make.width.mas_equalTo(SCREEN_WIDTH);
-                make.bottom.mas_equalTo(0);
-            }];
-        }
-        
-        
-        //非刘海屏
-        else
-        {
-            [videoCoverImage mas_remakeConstraints:^(MASConstraintMaker *make) {
-                make.left.mas_equalTo(0);
-                make.top.mas_equalTo(0);
-                make.width.mas_equalTo(SCREEN_WIDTH);
-                make.bottom.mas_equalTo(0);
-            }];
-        }
-
-        
-        
-        //logo
-        [logoImage mas_remakeConstraints:^(MASConstraintMaker *make) {
-            make.left.mas_equalTo(20);
-            make.top.mas_equalTo(STATUS_BAR_HEIGHT+44+22);
-            make.width.height.mas_equalTo(32);
-        }];
-        
-    }
-    
-    
-    
-    //16:9  (1.77)左右     居中
-    else if(WHRate<1.80 && WHRate >1.70)
-    {
-        videoWHSize = 1;
-        
-        CGFloat videoH = SCREEN_WIDTH / WHRate;
-        [videoCoverImage mas_remakeConstraints:^(MASConstraintMaker *make) {
-            make.left.mas_equalTo(0);
-            make.centerY.mas_equalTo(self);
-            make.width.mas_equalTo(SCREEN_WIDTH);
-            make.height.mas_equalTo(videoH);
-        }];
-        
-        //logo
-        [logoImage mas_remakeConstraints:^(MASConstraintMaker *make) {
-            make.centerX.mas_equalTo(self.contentView);
-            make.bottom.mas_equalTo(videoCoverImage.mas_top).offset(-23);
-            make.width.height.mas_equalTo(32);
-        }];
-    }
-    
-    
-    //其他比例的视频
-    else
-    {
-        videoWHSize = 2;
-        
-        CGFloat videoH = SCREEN_WIDTH / WHRate;
-        [videoCoverImage mas_remakeConstraints:^(MASConstraintMaker *make) {
-            make.left.mas_equalTo(0);
-            make.centerY.mas_equalTo(self);
-            make.width.mas_equalTo(SCREEN_WIDTH);
-            make.height.mas_equalTo(videoH);
-        }];
-        
-        //logo
-        [logoImage mas_remakeConstraints:^(MASConstraintMaker *make) {
-            make.left.mas_equalTo(20);
-            make.top.mas_equalTo(STATUS_BAR_HEIGHT+44+22);
-            make.width.height.mas_equalTo(32);
-        }];
-    }
-    
+    [self updateVideoBGLayout];
     
     
     //封面图
@@ -548,10 +460,103 @@
         }];
     }
     
-
 }
 
 
+
+-(void)updateVideoBGLayout
+{
+    
+    //视频宽高比
+    CGFloat imageWidth = dataModel.width.floatValue > 0 ? dataModel.width.floatValue : 1920;
+    CGFloat imageHeight = dataModel.height.floatValue > 0 ? dataModel.height.floatValue : 1080;
+    CGFloat WHRate = imageWidth / imageHeight;
+    
+    
+    //9:16  0.562左右   撑满
+    if (WHRate<0.57)
+    {
+        videoWHSize = 0;
+
+        //如果是刘海屏
+        if ([UIApplication sharedApplication].statusBarFrame.size.height>20)
+        {
+            [videoCoverImage mas_remakeConstraints:^(MASConstraintMaker *make) {
+                make.left.mas_equalTo(0);
+                make.top.mas_equalTo(0);
+                make.width.mas_equalTo(SCREEN_WIDTH);
+                make.bottom.mas_equalTo(0);
+            }];
+        }
+        
+        
+        //非刘海屏
+        else
+        {
+            [videoCoverImage mas_remakeConstraints:^(MASConstraintMaker *make) {
+                make.left.mas_equalTo(0);
+                make.top.mas_equalTo(0);
+                make.width.mas_equalTo(SCREEN_WIDTH);
+                make.bottom.mas_equalTo(0);
+            }];
+        }
+        
+        
+        //logo
+        [logoImage mas_remakeConstraints:^(MASConstraintMaker *make) {
+            make.left.mas_equalTo(20);
+            make.top.mas_equalTo(STATUS_BAR_HEIGHT+44+22);
+            make.width.height.mas_equalTo(32);
+        }];
+        
+    }
+    
+    
+    
+    //16:9  (1.77)左右     居中
+    else if(WHRate<1.80 && WHRate >1.70)
+    {
+        videoWHSize = 1;
+        
+        CGFloat videoH = SCREEN_WIDTH / WHRate;
+        [videoCoverImage mas_remakeConstraints:^(MASConstraintMaker *make) {
+            make.left.mas_equalTo(0);
+            make.centerY.mas_equalTo(self);
+            make.width.mas_equalTo(SCREEN_WIDTH);
+            make.height.mas_equalTo(videoH);
+        }];
+        
+        //logo
+        [logoImage mas_remakeConstraints:^(MASConstraintMaker *make) {
+            make.centerX.mas_equalTo(self.contentView);
+            make.bottom.mas_equalTo(videoCoverImage.mas_top).offset(-23);
+            make.width.height.mas_equalTo(32);
+        }];
+    }
+    
+    
+    //其他比例的视频
+    else
+    {
+        videoWHSize = 2;
+        
+        CGFloat videoH = SCREEN_WIDTH / WHRate;
+        [videoCoverImage mas_remakeConstraints:^(MASConstraintMaker *make) {
+            make.left.mas_equalTo(0);
+            make.centerY.mas_equalTo(self);
+            make.width.mas_equalTo(SCREEN_WIDTH);
+            make.height.mas_equalTo(videoH);
+        }];
+        
+        //logo
+        [logoImage mas_remakeConstraints:^(MASConstraintMaker *make) {
+            make.left.mas_equalTo(20);
+            make.top.mas_equalTo(STATUS_BAR_HEIGHT+44+22);
+            make.width.height.mas_equalTo(32);
+        }];
+    }
+    
+}
 
 
 #pragma mark - 数据绑定 与 回调
@@ -571,6 +576,8 @@
         [weakSelf currentFollowStateDidChange];
     }).observe(@"contentBelongAlbumsUpdateTime",^(id value){
         [weakSelf updateVideoRelateAlbum];
+    }).observe(@"isShowCommentBG",^(id value){
+        [weakSelf showCommentBG:value];
     });
 }
 
@@ -826,6 +833,35 @@
 }
 
 
+//显示评论
+-(void)showCommentBG:(NSString*)value
+{
+//    NSString * contentId = [SZData sharedSZData].currentContentId;
+//    if ([dataModel.id isEqualToString:contentId])
+//    {
+//        if (value.boolValue==YES)
+//        {
+//            CGFloat height = SCREEN_WIDTH * 0.562;
+//            [UIView animateWithDuration:0.1 animations:^{
+//                [self->videoCoverImage mas_remakeConstraints:^(MASConstraintMaker *make) {
+//                    make.left.mas_equalTo(0);
+//                    make.top.mas_equalTo(0);
+//                    make.width.mas_equalTo(SCREEN_WIDTH);
+//                    make.height.mas_equalTo(height);
+//                }];
+//            }];
+//        }
+//        else
+//        {
+//            [self updateVideoBGLayout];
+//        }
+//        
+//        
+//        
+//    }
+}
+
+
 #pragma mark - 播放视频
 -(void)playingVideo
 {
@@ -963,6 +999,7 @@
     }
 }
 
+
 -(void)albumClickAction:(NSString*)albumTitle
 {
     for (int i = 0; i<belongAlbumArr.count; i++)
@@ -978,6 +1015,7 @@
             //视频合集
             UINavigationController * nav = [self getCurrentNavigationController];
             SZVideoDetailVC * vc = [[SZVideoDetailVC alloc]init];;
+            vc.hidesBottomBarWhenPushed=YES;
             vc.albumId = album.id;
             vc.detailType=1;
             vc.albumName=albumTitle;
@@ -991,7 +1029,6 @@
     NSNumber * num = [NSNumber numberWithBool:YES];
     [[NSNotificationCenter defaultCenter]postNotificationName:@"MJRemoteEnterFullScreen" object:num];
 }
-
 
 
 

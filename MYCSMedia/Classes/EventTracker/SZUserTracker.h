@@ -13,12 +13,9 @@
 
 +(SZUserTracker *)shareTracker;
 
-
 +(void)trackingVideoTab:(NSString *)tabName;
 
 +(void)trackingButtonEventName:(NSString *)eventName param:(NSDictionary*)dic;
-
-
 
 
 @end

@@ -30,6 +30,8 @@
 @property(strong,nonatomic)NSMutableDictionary * contentRelateContentDislikeDic;
 @property(strong,nonatomic)NSMutableDictionary * contentBelongAlbumsDic;;
 @property(strong,nonatomic)NSString * currentVideoTab;
+@property(strong,nonatomic)NSString * isShowCommentBG;
+
 
 +(instancetype)sharedSZData;
 

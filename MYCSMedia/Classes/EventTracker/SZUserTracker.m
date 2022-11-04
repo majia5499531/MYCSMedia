@@ -60,7 +60,6 @@
 #pragma mark - 上报数据
 +(void)eventUpload:(NSDictionary*)param evnetKey:(NSString*)key
 {
-//    NSLog(@"user_tracking_%@_%@",key,[param convertToJSON]);
     [[SZManager sharedManager].delegate onEventTracking:key param:param];
 }
 

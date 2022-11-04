@@ -2226,7 +2226,7 @@ static UISlider * _volumeSlider;
             make.height.mas_equalTo(54);
         }];
     }
-    return _middlePlayBtn;;
+    return _middlePlayBtn;
 }
 
 -(NSString*)playStateDesc:(NSInteger)state

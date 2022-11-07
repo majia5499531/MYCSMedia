@@ -65,7 +65,7 @@
     //发广播
     [[NSNotificationCenter defaultCenter]postNotificationName:@"SZRMVideoWillPlay" object:nil];
     
-    //如果是老url
+    //如果是老url，并且已经加载完成
     if ([videoURL isEqualToString:manager.MJVideoView.playerModel.videoURL] && manager.MJVideoView.isLoaded)
     {
         

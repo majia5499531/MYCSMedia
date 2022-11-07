@@ -42,7 +42,7 @@
 #pragma mark - Login
 +(void)checkRMLoginStatus:(LoginCallback)result
 {
-    SZGlobalInfo * globalobjc = [SZGlobalInfo sharedManager];
+        SZGlobalInfo * globalobjc = [SZGlobalInfo sharedManager];
         
         NSString * newTGT = [[SZManager sharedManager].delegate onGetTGT];
         NSString * localTGT = [SZGlobalInfo sharedManager].localTGT;

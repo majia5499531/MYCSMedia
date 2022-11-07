@@ -45,6 +45,9 @@
     CategoryListModel * cateList;
     UIScrollView * scrollBG;
     SZColumnBar * columnbar;
+    MJButton * backBtn;
+    MJButton * profileBtn;
+    MJButton * searchBtn;
     NSArray * titleArr;
     
     SZHomeRootView1 * rootview1;
@@ -234,35 +237,34 @@
     [columnbar setCenterX:self.view.width/2-25];
     
     //backbtn
-    MJButton * backBtn = [[MJButton alloc]init];
-    [backBtn setImage:[UIImage getBundleImage:@"sz_naviback"] forState:UIControlStateNormal];
-    [backBtn addTarget:self action:@selector(backBtnAction) forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:backBtn];
-    [backBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.mas_equalTo(0);
-        make.top.mas_equalTo(STATUS_BAR_HEIGHT-7.5);
-        make.width.mas_equalTo(50);
-        make.height.mas_equalTo(50);
-    }];
-    if (isOnTabbar)
+    if (isOnTabbar==NO)
     {
-        backBtn.hidden=YES;
+        backBtn = [[MJButton alloc]init];
+        [backBtn setImage:[UIImage getBundleImage:@"sz_naviback"] forState:UIControlStateNormal];
+        [backBtn addTarget:self action:@selector(backBtnAction) forControlEvents:UIControlEventTouchUpInside];
+        [self.view addSubview:backBtn];
+        [backBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.left.mas_equalTo(0);
+            make.top.mas_equalTo(STATUS_BAR_HEIGHT-7.5);
+            make.width.mas_equalTo(50);
+            make.height.mas_equalTo(50);
+        }];
     }
     
     //profile
-    MJButton * profileBtn = [[MJButton alloc]initWithFrame:CGRectMake(0, STATUS_BAR_HEIGHT-7, 50, 50)];
+    profileBtn = [[MJButton alloc]initWithFrame:CGRectMake(0, STATUS_BAR_HEIGHT-7, 50, 50)];
     [profileBtn setImage:[UIImage getBundleImage:@"sz_home_profile"] forState:UIControlStateNormal];
     [profileBtn addTarget:self action:@selector(profileBtnAction) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:profileBtn];
     [profileBtn mas_makeConstraints:^(MASConstraintMaker *make) {
         make.right.mas_equalTo(0);
-        make.top.mas_equalTo(backBtn);
+        make.top.mas_equalTo(STATUS_BAR_HEIGHT-7.5);
         make.width.mas_equalTo(45);
         make.height.mas_equalTo(50);
     }];
     
     //search
-    MJButton * searchBtn = [[MJButton alloc]initWithFrame:CGRectMake(0, STATUS_BAR_HEIGHT-7, 50, 50)];
+    searchBtn = [[MJButton alloc]initWithFrame:CGRectMake(0, STATUS_BAR_HEIGHT-7, 50, 50)];
     [searchBtn setImage:[UIImage getBundleImage:@"sz_home_search"] forState:UIControlStateNormal];
     [searchBtn addTarget:self action:@selector(searchBtnAction) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:searchBtn];
@@ -338,6 +340,8 @@
     
     [self addNotifications];
     
+    [self addDataBinding];
+    
     [self requestXKSH_Activity];
     
     [self requestVideoColumnInfo];
@@ -372,7 +376,7 @@
 }
 
 
-#pragma mark - Add Notoify
+#pragma mark - 数据监听 绑定
 -(void)addNotifications
 {
     [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(videoViewDidEnterFullSreen:) name:@"MJNeedHideStatusBar" object:nil];
@@ -388,6 +392,39 @@
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
+
+
+-(void)addDataBinding
+{
+    //绑定数据
+    [self bindModel:[SZData sharedSZData]];
+    
+    __weak typeof (self) weakSelf = self;
+    self.observe(@"isShowCommentBG",^(id value){
+        [weakSelf showCommentBG:value];
+    });
+}
+
+//显示评论
+-(void)showCommentBG:(NSString*)value
+{
+    if (value.boolValue)
+    {
+        backBtn.hidden=YES;
+        columnbar.hidden=YES;
+        searchBtn.hidden=YES;
+        profileBtn.hidden=YES;
+    }
+    else
+    {
+        backBtn.hidden=NO;
+        columnbar.hidden=NO;
+        searchBtn.hidden=NO;
+        profileBtn.hidden=NO;
+    }
+    
+}
+
 
 
 #pragma mark - Notification CallBack
@@ -414,10 +451,33 @@
 
 -(void)onDeviceOrientationChange:(NSNotification*)notify
 {
-    //如果当前是topVC，并且栏目是视频或小康生活
-    if (![self.navigationController.topViewController isEqual:self] || _currentSelectIdx==2)
+    //1.直播列表不全屏
+    //2.如果当前是push进来的，则必须是顶层
+    //3.当前是tab根视图，则当前tab必须为选中状态
+    NSArray * navArr = self.navigationController.viewControllers;
+    
+    UIViewController * lastvc = navArr.lastObject;
+    
+    UINavigationController * currentNav = self.tabBarController.selectedViewController;
+    
+    
+    if (self.currentSelectIdx==2)
     {
         return;
+    }
+    else if (navArr.count>1 || lastvc != self)
+    {
+        if (lastvc!=self)
+        {
+            return;
+        }
+    }
+    else if (navArr.count==1)
+    {
+        if (currentNav!=self.navigationController)
+        {
+            return;
+        }
     }
     
     

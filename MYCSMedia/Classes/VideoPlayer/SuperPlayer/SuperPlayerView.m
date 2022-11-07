@@ -83,6 +83,8 @@ static UISlider * _volumeSlider;
     [[AFNetworkReachabilityManager sharedManager]stopMonitoring];
     
     [self.volumeView removeFromSuperview];
+    
+    NSLog(@"superplayerview__dealloc");
 }
 
 

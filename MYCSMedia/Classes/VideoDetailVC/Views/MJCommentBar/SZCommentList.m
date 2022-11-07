@@ -27,6 +27,7 @@
 #import "SZCommentHeader.h"
 #import "SZCommentFooter.h"
 #import "ReplyModel.h"
+#import "MJVideoManager.h"
 
 @interface SZCommentList ()<UICollectionViewDataSource,UICollectionViewDelegate,UIGestureRecognizerDelegate>
 @property(strong,nonatomic)NSString * contentId;
@@ -41,6 +42,7 @@
     UILabel * placeholderLabel;
     UILabel * countLabel;
     UIView * BGView;
+    UIView * gestview;
     
     UIView * sepeline;
     
@@ -74,7 +76,7 @@
     self.backgroundColor=HW_CLEAR;
     
     //关闭手势
-    UIView * gestview =[[UIView alloc]initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH, topspace)];
+    gestview =[[UIView alloc]initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH, topspace)];
     [self addSubview:gestview];
     UITapGestureRecognizer * tap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(listViewBGTapAction)];
     [gestview addGestureRecognizer:tap];
@@ -253,6 +255,7 @@
     else
     {
         [BGView setFrame:CGRectMake(BGView.left,newtop, BGView.width, BGView.height)];
+        
     }
     
     isDragging = YES;
@@ -490,7 +493,7 @@
 
 -(void)doubleTapAction
 {
-    
+    //解决手势穿透问题
 }
 
 

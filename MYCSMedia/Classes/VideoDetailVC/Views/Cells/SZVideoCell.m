@@ -836,29 +836,27 @@
 //显示评论
 -(void)showCommentBG:(NSString*)value
 {
-//    NSString * contentId = [SZData sharedSZData].currentContentId;
-//    if ([dataModel.id isEqualToString:contentId])
-//    {
-//        if (value.boolValue==YES)
-//        {
-//            CGFloat height = SCREEN_WIDTH * 0.562;
-//            [UIView animateWithDuration:0.1 animations:^{
-//                [self->videoCoverImage mas_remakeConstraints:^(MASConstraintMaker *make) {
-//                    make.left.mas_equalTo(0);
-//                    make.top.mas_equalTo(0);
-//                    make.width.mas_equalTo(SCREEN_WIDTH);
-//                    make.height.mas_equalTo(height);
-//                }];
-//            }];
-//        }
-//        else
-//        {
-//            [self updateVideoBGLayout];
-//        }
-//        
-//        
-//        
-//    }
+    NSString * contentId = [SZData sharedSZData].currentContentId;
+    if ([dataModel.id isEqualToString:contentId])
+    {
+        if (value.boolValue==YES)
+        {
+            CGFloat height = SCREEN_HEIGHT * 0.3;
+            [UIView animateWithDuration:0.1 animations:^{
+                [self->videoCoverImage mas_remakeConstraints:^(MASConstraintMaker *make) {
+                    make.left.mas_equalTo(0);
+                    make.top.mas_equalTo(0);
+                    make.width.mas_equalTo(SCREEN_WIDTH);
+                    make.height.mas_equalTo(height);
+                }];
+            }];
+        }
+        else
+        {
+            [self updateVideoBGLayout];
+        }
+
+    }
 }
 
 
@@ -881,16 +879,15 @@
 
     [MJVideoManager playWindowVideoAtView:videoCoverImage url:dataModel.playUrl contentModel:dataModel renderModel:renderMode];
 
-    //获取进度条
+    //再cell里插入进度条
     SPDefaultControlView * controlView =  (SPDefaultControlView*)[MJVideoManager videoPlayer].controlView;
     videoSlider = controlView.externalSlider;
     videoSlider.hidden=NO;
     [self insertSubview:videoSlider belowSubview:descLabel];
 
     
-    CGFloat sliderOffset = self.height==SCREEN_HEIGHT?  (-BOTTOM_SAFEAREA_HEIGHT) : 0;
-    
     //进度条改成永远在下方
+    CGFloat sliderOffset = self.height==SCREEN_HEIGHT?  (-BOTTOM_SAFEAREA_HEIGHT) : 0;
     [videoSlider mas_remakeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_equalTo(0);
         make.height.mas_equalTo(40);

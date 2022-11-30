@@ -192,6 +192,7 @@
         ContentListModel * list = [ContentListModel model];
         model.isManualPlay = YES;
         model.volcCategory = self.category_name;
+        model.requestId = self.requestId;
         [list.dataArr addObject:model];
         [weakSelf requestDone:list.dataArr];
         

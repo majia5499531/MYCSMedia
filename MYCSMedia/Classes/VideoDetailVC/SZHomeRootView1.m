@@ -220,6 +220,7 @@
     singleVideo = model;
     model.isManualPlay=YES;
     model.volcCategory = home.category_name;
+    model.requestId = home.requestId;
     
     [self requestVideoList];
 }

@@ -156,7 +156,7 @@
 #pragma mark - 界面&布局
 -(void)MJInitSubviews
 {
-    //判断是否是嵌在tabbar里
+    //判断是否是嵌在tabbar里(nav的第一个vc)
     UINavigationController * nav = [self getCurrentNavigationController];
     if (self==nav.viewControllers.firstObject)
     {
@@ -313,6 +313,7 @@
         }];
 }
 
+
 -(void)requestVideoColumnInfo
 {
     PanelModel * model = [PanelModel model];
@@ -331,6 +332,7 @@
 }
 
 
+
 #pragma mark - Request Done
 -(void)requestCategoryListDone:(CategoryListModel*)list
 {
@@ -346,6 +348,8 @@
     
     [self requestVideoColumnInfo];
 }
+
+
 -(void)requestXKSH_ActivityDone:(PanelConfigModel*)panelConfig
 {
     NSString * img1 = panelConfig.imageUrl;

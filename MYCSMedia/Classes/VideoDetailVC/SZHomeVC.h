@@ -15,6 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property(assign,nonatomic)NSInteger initialIndex;
 @property(assign,nonatomic)NSInteger currentSelectIdx;
 @property(strong,nonatomic)NSString * category_name;
+@property(strong,nonatomic)NSString * requestId;
 
 @end
 

@@ -16,6 +16,7 @@
 @property(strong,nonatomic)NSString * albumId;
 @property(strong,nonatomic)NSString * albumName;
 @property(strong,nonatomic)NSString * category_name;
+@property(strong,nonatomic)NSString * requestId;
 @property(assign,nonatomic)BOOL isPreview;
 
 @end

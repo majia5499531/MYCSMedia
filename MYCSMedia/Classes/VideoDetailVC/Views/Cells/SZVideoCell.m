@@ -796,12 +796,19 @@
     //如果当前ID与cell持有的内容ID相同，则表示播放该视频
     if ([dataModel.id isEqualToString:currentId])
     {
-        //判断是否当前VC在顶层
-        UIViewController * vc = [self getCurrentViewController];
+        
+        //判断当前tabbar选中的是否是现在nav
         UINavigationController * nav = [self getCurrentNavigationController];
-        if ([nav.topViewController isEqual:vc])
+        UITabBarController * tabvc = nav.tabBarController;
+        if ([tabvc.selectedViewController isEqual:nav])
         {
-            [self playingVideo];
+            //判断是否当前VC在顶层
+            UIViewController * vc = [self getCurrentViewController];
+            if ([nav.topViewController isEqual:vc])
+            {
+                NSLog(@"CellNeedPlay_%@_%@_%@_%@_%@",currentId,self,vc,nav,nav.tabBarController);
+                [self playingVideo];
+            }
         }
     }
 }

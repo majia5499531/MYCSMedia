@@ -60,7 +60,7 @@
     
     [[SZContentTracker shareTracker]requestForUploading:bizparam eventKey:eventName contentModel:model];
         
-//    NSLog(@"MJContentTracker_once_事件:%@_新闻:%@_cateName:%@",eventName,groupId,model.volcCategory);
+    NSLog(@"MJContentTracker_once_事件:%@_新闻:%@_cateName:%@_reqid:%@",eventName,groupId,model.volcCategory,model.requestId);
 }
 
 
@@ -128,7 +128,7 @@
             NSNumber * progressNumber = [tracker.progressDic valueForKey:groupId];
             
             
-            //上报
+            //内容埋点上报
             NSMutableDictionary * bizparam=[NSMutableDictionary dictionary];
             [bizparam setValue:@"click_category" forKey:@"enter_from"];
             [bizparam setValue:model.volcCategory forKey:@"category_name"];
@@ -223,7 +223,7 @@
             NSInteger timeNow = [[NSDate date]timeIntervalSince1970]*1000;
             NSNumber * timestampObjc = [tracker.startTimeDic valueForKey:groupId];
             NSInteger duration = timeNow - timestampObjc.integerValue;
-            
+            NSArray * __items = [SZContentTracker make__items:groupId];
             //时长过短的过滤掉
             if (duration<100)
             {
@@ -240,13 +240,13 @@
             [bizparam setValue:model.volcCategory forKey:@"category_name"];
             [bizparam setValue:groupId forKey:@"group_id"];
             [bizparam setValue:@"content_manager_system" forKey:@"params_for_special"];
-            [bizparam setValue:[SZContentTracker make__items:groupId] forKey:@"__items"];
+            [bizparam setValue:__items forKey:@"__items"];
             [bizparam setValue:[NSString stringWithFormat:@"%ld",(long)duration] forKey:@"duration"];
             [bizparam setValue:progressNumber forKey:@"percent"];
             [bizparam setValue:model.requestId forKey:@"req_id"];
             
             [tracker requestForUploading:bizparam eventKey:@"cms_video_over" contentModel:model];
-            
+
             
             
             //行为埋点

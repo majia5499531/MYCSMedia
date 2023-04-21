@@ -89,6 +89,25 @@
 #define IMAGE_RATE_34               0.75
 #define IMAGE_RATE_ACTIVITY         (0.382)
 #define TOPIC_NEWS_IMAGE_RATE       (300.0/750.0)
+#define COLUMNBAR_HEIGHT            36
+
+#define HOME_CATEGORY_CODE          @"mycs.video"
+
+#define XKSH_CATEGORY_CODE          @"mycs.xksh"
+#define VIDEO_CATEGORY_CODE         @"mycs.video.video"
+#define LIVE_CATEGORY_CODE          @"mycs.video.live"
+
+#define XKSH_ACTIVITY_CODE          @"activity.xksh.link"
+#define VIDEO_ACTIVITY_CODE         @"activity.video.link"
+
+#define XKSH_LIST_PANEL_CODE        @"xksh.works"
+#define VIDEO_LIST_PANEL_CODE       @"mycs.video.video"
+#define LIVE_LIST_PANEL_CODE        @"mycs.live.livelist"
+
+
+#define LIVE_5G_CATEGORY_CODE       @"5G.house.zhibo"
+#define VIDEO_5G_CATEGORY_CODE      @"5G.house.tuijian"
+#define HUDONG_5G_CATEGORY_CODE     @"5G.house.hudong"
 
 
 #define SEARCHBAR_HEIGHT        ([UIApplication sharedApplication].statusBarFrame.size.height+48)
@@ -206,6 +225,7 @@
 
 //字体
 #define FONT(f)                     [UIFont fontWithName:@"PingFang SC" size:f]
+#define FONT_WEIGHT(f,k)            [UIFont systemFontOfSize:f weight:k]
 #define BOLD_FONT(f)                [UIFont boldSystemFontOfSize:f]
 #define BOLD_BOLD_FONT(f)           [UIFont systemFontOfSize:f weight:UIFontWeightBlack]
 #define LIGHT_FONT(f)               [UIFont systemFontOfSize:f weight:UIFontWeightLight];
@@ -239,6 +259,7 @@
 #define HW_GRAY_WORD_1              [UIColor colorWithHexString:@"999999"]
 #define HW_GRAY_WORD_2              [UIColor colorWithHexString:@"D4D4D4"]
 
+#define HW_GRAY_F7                  [UIColor colorWithHexString:@"F7F7F7"]
 
 #define HW_RED_WORD_1               [UIColor colorWithHexString:@"FB3838"]
 

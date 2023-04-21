@@ -7,7 +7,6 @@
 //
 
 #import "UIScrollView+MJCategory.h"
-//#import "UIView+MJCategory.h"
 
 @implementation UIScrollView (MJCategory)
 

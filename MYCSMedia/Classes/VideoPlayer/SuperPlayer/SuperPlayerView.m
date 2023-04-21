@@ -483,6 +483,7 @@ static UISlider * _volumeSlider;
     else
     {
         [self.controlView fadeShow];
+        [self.controlView fadeOut:2];
     }
     
     

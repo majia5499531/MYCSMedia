@@ -44,23 +44,26 @@
     return [MJVideoManager sharedMediaManager].MJVideoView;
 }
 
-+(void)playFullScreenVideoAt:(UIViewController *)controller URL:(NSString *)url
-{
-    //全屏VC
-    MJVideoFullScreen * fullvc = [[MJVideoFullScreen alloc]init];
-    fullvc.videoURL = url;
-    fullvc.modalPresentationStyle = UIModalPresentationFullScreen;
-    [controller presentViewController:fullvc animated:NO completion:nil];
-}
 
-+(void)playWindowVideoAtView:(UIView*)view url:(NSString*)videoURL contentModel:(ContentModel*)model renderModel:(NSInteger)type
+
++(void)playWindowVideoAtView:(UIView*)view url:(NSString*)videoURL contentModel:(ContentModel*)model renderModel:(MJVideoRenderMode)renderMode controlMode:(MJVideoControlStyle)controlUI
 {
     //设置播放层
     MJVideoManager * manager = [MJVideoManager sharedMediaManager];
     manager.MJVideoView.fatherView = view;
     manager.MJVideoView.delegate = manager;
-    manager.MJVideoView.disableInteraction = YES;
-    manager.MJVideoView.controlView.hidden = YES;
+    if (controlUI==MJCONTROL_STYLE_SHORT_VIDEO)
+    {
+        manager.MJVideoView.disableInteraction = YES;
+        manager.MJVideoView.controlView.hidden = YES;
+    }
+    else
+    {
+        manager.MJVideoView.disableInteraction=NO;
+        manager.MJVideoView.controlView.hidden=NO;
+    }
+    
+    
     
     //发广播
     [[NSNotificationCenter defaultCenter]postNotificationName:@"SZRMVideoWillPlay" object:nil];
@@ -85,14 +88,14 @@
         //停止播放
         else if (manager.MJVideoView.playerState==StateStopped)
         {
-            [MJVideoManager playNewVideo:videoURL contentModel:model renderMode:type];
+            [MJVideoManager playNewVideo:videoURL contentModel:model renderMode:renderMode];
         }
         
         
         //不是则播放
         else
         {
-            [MJVideoManager playNewVideo:videoURL contentModel:model renderMode:type];
+            [MJVideoManager playNewVideo:videoURL contentModel:model renderMode:renderMode];
         }
     }
     
@@ -100,7 +103,7 @@
     //新url
     else
     {
-        [MJVideoManager playNewVideo:videoURL contentModel:model renderMode:type];
+        [MJVideoManager playNewVideo:videoURL contentModel:model renderMode:renderMode];
     }
     
 }
@@ -109,7 +112,7 @@
 
 
 //播放新视频
-+(void)playNewVideo:(NSString*)videourl contentModel:(ContentModel*)contentModel renderMode:(NSInteger)renderMode
++(void)playNewVideo:(NSString*)videourl contentModel:(ContentModel*)contentModel renderMode:(MJVideoRenderMode)renderMode
 {
     MJVideoManager * manager = [MJVideoManager sharedMediaManager];
     

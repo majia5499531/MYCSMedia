@@ -37,6 +37,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic , copy) NSString              * issueTimeStamp;
 @property (nonatomic , copy) NSString              * type;
 @property (nonatomic , copy) NSString              * external;
+@property (strong,nonatomic)NSString *              externalUrl;
 @property (nonatomic , copy) NSString              * disableComment;
 @property (nonatomic , copy) NSString              * playUrl;
 @property (nonatomic , copy) NSString              * timeDif;

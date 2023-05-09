@@ -505,8 +505,10 @@
         
         [self installVideoAlbumview];
         
-        [self videoAlbumnBtnActions:btnArr[0]];
-        
+        if(videoAlbumnList.count > 0)
+        {
+            [self videoAlbumnBtnActions:btnArr[0]];
+        }
         
     }
     

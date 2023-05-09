@@ -279,7 +279,6 @@
     
     //创建tab
     [self installSubviews];
-    
 }
 
 

@@ -32,6 +32,8 @@
 #import "SZHomeVC.h"
 #import "SDWebImage.h"
 #import <MJRefresh/MJRefresh.h>
+#import "CategoryModel.h"
+#import "PanelModel.h"
 
 @interface SZ5GVideoListVC ()
 
@@ -52,18 +54,89 @@
 #pragma mark - Override
 -(void)requestVideoList
 {
-    ContentListModel * model = [ContentListModel model];
-    NSMutableDictionary * param=[NSMutableDictionary dictionary];
-    NSString * ssid = [[SZManager sharedManager].delegate onGetUserDevice];
+    //如果没有panelcode，先去查询panelCode
+    if(self.panelCode.length)
+    {
+        [self requestVideoListWithPanelCode];
+
+    }
+    else
+    {
+        [self requestCurrentPanelCode:normal];
+    }
     
-    [param setValue:self.categoryCode forKey:@"categoryCode"];
+    
+}
+
+-(void)requestMoreVideos
+{
+    if(self.panelCode.length)
+    {
+        [self requestMoreVideosWithPanelCode];
+    }
+    else
+    {
+        [self requestCurrentPanelCode:YES];
+    }
+}
+
+
+
+
+#pragma mark - Request
+//查询panelCode
+-(void)requestCurrentPanelCode:(BOOL)loadmore
+{
+    NSMutableDictionary * param=[NSMutableDictionary dictionary];
     [param setValue:@"open" forKey:@"refreshType"];
-    [param setValue:ssid forKey:@"ssid"];
     [param setValue:@"1" forKey:@"personalRec"];
+    [param setValue:self.categoryCode forKey:@"categoryCode"];
+    [param setValue:@"10" forKey:@"pageSize"];
     
     __weak typeof (self) weakSelf = self;
-    [model GETRequestInView:nil WithUrl:APPEND_SUBURL(BASE_URL, API_WANDA_GET_CONTENTS) Params:param Success:^(id responseObject) {
-        [weakSelf requestVideoListDone:model];
+    CategoryModel * model = [CategoryModel model];
+    [model GETRequestInView:self.view WithUrl:APPEND_SUBURL(BASE_URL, API_WANDA_GET_TOP_VIDEO) Params:param Success:^(id responseObject) {
+        
+        if(model.dataArr.count)
+        {
+            PanelModel * videopanel = model.dataArr.firstObject;
+            self.panelCode = videopanel.code;
+        }
+        
+        
+        if(loadmore)
+        {
+            [weakSelf requestMoreVideosWithPanelCode];
+        }
+        else
+        {
+            [weakSelf requestVideoListWithPanelCode];
+        }
+        
+        } Error:^(id responseObject) {
+            
+        } Fail:^(NSError *error) {
+            
+        }];
+}
+
+//通过panelCode查数据
+-(void)requestVideoListWithPanelCode
+{
+    NSString * pagesize = [NSString stringWithFormat:@"%d",VIDEO_PAGE_SIZE];
+    NSString * ssid = [[SZManager sharedManager].delegate onGetUserDevice];
+    
+    NSMutableDictionary * param=[NSMutableDictionary dictionary];
+    [param setValue:self.panelCode forKey:@"panelCode"];
+    [param setValue:pagesize forKey:@"pageSize"];
+    [param setValue:@"0" forKey:@"removeFirst"];
+    [param setValue:ssid forKey:@"ssid"];
+    [param setValue:@"refresh" forKey:@"refreshType"];
+    
+    ContentListModel * dataModel = [ContentListModel model];
+    __weak typeof (self) weakSelf = self;
+    [dataModel GETRequestInView:self.view WithUrl:APPEND_SUBURL(BASE_URL, API_URL_VIDEO_LIST) Params:param Success:^(id responseObject){
+        [weakSelf requestVideoListDone:dataModel];
         } Error:^(id responseObject) {
             [weakSelf requestFailed];
         } Fail:^(NSError *error) {
@@ -71,22 +144,26 @@
         }];
 }
 
--(void)requestMoreVideos
+-(void)requestMoreVideosWithPanelCode
 {
-    ContentListModel * model = [ContentListModel model];
-    NSMutableDictionary * param=[NSMutableDictionary dictionary];
+    //获取最后一条视频的ID
+    ContentModel * lastModel = self.dataModel.dataArr.lastObject;
+    NSString * lastContentId =  lastModel.id;
+    NSString * pagesize = [NSString stringWithFormat:@"%d",VIDEO_PAGE_SIZE];
     NSString * ssid = [[SZManager sharedManager].delegate onGetUserDevice];
-    ContentModel * lastContent = self.dataModel.dataArr.lastObject;
     
-    [param setValue:self.categoryCode forKey:@"categoryCode"];
-    [param setValue:@"open" forKey:@"refreshType"];
+    NSMutableDictionary * param=[NSMutableDictionary dictionary];
+    [param setValue:self.panelCode forKey:@"panelCode"];
+    [param setValue:lastContentId forKey:@"contentId"];
+    [param setValue:pagesize forKey:@"pageSize"];
+    [param setValue:@"1" forKey:@"removeFirst"];
     [param setValue:ssid forKey:@"ssid"];
-    [param setValue:@"1" forKey:@"personalRec"];
-    [param setValue:@"10" forKey:@"pageSize"];
-    [param setValue:lastContent.id forKey:@"contentId"];
+    [param setValue:@"loadmore" forKey:@"refreshType"];
     
+    ContentListModel * model = [ContentListModel model];
+    model.hideLoading=YES;
     __weak typeof (self) weakSelf = self;
-    [model GETRequestInView:nil WithUrl:APPEND_SUBURL(BASE_URL, API_WANDA_GET_MORE_CONTENTS) Params:param Success:^(id responseObject) {
+    [model GETRequestInView:nil WithUrl:APPEND_SUBURL(BASE_URL, API_URL_VIDEO_LIST) Params:param Success:^(id responseObject){
         [weakSelf requestMoreVideoDone:model];
         } Error:^(id responseObject) {
             [weakSelf requestFailed];

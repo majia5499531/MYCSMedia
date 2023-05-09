@@ -744,7 +744,7 @@
         url = @"act/xksh/#/me?tabsId=2";
     }
     
-    dispatch_time_t time=dispatch_time(DISPATCH_TIME_NOW, 1.5*NSEC_PER_SEC);
+    dispatch_time_t time=dispatch_time(DISPATCH_TIME_NOW, 2*NSEC_PER_SEC);
         dispatch_after(time, dispatch_get_main_queue(), ^{
             NSString * h5url = APPEND_SUBURL(BASE_H5_URL, url);
             [[SZManager sharedManager].delegate onOpenWebview:h5url param:nil];

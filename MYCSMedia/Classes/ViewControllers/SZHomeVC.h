@@ -16,7 +16,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 //初始tab
 @property(assign,nonatomic)NSInteger initialIndex;
-
 //火山cate
 @property(strong,nonatomic)NSString * category_name;
 //火山reqId

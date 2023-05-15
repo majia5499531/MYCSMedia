@@ -191,6 +191,9 @@
     //这里是长沙
     SZVideoListVC * vc1 = [[SZVideoListVC alloc]init];
     vc1.panelCode = XKSH_LIST_PANEL_CODE;
+    vc1.contentId=self.contentId;
+    vc1.category_name = self.category_name;
+    vc1.requestId = self.requestId;
     [scrollBG addSubview:vc1.view];
     [self addChildViewController:vc1];
     [vc1.view mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -203,6 +206,9 @@
     //视频
     SZVideoListVC * vc2 = [[SZVideoListVC alloc]init];
     vc2.panelCode = VIDEO_LIST_PANEL_CODE;
+    vc2.contentId=self.contentId;
+    vc2.category_name = self.category_name;
+    vc2.requestId = self.requestId;
     [scrollBG addSubview:vc2.view];
     [self addChildViewController:vc2];
     [vc2.view mas_makeConstraints:^(MASConstraintMaker *make) {

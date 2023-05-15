@@ -11,6 +11,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface SZ5GVC : UIViewController
 @property(assign,nonatomic)NSInteger initialIndex;
+@property(strong,nonatomic)NSString * contentId;
 @end
 
 NS_ASSUME_NONNULL_END

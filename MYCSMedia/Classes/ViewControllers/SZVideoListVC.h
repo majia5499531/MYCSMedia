@@ -18,6 +18,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property(assign,nonatomic)BOOL isFocusedVC;
 @property(strong,nonatomic)CategoryModel * cateModel;
 @property(strong,nonatomic)NSString * contentId;
+@property(strong,nonatomic)NSString * category_name;
+@property(strong,nonatomic)NSString * requestId;
 @property(strong,nonatomic)ContentListModel * dataModel;
 
 

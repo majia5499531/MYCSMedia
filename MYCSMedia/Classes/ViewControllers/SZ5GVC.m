@@ -128,6 +128,7 @@
         {
             SZ5GVideoListVC * vc = [[SZ5GVideoListVC alloc]init];
             vc.categoryCode = cateM.code;
+            vc.contentId=self.contentId;
             targetvc = vc;
         }
         else

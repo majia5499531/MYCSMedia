@@ -28,7 +28,6 @@
 #import "SZGlobalInfo.h"
 #import "UIScrollView+MJCategory.h"
 #import "UIResponder+MJCategory.h"
-#import "SZHomeVC.h"
 #import "SDWebImage.h"
 #import <MJRefresh/MJRefresh.h>
 
@@ -360,11 +359,10 @@
 #pragma mark - Request Done
 -(void)requestSingleVideoDone:(ContentModel*)model
 {
-    SZHomeVC * home = (SZHomeVC*)[self getCurrentViewController];
     singleVideo = model;
     model.isManualPlay=YES;
-    model.volcCategory = home.category_name;
-    model.requestId = home.requestId;
+    model.volcCategory = self.category_name;
+    model.requestId = self.requestId;
     [self requestVideoList];
 }
 

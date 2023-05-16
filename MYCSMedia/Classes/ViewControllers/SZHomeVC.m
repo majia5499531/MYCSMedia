@@ -333,7 +333,7 @@
     
     
     titleArr = @[title1,title2,title3];
-    columnbar = [[SZColumnBar alloc]initWithTitles:titleArr relateScrollView:scrollBG delegate:self originX:scaleSize itemMargin:25 txtColor:[UIColor colorWithWhite:1 alpha:0.5] selTxtColor:HW_WHITE lineColor:HW_WHITE initialIndex:self.initialIndex];
+    columnbar = [[SZColumnBar alloc]initWithTitles:titleArr relateScrollView:scrollBG delegate:self originX:scaleSize itemMargin:25 txtColor:[UIColor colorWithWhite:1 alpha:0.5] selTxtColor:HW_WHITE lineColor:HW_CLEAR initialIndex:self.initialIndex];
     [self.view addSubview:columnbar];
     [columnbar mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_equalTo(80);
@@ -343,6 +343,7 @@
     }];
     [columnbar setAlignStyle:SZColumnAlignmentSpacebtween];
     [columnbar refreshView];
+    [columnbar setUnderlingImage:@"sz_columnbar_line_white"];
 }
 
 
@@ -525,6 +526,5 @@
 {
     return NO;
 }
-
 
 @end

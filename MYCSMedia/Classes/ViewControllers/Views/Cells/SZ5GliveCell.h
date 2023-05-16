@@ -13,6 +13,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 -(void)setCellData:(id)data;
 
+-(CGFloat)cellHeigh;
+
 @end
 
 NS_ASSUME_NONNULL_END

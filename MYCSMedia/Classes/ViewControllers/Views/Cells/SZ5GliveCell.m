@@ -17,6 +17,7 @@
 
 @implementation SZ5GliveCell
 {
+    UIView * bg;
     UIImageView * coverImageView;
     UILabel * titleLabel;
     UIImageView * stateLogo;
@@ -32,8 +33,7 @@
         
         //bg
         CGFloat cellW = SCREEN_WIDTH-12-12;
-        CGFloat cellH = cellW * 5 /7;
-        UIView * bg = [[UIView alloc]init];
+        bg = [[UIView alloc]init];
         bg.backgroundColor=[UIColor whiteColor];
         bg.layer.cornerRadius=12;
         [self addSubview:bg];
@@ -41,7 +41,6 @@
             make.left.mas_equalTo(12);
             make.top.mas_equalTo(0);
             make.width.mas_equalTo(cellW);
-            make.height.mas_equalTo(cellH);
         }];
         
         //标题
@@ -52,9 +51,8 @@
         [bg addSubview:titleLabel];
         [titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
             make.left.mas_equalTo(12);
-            make.top.mas_equalTo(0);
+            make.top.mas_equalTo(16);
             make.right.mas_equalTo(-12);
-            make.height.mas_equalTo(45);
         }];
         
         
@@ -67,9 +65,10 @@
         [bg addSubview:coverImageView];
         [coverImageView mas_makeConstraints:^(MASConstraintMaker *make) {
             make.left.mas_equalTo(12);
-            make.top.mas_equalTo(48);
+            make.top.mas_equalTo(titleLabel.mas_bottom).offset(10);
             make.right.mas_equalTo(-12);
             make.height.mas_equalTo(imgH);
+            make.bottom.mas_equalTo(-18);
         }];
         
         //状态
@@ -107,6 +106,13 @@
     {
         stateLogo.image = [UIImage getBundleImage:@"sz_livestate_pre"];
     }
+}
+
+-(CGFloat)cellHeigh
+{
+    [self layoutIfNeeded];
+    
+    return bg.bottom+10;
 }
 
 

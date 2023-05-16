@@ -216,7 +216,7 @@
     [self.view layoutIfNeeded];
     
     //SZColumnBar
-    columnbar = [[SZColumnBar alloc]initWithTitles:titles relateScrollView:scrollBG delegate:self originX:25 itemMargin:12  txtColor:[UIColor colorWithRed:0 green:0 blue:0 alpha:0.4] selTxtColor:HW_BLACK lineColor:HW_RED_WORD_1 initialIndex:self.initialIndex];
+    columnbar = [[SZColumnBar alloc]initWithTitles:titles relateScrollView:scrollBG delegate:self originX:25 itemMargin:12  txtColor:[UIColor colorWithRed:0 green:0 blue:0 alpha:0.4] selTxtColor:HW_BLACK lineColor:HW_CLEAR initialIndex:self.initialIndex];
     [self.view addSubview:columnbar];
     [columnbar mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo(searchBtnBG.mas_bottom).offset(5);
@@ -239,7 +239,8 @@
         searchBtn.MJSelectState=YES;
         profileBtn.MJSelectState=YES;
         searchBtnBG.layer.backgroundColor=[UIColor colorWithRed:0 green:0 blue:0 alpha:0.2].CGColor;
-        [columnbar setTxtColor:[UIColor colorWithWhite:1 alpha:0.5] selectedColor:HW_WHITE lineColor:HW_WHITE];
+        [columnbar setTxtColor:[UIColor colorWithWhite:1 alpha:0.5] selectedColor:HW_WHITE lineColor:HW_CLEAR];
+        [columnbar setUnderlingImage:@"sz_columnbar_line_white"];
     }
     else
     {
@@ -247,7 +248,8 @@
         searchBtn.MJSelectState=NO;
         profileBtn.MJSelectState=NO;
         searchBtnBG.layer.backgroundColor=HW_GRAY_BG_White.CGColor;
-        [columnbar setTxtColor:[UIColor colorWithRed:0 green:0 blue:0 alpha:0.4] selectedColor:HW_BLACK lineColor:HW_RED_WORD_1];
+        [columnbar setTxtColor:[UIColor colorWithRed:0 green:0 blue:0 alpha:0.4] selectedColor:HW_BLACK lineColor:HW_CLEAR];
+        [columnbar setUnderlingImage:@"sz_columnbar_line"];
     }
 }
 

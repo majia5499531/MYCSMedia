@@ -36,6 +36,9 @@ typedef NS_ENUM(NSUInteger, SZColumnAlignment) {
 
 //设置字体
 
+//设置图片
+-(void)setUnderlingImage:(NSString*)imgstr;
+
 //设置间距
 
 //设置badge

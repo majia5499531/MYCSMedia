@@ -13,6 +13,7 @@
 #import "MJButton.h"
 #import "UIScrollView+MJCategory.h"
 #import "Masonry.h"
+#import "UIImage+MJCategory.h"
 
 @interface SZColumnBar ()<UIScrollViewDelegate>
 @property(weak,nonatomic)id <SZColumnBarDelegate> columnDelegate;
@@ -27,7 +28,7 @@
     UIScrollView * tabbarScrollBG;
     
     //下划线
-    UIView * line;
+    UIImageView * underline;
     
     //当前页
     NSInteger currentPage;
@@ -83,9 +84,8 @@
         }];
         
         //底部线
-        line = [[UIView alloc]init];
-        line.layer.cornerRadius=1.5;
-        [tabbarScrollBG addSubview:line];
+        underline = [[UIImageView alloc]init];
+        [tabbarScrollBG addSubview:underline];
         
         //按钮arr
         tabBtnArr = [NSMutableArray array];
@@ -121,7 +121,7 @@
     relatedScrollView.delegate=self;
     
     //下划线颜色
-    line.backgroundColor=linecolor;
+    underline.backgroundColor=linecolor;
     
     //状态归零
     currentPage=-1;
@@ -176,7 +176,7 @@
     {
         btn.mj_textColor = set_txtColor;
         btn.mj_textColor_sel = set_selTxtcolor;
-        line.backgroundColor = set_lineColor;
+        underline.backgroundColor = set_lineColor;
         
         if (btn.MJSelectState)
         {
@@ -384,9 +384,14 @@
     [self tabBtnActions:btn];
 }
 
+-(void)setUnderlingImage:(NSString*)imgstr
+{
+    underline.image = [UIImage getBundleImage:imgstr];
+}
+
 -(void)debugMode
 {
-    line.backgroundColor=[UIColor redColor];
+    underline.backgroundColor=[UIColor redColor];
     tabbarScrollBG.backgroundColor=[UIColor greenColor];
     for (MJButton * btn in tabBtnArr)
     {
@@ -540,11 +545,11 @@
     
     
     //下划线移动
-    [line mas_remakeConstraints:^(MASConstraintMaker *make) {
+    [underline mas_remakeConstraints:^(MASConstraintMaker *make) {
         make.centerX.mas_equalTo(selBtn.mas_centerX);
-        make.width.mas_equalTo(30);
+        make.width.mas_equalTo(15.5);
         make.top.mas_equalTo(self.height-5);
-        make.height.mas_equalTo(3);
+        make.height.mas_equalTo(5.5);
     }];
     
     

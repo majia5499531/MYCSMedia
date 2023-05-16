@@ -321,11 +321,17 @@
 -(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     
-    CGFloat cellW = SCREEN_WIDTH-12-12;
-    CGFloat cellH = cellW * 5 /7;
-    CGFloat interSpace = 12;
+    SZ5GliveCell * cell=[[SZ5GliveCell alloc]init];
+    ContentModel * model = liveListModel.dataArr[indexPath.row];
+    [cell setCellData:model];
+    return [cell cellHeigh];
     
-    return cellH + interSpace;
+//
+//    CGFloat cellW = SCREEN_WIDTH-12-12;
+//    CGFloat cellH = cellW * 5 /7;
+//    CGFloat interSpace = 12;
+//
+//    return cellH + interSpace;
 }
 -(UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
 {
@@ -338,6 +344,15 @@
     
     PanelModel * panelTV = cateModel.dataArr[0];
     PanelModel * panelAudio = cateModel.dataArr[1];
+    
+    //bg
+    UIImageView * imgbg = [[UIImageView alloc]init];
+    imgbg.image = [UIImage getBundleImage:@"sz_5g_live_bg"];
+    [header addSubview:imgbg];
+    [imgbg mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.left.right.bottom.mas_equalTo(0);
+    }];
+    
     
     UIView * tvIcon = [[UIView alloc]init];
     tvIcon.layer.cornerRadius=2.5;
@@ -385,7 +400,7 @@
     [header addSubview:audioIcon];
     [audioIcon mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_equalTo(12);
-        make.top.mas_equalTo(tvIcon.mas_bottom).offset(103);
+        make.top.mas_equalTo(tvIcon.mas_bottom).offset(108);
         make.width.mas_equalTo(5);
         make.height.mas_equalTo(15);
     }];
@@ -464,7 +479,7 @@
 }
 -(CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
 {
-    return 310;
+    return 315;
 }
 -(CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section
 {

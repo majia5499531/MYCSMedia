@@ -20,6 +20,8 @@
 #import "CategoryListModel.h"
 #import "SZGlobalInfo.h"
 #import "CategoryModel.h"
+#import "SZUserTracker.h"
+
 
 @interface SZ5GVC ()<SZColumnBarDelegate,UIScrollViewDelegate>
 {
@@ -34,6 +36,7 @@
     SZColumnBar * columnbar;
     
     UIViewController * currentVC;
+    NSInteger videoTabIndex;
 }
 
 @end
@@ -81,6 +84,7 @@
 
 -(void)installSubviews
 {
+    //bg
     self.view.backgroundColor=[UIColor whiteColor];
     
     //ScrollBG
@@ -130,6 +134,9 @@
             vc.categoryCode = cateM.code;
             vc.contentId=self.contentId;
             targetvc = vc;
+            
+            //标记视频tab的index
+            videoTabIndex = i;
         }
         else
         {
@@ -215,8 +222,8 @@
     
     [self.view layoutIfNeeded];
     
-    //SZColumnBar
-    columnbar = [[SZColumnBar alloc]initWithTitles:titles relateScrollView:scrollBG delegate:self originX:25 itemMargin:12  txtColor:[UIColor colorWithRed:0 green:0 blue:0 alpha:0.4] selTxtColor:HW_BLACK lineColor:HW_CLEAR initialIndex:self.initialIndex];
+    //创建SZColumnBar
+    columnbar = [[SZColumnBar alloc]initWithTitles:titles relateScrollView:scrollBG delegate:self originX:25 itemMargin:12  txtColor:[UIColor colorWithRed:0 green:0 blue:0 alpha:0.4] selTxtColor:HW_BLACK lineColor:HW_CLEAR initialIndex:videoTabIndex];
     [self.view addSubview:columnbar];
     [columnbar mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo(searchBtnBG.mas_bottom).offset(5);
@@ -233,7 +240,7 @@
 #pragma mark - Animation
 -(void)columnBarAnimations:(NSInteger)index
 {
-    if (index==5)
+    if (index==videoTabIndex)
     {
         backBtn.MJSelectState=YES;
         searchBtn.MJSelectState=YES;
@@ -305,6 +312,9 @@
 
 -(void)profileBtnAction
 {
+    //埋点
+    [SZUserTracker trackingButtonEventName:@"5GChannel_Homepage_click" param:@{@"button_name":@"个人中心"}];
+    
     //未登录则跳转登录
     if (![SZGlobalInfo sharedManager].SZRMToken.length)
     {
@@ -317,7 +327,10 @@
 }
 
 -(void)searchBtnAction
-{    
+{
+    //埋点
+    [SZUserTracker trackingButtonEventName:@"5GChannel_Homepage_click" param:@{@"button_name":@"搜索"}];
+    
     NSString * h5ur = APPEND_SUBURL(BASE_H5_URL, @"fuse/news/#/searchPlus");
     [[SZManager sharedManager].delegate onOpenWebview:h5ur param:nil];
 }
@@ -345,6 +358,12 @@
 {
     //columnbar动画
     [self columnBarAnimations:index];
+    
+    //埋点
+    CategoryModel * cateM  = dataModel.dataArr[index];
+    NSMutableDictionary * param=[NSMutableDictionary dictionary];
+    [param setValue:cateM.name forKey:@"channel_name"];
+    [SZUserTracker trackingButtonEventName:@"5GChannel_Homepage_view" param:param];
     
     //触发didAppear
     UIViewController * newVC = self.childViewControllers[index];

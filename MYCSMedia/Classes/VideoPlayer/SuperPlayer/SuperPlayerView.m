@@ -1660,6 +1660,27 @@ static UISlider * _volumeSlider;
             }
             
             
+            
+            //5G行为埋点
+            ContentModel * mycontentModel = self.externalModel;
+            NSMutableDictionary * trackparam=[NSMutableDictionary dictionary];
+            [trackparam setValue:@"5G频道" forKey:@"module_source"];
+            NSString * renewstr = self.isReplay? @"是" :@"否";
+            [trackparam setValue:renewstr forKey:@"is_renew"];
+            [trackparam setValue:mycontentModel.id forKey:@"content_id"];
+            [trackparam setValue:mycontentModel.title forKey:@"content_name"];
+            [trackparam setValue:mycontentModel.createBy forKey:@"creator_id"];
+            [trackparam setValue:mycontentModel.source forKey:@"content_source"];
+            [trackparam setValue:mycontentModel.thirdPartyId forKey:@"third_ID"];
+            [trackparam setValue:mycontentModel.keywordsShow forKey:@"content_key"];
+            [trackparam setValue:mycontentModel.tagsShow forKey:@"content_list"];
+            [trackparam setValue:mycontentModel.classification forKey:@"content_classify"];
+            [patrackparamram setValue:mycontentModel.type forKey:@"content_type"];
+            [trackparam setValue:mycontentModel.createTime forKey:@"create_time"];
+            [trackparam setValue:mycontentModel.issueTimeStamp forKey:@"publish_time"];
+            [SZUserTracker trackingButtonEventName:@"5GChannel_Video_play" param:trackparam];
+            
+            
             //行为埋点
             ContentModel * contentM = self.externalModel;
             NSMutableDictionary * param=[NSMutableDictionary dictionary];
@@ -1918,6 +1939,25 @@ static UISlider * _volumeSlider;
     [self seekToTime:1];
     
     self.externalModel.isFinishPlay=YES;
+    
+    
+    //5G埋点
+    ContentModel * mycontentModel = self.externalModel;
+    NSMutableDictionary * trackparam=[NSMutableDictionary dictionary];
+    [trackparam setValue:@"5G频道" forKey:@"module_source"];
+    [trackparam setValue:mycontentModel.playDuration forKey:@"play_duration"];
+    [trackparam setValue:mycontentModel.id forKey:@"content_id"];
+    [trackparam setValue:mycontentModel.title forKey:@"content_name"];
+    [trackparam setValue:mycontentModel.createBy forKey:@"creator_id"];
+    [trackparam setValue:mycontentModel.source forKey:@"content_source"];
+    [trackparam setValue:mycontentModel.thirdPartyId forKey:@"third_ID"];
+    [trackparam setValue:mycontentModel.keywordsShow forKey:@"content_key"];
+    [trackparam setValue:mycontentModel.tagsShow forKey:@"content_list"];
+    [trackparam setValue:mycontentModel.classification forKey:@"content_classify"];
+    [trackparam setValue:mycontentModel.type forKey:@"content_type"];
+    [trackparam setValue:mycontentModel.createTime forKey:@"create_time"];
+    [trackparam setValue:mycontentModel.issueTimeStamp forKey:@"publish_time"];
+    [SZUserTracker trackingButtonEventName:@"5GChannel_Video_finish" param:trackparam];
     
 //    //修改播放状态
 //    self.playerState = StateStopped;

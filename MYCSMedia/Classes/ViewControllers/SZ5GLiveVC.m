@@ -25,7 +25,7 @@
 #import "PanelModel.h"
 #import "CategoryModel.h"
 #import "SDWebImage.h"
-
+#import "SZUserTracker.h"
 
 @interface SZ5GLiveVC ()<UITableViewDelegate,UITableViewDataSource>
 {
@@ -251,6 +251,21 @@
     PanelModel * panelM = cateModel.dataArr[0];
     ContentModel * tvContent = panelM.dataArr[btn.tag];
     [[SZManager sharedManager].delegate onOpenWebview:tvContent.externalUrl param:nil];
+    
+    //5G埋点
+    NSMutableDictionary * trackparam=[NSMutableDictionary dictionary];
+    [trackparam setValue:tvContent.id forKey:@"contentId"];
+    [trackparam setValue:tvContent.title forKey:@"content_name"];
+    [trackparam setValue:@"5G频道" forKey:@"module_source"];
+    [trackparam setValue:tvContent.keywordsShow forKey:@"content_key"];
+    [trackparam setValue:tvContent.source forKey:@"content_source"];
+    [trackparam setValue:tvContent.thirdPartyId forKey:@"third_ID"];
+    [trackparam setValue:tvContent.tagsShow forKey:@"content_list"];
+    [trackparam setValue:tvContent.classification forKey:@"content_classify"];
+    [trackparam setValue:tvContent.type forKey:@"content_type"];
+    [trackparam setValue:tvContent.createTime forKey:@"create_time"];
+    [trackparam setValue:tvContent.issueTimeStamp forKey:@"publish_time"];
+    [SZUserTracker trackingButtonEventName:@"5GChannel_Content_click" param:trackparam];
 }
 
 -(void)radioBtnAction:(MJButton*)btn
@@ -258,6 +273,21 @@
     PanelModel * panelM = cateModel.dataArr[1];
     ContentModel * tvContent = panelM.dataArr[btn.tag];
     [[SZManager sharedManager].delegate onOpenWebview:tvContent.externalUrl param:nil];
+    
+    //5G埋点
+    NSMutableDictionary * trackparam=[NSMutableDictionary dictionary];
+    [trackparam setValue:tvContent.id forKey:@"contentId"];
+    [trackparam setValue:tvContent.title forKey:@"content_name"];
+    [trackparam setValue:@"5G频道" forKey:@"module_source"];
+    [trackparam setValue:tvContent.keywordsShow forKey:@"content_key"];
+    [trackparam setValue:tvContent.source forKey:@"content_source"];
+    [trackparam setValue:tvContent.thirdPartyId forKey:@"third_ID"];
+    [trackparam setValue:tvContent.tagsShow forKey:@"content_list"];
+    [trackparam setValue:tvContent.classification forKey:@"content_classify"];
+    [trackparam setValue:tvContent.type forKey:@"content_type"];
+    [trackparam setValue:tvContent.createTime forKey:@"create_time"];
+    [trackparam setValue:tvContent.issueTimeStamp forKey:@"publish_time"];
+    [SZUserTracker trackingButtonEventName:@"5GChannel_Content_click" param:trackparam];
 }
 
 #pragma mark - Route
@@ -288,6 +318,22 @@
     
     
     [[SZManager sharedManager].delegate onOpenWebview:H5URL param:param];
+    
+    
+    //5G埋点
+    NSMutableDictionary * trackparam=[NSMutableDictionary dictionary];
+    [trackparam setValue:model.id forKey:@"contentId"];
+    [trackparam setValue:model.title forKey:@"content_name"];
+    [trackparam setValue:@"5G频道" forKey:@"module_source"];
+    [trackparam setValue:model.keywordsShow forKey:@"content_key"];
+    [trackparam setValue:model.source forKey:@"content_source"];
+    [trackparam setValue:model.thirdPartyId forKey:@"third_ID"];
+    [trackparam setValue:model.tagsShow forKey:@"content_list"];
+    [trackparam setValue:model.classification forKey:@"content_classify"];
+    [trackparam setValue:model.type forKey:@"content_type"];
+    [trackparam setValue:model.createTime forKey:@"create_time"];
+    [trackparam setValue:model.issueTimeStamp forKey:@"publish_time"];
+    [SZUserTracker trackingButtonEventName:@"5GChannel_Content_click" param:trackparam];
 }
 
 
@@ -374,23 +420,29 @@
         make.left.mas_equalTo(tvIcon.mas_right).offset(8);
         make.centerY.mas_equalTo(tvIcon);
     }];
+   
     
-    CGFloat btnw = (SCREEN_WIDTH-(12*5))/4;
-    CGFloat btnH = btnw * 0.78;
-    for (int i = 0; i<4; i++)
+    NSInteger tvnumber = panelTV.dataArr.count;
+    if(tvnumber>0)
     {
-        ContentModel * model = panelTV.dataArr[i];
-        MJButton * tvbtn = [[MJButton alloc]init];
-        tvbtn.tag=i;
-        [tvbtn addTarget:self action:@selector(tvBtnAction:) forControlEvents:UIControlEventTouchUpInside];
-        [tvbtn sd_setImageWithURL:[NSURL URLWithString:model.thumbnailUrl] forState:UIControlStateNormal];
-        [header addSubview:tvbtn];
-        [tvbtn mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.left.mas_equalTo(12 + i*(btnw + 12));
-            make.top.mas_equalTo(tvIcon.mas_bottom).offset(14);
-            make.width.mas_equalTo(btnw);
-            make.height.mas_equalTo(btnH);
-        }];
+        CGFloat btnw = (SCREEN_WIDTH-(12*5))/4;
+        CGFloat btnH = btnw * 0.78;
+        for (int i = 0; i<tvnumber; i++)
+        {
+            ContentModel * model = panelTV.dataArr[i];
+            MJButton * tvbtn = [[MJButton alloc]init];
+            tvbtn.tag=i;
+            [tvbtn addTarget:self action:@selector(tvBtnAction:) forControlEvents:UIControlEventTouchUpInside];
+            [tvbtn sd_setImageWithURL:[NSURL URLWithString:model.thumbnailUrl] forState:UIControlStateNormal];
+            [header addSubview:tvbtn];
+            [tvbtn mas_makeConstraints:^(MASConstraintMaker *make) {
+                make.left.mas_equalTo(12 + i*(btnw + 12));
+                make.top.mas_equalTo(tvIcon.mas_bottom).offset(14);
+                make.width.mas_equalTo(btnw);
+                make.height.mas_equalTo(btnH);
+            }];
+        }
+        
     }
     
     
@@ -416,38 +468,44 @@
     }];
 
 
-    CGFloat audioMargin = 27;
-    CGFloat audioBtnW = (SCREEN_WIDTH-(audioMargin*5))/4;
-    CGFloat audioBtnH = audioBtnW * 1;
-    for (int i = 0; i<4; i++)
+    
+    CGFloat audioNumber = panelAudio.dataArr.count;
+    if(audioNumber>0)
     {
-        
-        ContentModel * model = panelAudio.dataArr[i];
-        
-        MJButton * radiobtn = [[MJButton alloc]init];
-        radiobtn.tag=i;
-        [radiobtn addTarget:self action:@selector(radioBtnAction:) forControlEvents:UIControlEventTouchUpInside];
-        [radiobtn sd_setImageWithURL:[NSURL URLWithString:model.thumbnailUrl] forState:UIControlStateNormal];
-        
-        [header addSubview:radiobtn];
-        [radiobtn mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.left.mas_equalTo(audioMargin + i*(audioBtnW + audioMargin));
-            make.top.mas_equalTo(audioIcon.mas_bottom).offset(14);
-            make.width.mas_equalTo(audioBtnW);
-            make.height.mas_equalTo(audioBtnH);
-        }];
+        CGFloat audioMargin = 27;
+        CGFloat audioBtnW = (SCREEN_WIDTH-(audioMargin*5))/4;
+        CGFloat audioBtnH = audioBtnW * 1;
+        for (int i = 0; i<4; i++)
+        {
+            
+            ContentModel * model = panelAudio.dataArr[i];
+            
+            MJButton * radiobtn = [[MJButton alloc]init];
+            radiobtn.tag=i;
+            [radiobtn addTarget:self action:@selector(radioBtnAction:) forControlEvents:UIControlEventTouchUpInside];
+            [radiobtn sd_setImageWithURL:[NSURL URLWithString:model.thumbnailUrl] forState:UIControlStateNormal];
+            
+            [header addSubview:radiobtn];
+            [radiobtn mas_makeConstraints:^(MASConstraintMaker *make) {
+                make.left.mas_equalTo(audioMargin + i*(audioBtnW + audioMargin));
+                make.top.mas_equalTo(audioIcon.mas_bottom).offset(14);
+                make.width.mas_equalTo(audioBtnW);
+                make.height.mas_equalTo(audioBtnH);
+            }];
 
-        UILabel * title=[[UILabel alloc]init];
-        title.text=model.title;
-        title.textColor=HW_BLACK;
-        title.font=FONT(13);
-        [header addSubview:title];
-        [title mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.top.mas_equalTo(radiobtn.mas_bottom).offset(9);
-            make.centerX.mas_equalTo(radiobtn);
-            make.height.mas_equalTo(16);
-        }];
+            UILabel * title=[[UILabel alloc]init];
+            title.text=model.title;
+            title.textColor=HW_BLACK;
+            title.font=FONT(13);
+            [header addSubview:title];
+            [title mas_makeConstraints:^(MASConstraintMaker *make) {
+                make.top.mas_equalTo(radiobtn.mas_bottom).offset(9);
+                make.centerX.mas_equalTo(radiobtn);
+                make.height.mas_equalTo(16);
+            }];
+        }
     }
+    
     
     
     UIView * liveIcon = [[UIView alloc]init];

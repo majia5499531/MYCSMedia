@@ -34,6 +34,8 @@
 #import <MJRefresh/MJRefresh.h>
 #import "CategoryModel.h"
 #import "PanelModel.h"
+#import "SZUserTracker.h"
+
 
 @interface SZ5GVideoListVC ()
 

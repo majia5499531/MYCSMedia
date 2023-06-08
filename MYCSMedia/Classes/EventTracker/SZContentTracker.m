@@ -141,6 +141,27 @@
             [tracker requestForUploading:bizparam eventKey:@"cms_video_over_auto" contentModel:model];
             
             
+            //5G行为埋点
+            ContentModel * mycontentModel = model;
+            NSMutableDictionary * trackparam=[NSMutableDictionary dictionary];
+            [trackparam setValue:@"5G频道" forKey:@"module_source"];
+            [trackparam setValue:[NSNumber numberWithInteger:duration] forKey:@"play_duration"];
+            [trackparam setValue:mycontentModel.id forKey:@"content_id"];
+            [trackparam setValue:mycontentModel.title forKey:@"content_name"];
+            [trackparam setValue:mycontentModel.createBy forKey:@"creator_id"];
+            [trackparam setValue:mycontentModel.source forKey:@"content_source"];
+            [trackparam setValue:mycontentModel.thirdPartyId forKey:@"third_ID"];
+            [trackparam setValue:mycontentModel.keywordsShow forKey:@"content_key"];
+            [trackparam setValue:mycontentModel.tagsShow forKey:@"content_list"];
+            [trackparam setValue:mycontentModel.classification forKey:@"content_classify"];
+            [trackparam setValue:mycontentModel.type forKey:@"content_type"];
+            [trackparam setValue:mycontentModel.createTime forKey:@"create_time"];
+            [trackparam setValue:mycontentModel.issueTimeStamp forKey:@"publish_time"];
+            [SZUserTracker trackingButtonEventName:@"5GChannel_Video_duration" param:trackparam];
+            
+            
+            
+            
             
             //行为埋点
             ContentModel * contentM = model;
@@ -247,6 +268,26 @@
             
             [tracker requestForUploading:bizparam eventKey:@"cms_video_over" contentModel:model];
 
+            
+            
+            
+            //5G行为埋点
+            ContentModel * mycontentModel = model;
+            NSMutableDictionary * trackparam=[NSMutableDictionary dictionary];
+            [trackparam setValue:@"5G频道" forKey:@"module_source"];
+            [trackparam setValue:[NSNumber numberWithInteger:duration] forKey:@"play_duration"];
+            [trackparam setValue:mycontentModel.id forKey:@"content_id"];
+            [trackparam setValue:mycontentModel.title forKey:@"content_name"];
+            [trackparam setValue:mycontentModel.createBy forKey:@"creator_id"];
+            [trackparam setValue:mycontentModel.source forKey:@"content_source"];
+            [trackparam setValue:mycontentModel.thirdPartyId forKey:@"third_ID"];
+            [trackparam setValue:mycontentModel.keywordsShow forKey:@"content_key"];
+            [trackparam setValue:mycontentModel.tagsShow forKey:@"content_list"];
+            [trackparam setValue:mycontentModel.classification forKey:@"content_classify"];
+            [trackparam setValue:mycontentModel.type forKey:@"content_type"];
+            [trackparam setValue:mycontentModel.createTime forKey:@"create_time"];
+            [trackparam setValue:mycontentModel.issueTimeStamp forKey:@"publish_time"];
+            [SZUserTracker trackingButtonEventName:@"5GChannel_Video_duration" param:trackparam];
             
             
             //行为埋点

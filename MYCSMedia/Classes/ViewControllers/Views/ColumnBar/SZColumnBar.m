@@ -14,6 +14,7 @@
 #import "UIScrollView+MJCategory.h"
 #import "Masonry.h"
 #import "UIImage+MJCategory.h"
+#import "SZUserTracker.h"
 
 @interface SZColumnBar ()<UIScrollViewDelegate>
 @property(weak,nonatomic)id <SZColumnBarDelegate> columnDelegate;
@@ -365,7 +366,7 @@
     //触发一次回调事件
     if (set_relateScrollview)
     {
-        CGFloat offsetX = set_relateScrollview.width*set_initialIndex - 1;
+        CGFloat offsetX = set_relateScrollview.width*set_initialIndex;
         [set_relateScrollview setContentOffset:CGPointMake(offsetX, 0) animated:NO];
         [self scrollViewDidEndDecelerating:set_relateScrollview];
     }
@@ -504,6 +505,9 @@
 {
     //index
     NSInteger index = selBtn.tag;
+    
+    //埋点
+    [SZUserTracker trackingButtonEventName:@"5GChannel_Homepage_click" param:@{@"button_name":selBtn.currentTitle}];
     
     //重复则return
     if (index==currentPage)

@@ -26,7 +26,7 @@
 #import "MJVideoManager.h"
 #import "SuperPlayer.h"
 #import "MJHUD.h"
-
+#import "SZUserTracker.h"
 
 #define test_pagesize @"10"
 
@@ -150,7 +150,7 @@
     videoSpecialList = [NSMutableArray array];
     btnArr = [NSMutableArray array];
     
-    
+
 }
 
 #pragma mark - Subview
@@ -497,6 +497,11 @@
 {
     dataModel = model;
     
+    //埋点
+    NSMutableDictionary * trackparam=[NSMutableDictionary dictionary];
+    [trackparam setValue:dataModel.collectionModel.id forKey:@"contentId"];
+    [trackparam setValue:dataModel.collectionModel.title forKey:@"contentName"];
+    [SZUserTracker trackingButtonEventName:@"5GChannel_Subpage_view" param:trackparam];
     
     //电视剧
     if ([dataModel.collectionModel.type isEqualToString:@"video_com"])
@@ -620,6 +625,21 @@
 #pragma mark - Play
 -(void)playVideo
 {
+    //埋点
+    NSMutableDictionary * trackparam=[NSMutableDictionary dictionary];
+    [trackparam setValue:currentContent.id forKey:@"contentId"];
+    [trackparam setValue:currentContent.title forKey:@"content_name"];
+    [trackparam setValue:@"5G频道" forKey:@"module_source"];
+    [trackparam setValue:currentContent.keywords forKey:@"content_key"];
+    [trackparam setValue:currentContent.source forKey:@"content_source"];
+    [trackparam setValue:currentContent.thirdPartyId forKey:@"third_ID"];
+    [trackparam setValue:currentContent.tags forKey:@"content_list"];
+    [trackparam setValue:currentContent.classification forKey:@"content_classify"];
+    [trackparam setValue:@"video_com" forKey:@"content_type"];
+    [trackparam setValue:currentContent.createTime forKey:@"create_time"];
+    [trackparam setValue:currentContent.issueTimeStamp forKey:@"publish_time"];
+    [SZUserTracker trackingButtonEventName:@"5GChannel_Content_click" param:trackparam];
+    
     [MJVideoManager playWindowVideoAtView:videoBG url:currentContent.playUrl contentModel:currentContent renderModel:MJRENDER_MODE_FILL_EDGE controlMode:MJCONTROL_STYLE_NORMAL];
     ;
 }

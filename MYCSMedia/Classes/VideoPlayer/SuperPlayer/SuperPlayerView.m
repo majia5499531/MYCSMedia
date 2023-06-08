@@ -1675,7 +1675,7 @@ static UISlider * _volumeSlider;
             [trackparam setValue:mycontentModel.keywordsShow forKey:@"content_key"];
             [trackparam setValue:mycontentModel.tagsShow forKey:@"content_list"];
             [trackparam setValue:mycontentModel.classification forKey:@"content_classify"];
-            [patrackparamram setValue:mycontentModel.type forKey:@"content_type"];
+            [trackparam setValue:mycontentModel.type forKey:@"content_type"];
             [trackparam setValue:mycontentModel.createTime forKey:@"create_time"];
             [trackparam setValue:mycontentModel.issueTimeStamp forKey:@"publish_time"];
             [SZUserTracker trackingButtonEventName:@"5GChannel_Video_play" param:trackparam];

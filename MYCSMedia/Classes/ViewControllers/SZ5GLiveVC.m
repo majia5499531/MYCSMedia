@@ -50,7 +50,8 @@
 {
     [super viewWillAppear:animated];
     
-    
+    //检查登录状态
+    [SZGlobalInfo checkRMLoginStatus:nil];
 }
 
 -(void)viewDidAppear:(BOOL)animated

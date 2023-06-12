@@ -56,6 +56,9 @@
     
     self.navigationController.navigationBar.hidden=YES;
     
+    //检查登录状态
+    [SZGlobalInfo checkRMLoginStatus:nil];
+    
     [currentVC beginAppearanceTransition:YES animated:animated];
 }
 

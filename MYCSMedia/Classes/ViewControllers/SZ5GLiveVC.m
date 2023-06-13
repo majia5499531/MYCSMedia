@@ -98,6 +98,14 @@
         make.height.mas_equalTo(STATUS_BAR_HEIGHT+78);
     }];
     
+    //bg
+    UIImageView * imgbg = [[UIImageView alloc]init];
+    imgbg.image = [UIImage getBundleImage:@"sz_5g_live_bg"];
+    [self.view addSubview:imgbg];
+    [imgbg mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.left.right.bottom.mas_equalTo(0);
+    }];
+    
     //直播列表
     tableview=[[UITableView alloc]initWithFrame:CGRectMake(0, 0, 0, 0) style:UITableViewStyleGrouped];
     tableview.dataSource=self;
@@ -113,6 +121,187 @@
         make.top.mas_equalTo(topsection.mas_bottom);
     }];
     
+}
+
+-(UIView*)createHeaderview
+{
+    UIView * header = [[UIView alloc]init];
+    
+    if (cateModel.dataArr.count==0)
+    {
+        return header;
+    }
+    
+    
+    PanelModel * tvPanel = cateModel.dataArr[0];
+    PanelModel * audioPanel = cateModel.dataArr[1];
+    PanelModel * livePanel = cateModel.dataArr[2];
+    
+    CGFloat sectionY = 17;
+    //如果有tv数据
+    if(tvPanel.dataArr.count)
+    {
+        UIView * tvIcon = [[UIView alloc]init];
+        tvIcon.layer.cornerRadius=2.5;
+        tvIcon.layer.backgroundColor=HW_RED_WORD_1.CGColor;
+        [header addSubview:tvIcon];
+        [tvIcon mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.left.mas_equalTo(12);
+            make.top.mas_equalTo(sectionY);
+            make.width.mas_equalTo(5);
+            make.height.mas_equalTo(15);
+        }];
+        
+        sectionY = 139;
+        
+        UILabel * tvlabel=[[UILabel alloc]init];
+        tvlabel.text=tvPanel.name;
+        tvlabel.textColor=HW_BLACK;
+        tvlabel.font=[UIFont systemFontOfSize:16 weight:600];
+        [header addSubview:tvlabel];
+        [tvlabel mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.left.mas_equalTo(tvIcon.mas_right).offset(8);
+            make.centerY.mas_equalTo(tvIcon);
+        }];
+        
+        
+        CGFloat btnw = (SCREEN_WIDTH-(12*5))/4;
+        CGFloat btnH = btnw * 0.78;
+        CGFloat dataCount = tvPanel.dataArr.count;
+        if(dataCount>4)
+        {
+            dataCount = 4;
+        }
+        
+        for (int i = 0; i<dataCount; i++)
+        {
+            ContentModel * model = tvPanel.dataArr[i];
+            MJButton * tvbtn = [[MJButton alloc]init];
+            tvbtn.tag=i;
+            [tvbtn addTarget:self action:@selector(tvBtnAction:) forControlEvents:UIControlEventTouchUpInside];
+            [tvbtn sd_setImageWithURL:[NSURL URLWithString:model.thumbnailUrl] forState:UIControlStateNormal];
+            [header addSubview:tvbtn];
+            [tvbtn mas_makeConstraints:^(MASConstraintMaker *make) {
+                make.left.mas_equalTo(12 + i*(btnw + 12));
+                make.top.mas_equalTo(tvIcon.mas_bottom).offset(14);
+                make.width.mas_equalTo(btnw);
+                make.height.mas_equalTo(btnH);
+            }];
+        }
+        
+        
+    }
+    
+    
+    
+    //如果有电台数据
+    if(audioPanel.dataArr.count)
+    {
+        UIView * audioIcon = [[UIView alloc]init];
+        audioIcon.layer.cornerRadius=2.5;
+        audioIcon.layer.backgroundColor=HW_RED_WORD_1.CGColor;
+        [header addSubview:audioIcon];
+        [audioIcon mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.left.mas_equalTo(12);
+            make.top.mas_equalTo(sectionY);
+            make.width.mas_equalTo(5);
+            make.height.mas_equalTo(15);
+        }];
+        
+        
+        if(tvPanel.dataArr.count)
+        {
+            sectionY = 287;
+        }
+        else
+        {
+            sectionY = 160;
+        }
+        
+        
+        UILabel * audiolabel=[[UILabel alloc]init];
+        audiolabel.text=audioPanel.name;
+        audiolabel.textColor=HW_BLACK;
+        audiolabel.font=[UIFont systemFontOfSize:16 weight:600];
+        [header addSubview:audiolabel];
+        [audiolabel mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.left.mas_equalTo(audioIcon.mas_right).offset(8);
+            make.centerY.mas_equalTo(audioIcon);
+        }];
+        
+        
+        CGFloat audioMargin = 27;
+        CGFloat audioBtnW = (SCREEN_WIDTH-(audioMargin*5))/4;
+        CGFloat audioBtnH = audioBtnW * 1;
+        
+        CGFloat dataCount = audioPanel.dataArr.count;
+        if(dataCount>4)
+        {
+            dataCount = 4;
+        }
+        
+        for (int i = 0; i<dataCount; i++)
+        {
+            ContentModel * model = audioPanel.dataArr[i];
+            
+            MJButton * radiobtn = [[MJButton alloc]init];
+            radiobtn.tag=i;
+            [radiobtn addTarget:self action:@selector(radioBtnAction:) forControlEvents:UIControlEventTouchUpInside];
+            [radiobtn sd_setImageWithURL:[NSURL URLWithString:model.thumbnailUrl] forState:UIControlStateNormal];
+            
+            [header addSubview:radiobtn];
+            [radiobtn mas_makeConstraints:^(MASConstraintMaker *make) {
+                make.left.mas_equalTo(audioMargin + i*(audioBtnW + audioMargin));
+                make.top.mas_equalTo(audioIcon.mas_bottom).offset(14);
+                make.width.mas_equalTo(audioBtnW);
+                make.height.mas_equalTo(audioBtnH);
+            }];
+            
+            UILabel * title=[[UILabel alloc]init];
+            title.text=model.title;
+            title.textColor=HW_BLACK;
+            title.font=FONT(13);
+            [header addSubview:title];
+            [title mas_makeConstraints:^(MASConstraintMaker *make) {
+                make.top.mas_equalTo(radiobtn.mas_bottom).offset(9);
+                make.centerX.mas_equalTo(radiobtn);
+                make.height.mas_equalTo(16);
+            }];
+        }
+    }
+    
+    
+    
+    
+    
+    UIView * liveIcon = [[UIView alloc]init];
+    liveIcon.layer.cornerRadius=2.5;
+    liveIcon.layer.backgroundColor=HW_RED_WORD_1.CGColor;
+    [header addSubview:liveIcon];
+    [liveIcon mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.mas_equalTo(12);
+        make.top.mas_equalTo(sectionY);
+        make.width.mas_equalTo(5);
+        make.height.mas_equalTo(15);
+    }];
+    
+    UILabel * liveLabel=[[UILabel alloc]init];
+    liveLabel.text=livePanel.name;
+    liveLabel.textColor=HW_BLACK;
+    liveLabel.font=[UIFont systemFontOfSize:16 weight:600];
+    [header addSubview:liveLabel];
+    [liveLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.mas_equalTo(liveIcon.mas_right).offset(8);
+        make.centerY.mas_equalTo(liveIcon);
+    }];
+    
+    
+    
+    [header layoutIfNeeded];
+    CGFloat height = [header getBottomY];
+    [header setFrame:CGRectMake(0, 0, SCREEN_WIDTH, height+12)];
+    
+    return header;
 }
 
 
@@ -152,10 +341,8 @@
 
 -(void)requestContentList
 {
-
     PanelModel * pannel = cateModel.dataArr[2];
-    
-    
+       
     NSString * pagesize = [NSString stringWithFormat:@"%d",VIDEO_PAGE_SIZE];
     
     NSMutableDictionary * param=[NSMutableDictionary dictionary];
@@ -212,7 +399,12 @@
 {
     if (categoryModel.dataArr.count==3)
     {
+        //电视、电台
         cateModel = categoryModel;
+        
+        //创建header
+        UIView * topblock = [self createHeaderview];
+        tableview.tableHeaderView = topblock;
         
         [tableview reloadData];
         
@@ -372,165 +564,12 @@
     ContentModel * model = liveListModel.dataArr[indexPath.row];
     [cell setCellData:model];
     return [cell cellHeigh];
-    
-//
-//    CGFloat cellW = SCREEN_WIDTH-12-12;
-//    CGFloat cellH = cellW * 5 /7;
-//    CGFloat interSpace = 12;
-//
-//    return cellH + interSpace;
 }
 -(UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
 {
-    UIView * header = [[UIView alloc]init];
-    if (cateModel.dataArr.count==0)
-    {
-        return header;
-    }
+//    return [self createHeaderview];;
+    return nil;
     
-    
-    PanelModel * panelTV = cateModel.dataArr[0];
-    PanelModel * panelAudio = cateModel.dataArr[1];
-    
-    //bg
-    UIImageView * imgbg = [[UIImageView alloc]init];
-    imgbg.image = [UIImage getBundleImage:@"sz_5g_live_bg"];
-    [header addSubview:imgbg];
-    [imgbg mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.left.right.bottom.mas_equalTo(0);
-    }];
-    
-    
-    UIView * tvIcon = [[UIView alloc]init];
-    tvIcon.layer.cornerRadius=2.5;
-    tvIcon.layer.backgroundColor=HW_RED_WORD_1.CGColor;
-    [header addSubview:tvIcon];
-    [tvIcon mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.mas_equalTo(12);
-        make.top.mas_equalTo(17);
-        make.width.mas_equalTo(5);
-        make.height.mas_equalTo(15);
-    }];
-    
-    UILabel * tvlabel=[[UILabel alloc]init];
-    tvlabel.text=panelTV.name;
-    tvlabel.textColor=HW_BLACK;
-    tvlabel.font=[UIFont systemFontOfSize:16 weight:600];
-    [header addSubview:tvlabel];
-    [tvlabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.mas_equalTo(tvIcon.mas_right).offset(8);
-        make.centerY.mas_equalTo(tvIcon);
-    }];
-   
-    
-    NSInteger tvnumber = panelTV.dataArr.count;
-    if(tvnumber>0)
-    {
-        CGFloat btnw = (SCREEN_WIDTH-(12*5))/4;
-        CGFloat btnH = btnw * 0.78;
-        for (int i = 0; i<tvnumber; i++)
-        {
-            ContentModel * model = panelTV.dataArr[i];
-            MJButton * tvbtn = [[MJButton alloc]init];
-            tvbtn.tag=i;
-            [tvbtn addTarget:self action:@selector(tvBtnAction:) forControlEvents:UIControlEventTouchUpInside];
-            [tvbtn sd_setImageWithURL:[NSURL URLWithString:model.thumbnailUrl] forState:UIControlStateNormal];
-            [header addSubview:tvbtn];
-            [tvbtn mas_makeConstraints:^(MASConstraintMaker *make) {
-                make.left.mas_equalTo(12 + i*(btnw + 12));
-                make.top.mas_equalTo(tvIcon.mas_bottom).offset(14);
-                make.width.mas_equalTo(btnw);
-                make.height.mas_equalTo(btnH);
-            }];
-        }
-        
-    }
-    
-    
-    UIView * audioIcon = [[UIView alloc]init];
-    audioIcon.layer.cornerRadius=2.5;
-    audioIcon.layer.backgroundColor=HW_RED_WORD_1.CGColor;
-    [header addSubview:audioIcon];
-    [audioIcon mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.mas_equalTo(12);
-        make.top.mas_equalTo(tvIcon.mas_bottom).offset(108);
-        make.width.mas_equalTo(5);
-        make.height.mas_equalTo(15);
-    }];
-    
-    UILabel * audiolabel=[[UILabel alloc]init];
-    audiolabel.text=panelAudio.name;
-    audiolabel.textColor=HW_BLACK;
-    audiolabel.font=[UIFont systemFontOfSize:16 weight:600];
-    [header addSubview:audiolabel];
-    [audiolabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.mas_equalTo(audioIcon.mas_right).offset(8);
-        make.centerY.mas_equalTo(audioIcon);
-    }];
-
-
-    
-    CGFloat audioNumber = panelAudio.dataArr.count;
-    if(audioNumber>0)
-    {
-        CGFloat audioMargin = 27;
-        CGFloat audioBtnW = (SCREEN_WIDTH-(audioMargin*5))/4;
-        CGFloat audioBtnH = audioBtnW * 1;
-        for (int i = 0; i<4; i++)
-        {
-            
-            ContentModel * model = panelAudio.dataArr[i];
-            
-            MJButton * radiobtn = [[MJButton alloc]init];
-            radiobtn.tag=i;
-            [radiobtn addTarget:self action:@selector(radioBtnAction:) forControlEvents:UIControlEventTouchUpInside];
-            [radiobtn sd_setImageWithURL:[NSURL URLWithString:model.thumbnailUrl] forState:UIControlStateNormal];
-            
-            [header addSubview:radiobtn];
-            [radiobtn mas_makeConstraints:^(MASConstraintMaker *make) {
-                make.left.mas_equalTo(audioMargin + i*(audioBtnW + audioMargin));
-                make.top.mas_equalTo(audioIcon.mas_bottom).offset(14);
-                make.width.mas_equalTo(audioBtnW);
-                make.height.mas_equalTo(audioBtnH);
-            }];
-
-            UILabel * title=[[UILabel alloc]init];
-            title.text=model.title;
-            title.textColor=HW_BLACK;
-            title.font=FONT(13);
-            [header addSubview:title];
-            [title mas_makeConstraints:^(MASConstraintMaker *make) {
-                make.top.mas_equalTo(radiobtn.mas_bottom).offset(9);
-                make.centerX.mas_equalTo(radiobtn);
-                make.height.mas_equalTo(16);
-            }];
-        }
-    }
-    
-    
-    
-    UIView * liveIcon = [[UIView alloc]init];
-    liveIcon.layer.cornerRadius=2.5;
-    liveIcon.layer.backgroundColor=HW_RED_WORD_1.CGColor;
-    [header addSubview:liveIcon];
-    [liveIcon mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.mas_equalTo(12);
-        make.top.mas_equalTo(audioIcon.mas_bottom).offset(133);
-        make.width.mas_equalTo(5);
-        make.height.mas_equalTo(15);
-    }];
-    
-    UILabel * liveLabel=[[UILabel alloc]init];
-    liveLabel.text=@"网络直播";
-    liveLabel.textColor=HW_BLACK;
-    liveLabel.font=[UIFont systemFontOfSize:16 weight:600];
-    [header addSubview:liveLabel];
-    [liveLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.mas_equalTo(liveIcon.mas_right).offset(8);
-        make.centerY.mas_equalTo(liveIcon);
-    }];
-
-    return header;
 }
 -(UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section
 {
@@ -538,7 +577,10 @@
 }
 -(CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
 {
-    return 315;
+//    UIView * head = [self createHeaderview];
+//    [head layoutIfNeeded];
+//    return head.height;
+    return 0.01;;
 }
 -(CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section
 {

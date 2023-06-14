@@ -5,8 +5,6 @@
 //  Created by 马佳 on 2021/6/9.
 //
 
-
-
 #import "MJLabel.h"
 
 @implementation MJLabel

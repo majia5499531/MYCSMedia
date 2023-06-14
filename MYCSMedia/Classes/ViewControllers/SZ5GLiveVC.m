@@ -132,7 +132,6 @@
         return header;
     }
     
-    
     PanelModel * tvPanel = cateModel.dataArr[0];
     PanelModel * audioPanel = cateModel.dataArr[1];
     PanelModel * livePanel = cateModel.dataArr[2];

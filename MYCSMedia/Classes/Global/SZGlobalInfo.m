@@ -297,8 +297,23 @@
         [param setValue:contentM.startTime forKey:@"publish_time"];
         [param setValue:contentM.type forKey:@"content_type"];
         [param setValue:source forKey:@"transmit_location"];
-        
         [SZUserTracker trackingButtonEventName:@"content_transmit" param:param];
+        
+        
+        //5G埋点
+        NSMutableDictionary * param2=[NSMutableDictionary dictionary];
+        [param2 setValue:contentM.id forKey:@"content_id"];
+        [param2 setValue:contentM.title forKey:@"content_name"];
+        [param2 setValue:contentM.source forKey:@"content_source"];
+        [param2 setValue:contentM.thirdPartyId forKey:@"third_ID"];
+        [param2 setValue:contentM.keywordsShow forKey:@"content_key"];
+        [param2 setValue:contentM.tagsShow forKey:@"content_list"];
+        [param2 setValue:contentM.classification forKey:@"content_classify"];
+        [param2 setValue:contentM.createTime forKey:@"create_time"];
+        [param2 setValue:contentM.startTime forKey:@"publish_time"];
+        [param2 setValue:contentM.type forKey:@"content_type"];
+        [param2 setValue:@"底部分享" forKey:@"transmit_location"];
+        [SZUserTracker trackingButtonEventName:@"5GChannel_transmit" param:param2];
     }
     
 }

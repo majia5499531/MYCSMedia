@@ -417,8 +417,6 @@
         if ([[SZGlobalInfo sharedManager].userId isEqualToString:dataModel.createBy])
         {
             followBtn.hidden=YES;
-            avatar.userInteractionEnabled = YES;
-            authorName.userInteractionEnabled = YES;
             
             [authorBG mas_remakeConstraints:^(MASConstraintMaker *make) {
                 make.bottom.mas_equalTo(descLabel.mas_top).offset(-10);
@@ -430,8 +428,6 @@
         else
         {
             followBtn.hidden = NO;
-            avatar.userInteractionEnabled = YES;
-            authorName.userInteractionEnabled = YES;
             
             [authorBG mas_remakeConstraints:^(MASConstraintMaker *make) {
                 make.bottom.mas_equalTo(descLabel.mas_top).offset(-10);
@@ -447,10 +443,7 @@
     else
     {
         followBtn.hidden = YES;
-        
-        avatar.userInteractionEnabled = NO;
-        authorName.userInteractionEnabled = NO;
-        
+                
         [authorBG mas_remakeConstraints:^(MASConstraintMaker *make) {
             make.bottom.mas_equalTo(descLabel.mas_top).offset(-10);
             make.left.mas_equalTo(descLabel.mas_left);
@@ -465,7 +458,6 @@
 
 -(void)updateVideoBGLayout
 {
-    
     //视频宽高比
     CGFloat imageWidth = dataModel.width.floatValue > 0 ? dataModel.width.floatValue : 1920;
     CGFloat imageHeight = dataModel.height.floatValue > 0 ? dataModel.height.floatValue : 1080;
@@ -982,6 +974,17 @@
 
 -(void)authorDetailBtnAction
 {
+//    //判断有没有issuseID
+//    if(dataModel.issuerId.length==0)
+//    {
+//        return;
+//    }
+    if([dataModel.thirdPartyCode isEqualToString:@"volcengine"])
+    {
+        return;
+    }
+    
+    
     //如果是自己，则不触发
     if ([dataModel.createBy isEqualToString:[SZGlobalInfo sharedManager].userId])
     {

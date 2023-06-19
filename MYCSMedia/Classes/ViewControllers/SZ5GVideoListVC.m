@@ -47,6 +47,7 @@
 {
     [super viewDidLoad];
     
+    [self requestAdvertiseInfo];
 }
 
 
@@ -175,5 +176,35 @@
 }
 
 
+#pragma mark - 查询广告
+-(void)requestAdvertiseInfo
+{
+    PanelModel * model = [PanelModel model];
+    model.hideLoading=YES;
+    NSMutableDictionary * param=[NSMutableDictionary dictionary];
+    [param setValue:VIDEO_ACTIVITY_CODE forKey:@"panelCode"];
+    
+    __weak typeof (self) weakSelf = self;
+    [model GETRequestInView:nil WithUrl:APPEND_SUBURL(BASE_URL, API_URL_PANEL_ACTIVITY) Params:param Success:^(id responseObject) {
+        [weakSelf requestAdvertiseInfoDone:model];
+        } Error:^(id responseObject) {
+            
+        } Fail:^(NSError *error) {
+            
+        }];
+}
+
+
+-(void)requestAdvertiseInfoDone:(PanelModel*)model
+{
+    NSString * img1 = model.config.imageUrl;
+    NSString * img2 = model.config.backgroundImageUrl;
+    NSString * linkUrl  = model.config.jumpUrl;
+    
+    if (linkUrl.length)
+    {
+        [self setActivityImg:img1 simpleImg:img2 linkUrl:linkUrl];
+    }
+}
 
 @end

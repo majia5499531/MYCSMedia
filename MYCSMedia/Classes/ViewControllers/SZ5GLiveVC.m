@@ -449,15 +449,7 @@
     [trackparam setValue:tvContent.id forKey:@"contentId"];
     [trackparam setValue:tvContent.title forKey:@"content_name"];
     [trackparam setValue:@"5G频道" forKey:@"module_source"];
-    [trackparam setValue:tvContent.keywordsShow forKey:@"content_key"];
-    [trackparam setValue:tvContent.source forKey:@"content_source"];
-    [trackparam setValue:tvContent.thirdPartyId forKey:@"third_ID"];
-    [trackparam setValue:tvContent.tagsShow forKey:@"content_list"];
-    [trackparam setValue:tvContent.classification forKey:@"content_classify"];
-    [trackparam setValue:tvContent.type forKey:@"content_type"];
-    [trackparam setValue:tvContent.createTime forKey:@"create_time"];
-    [trackparam setValue:tvContent.issueTimeStamp forKey:@"publish_time"];
-    [SZUserTracker trackingButtonEventName:@"5GChannel_Content_click" param:trackparam];
+    [SZUserTracker trackingButtonEventName:@"5GChannel_Subpage_click" param:trackparam];
 }
 
 -(void)radioBtnAction:(MJButton*)btn
@@ -471,15 +463,7 @@
     [trackparam setValue:tvContent.id forKey:@"contentId"];
     [trackparam setValue:tvContent.title forKey:@"content_name"];
     [trackparam setValue:@"5G频道" forKey:@"module_source"];
-    [trackparam setValue:tvContent.keywordsShow forKey:@"content_key"];
-    [trackparam setValue:tvContent.source forKey:@"content_source"];
-    [trackparam setValue:tvContent.thirdPartyId forKey:@"third_ID"];
-    [trackparam setValue:tvContent.tagsShow forKey:@"content_list"];
-    [trackparam setValue:tvContent.classification forKey:@"content_classify"];
-    [trackparam setValue:tvContent.type forKey:@"content_type"];
-    [trackparam setValue:tvContent.createTime forKey:@"create_time"];
-    [trackparam setValue:tvContent.issueTimeStamp forKey:@"publish_time"];
-    [SZUserTracker trackingButtonEventName:@"5GChannel_Content_click" param:trackparam];
+    [SZUserTracker trackingButtonEventName:@"5GChannel_Subpage_click" param:trackparam];
 }
 
 #pragma mark - Route
@@ -510,22 +494,6 @@
     
     
     [[SZManager sharedManager].delegate onOpenWebview:H5URL param:param];
-    
-    
-    //5G埋点
-    NSMutableDictionary * trackparam=[NSMutableDictionary dictionary];
-    [trackparam setValue:model.id forKey:@"contentId"];
-    [trackparam setValue:model.title forKey:@"content_name"];
-    [trackparam setValue:@"5G频道" forKey:@"module_source"];
-    [trackparam setValue:model.keywordsShow forKey:@"content_key"];
-    [trackparam setValue:model.source forKey:@"content_source"];
-    [trackparam setValue:model.thirdPartyId forKey:@"third_ID"];
-    [trackparam setValue:model.tagsShow forKey:@"content_list"];
-    [trackparam setValue:model.classification forKey:@"content_classify"];
-    [trackparam setValue:model.type forKey:@"content_type"];
-    [trackparam setValue:model.createTime forKey:@"create_time"];
-    [trackparam setValue:model.issueTimeStamp forKey:@"publish_time"];
-    [SZUserTracker trackingButtonEventName:@"5GChannel_Content_click" param:trackparam];
 }
 
 
@@ -601,6 +569,13 @@
             [SZGlobalInfo mjshowLoginAlert];
         }
     }];
+    
+    //5G埋点
+    NSMutableDictionary * trackparam=[NSMutableDictionary dictionary];
+    [trackparam setValue:model.id forKey:@"contentId"];
+    [trackparam setValue:model.title forKey:@"content_name"];
+    [trackparam setValue:@"5G频道" forKey:@"module_source"];
+    [SZUserTracker trackingButtonEventName:@"5GChannel_Subpage_click" param:trackparam];
 }
 
 

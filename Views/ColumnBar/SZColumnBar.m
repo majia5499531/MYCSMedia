@@ -404,7 +404,7 @@
 //测试四种方式（首次、tab点击、滑动、外部调用）
 -(void)callbackDidSelectedEvent
 {
-//    NSLog(@"page_didshow_%ld",(long)currentPage);
+    NSLog(@"page_didshow_%ld",(long)currentPage);
     
     //通知代理刷新列表
     if (self.columnDelegate && [self.columnDelegate respondsToSelector:@selector(mjview:didSelectColumnIndex:)])
@@ -417,7 +417,7 @@
 {
     [self tabbarAnimations:nextPage];
     
-//    NSLog(@"page_willshow_%ld",(long)nextPage);
+    NSLog(@"page_willshow_%ld",(long)nextPage);
     
     if (self.columnDelegate && [self.columnDelegate respondsToSelector:@selector(mjview:willSelectTab:)])
     {

@@ -26,6 +26,8 @@
 #import "CategoryModel.h"
 #import "SDWebImage.h"
 #import "SZUserTracker.h"
+#import "MJVideoManager.h"
+#import "SZData.h"
 
 @interface SZ5GLiveVC ()<UITableViewDelegate,UITableViewDataSource>
 {
@@ -58,7 +60,9 @@
 {
     [super viewDidAppear:animated];
     
-    
+    //强制停止播放
+    [MJVideoManager destroyVideoPlayer];
+    [[SZData sharedSZData]setCurrentContentId:@""];
 }
 
 -(void)viewWillDisappear:(BOOL)animated

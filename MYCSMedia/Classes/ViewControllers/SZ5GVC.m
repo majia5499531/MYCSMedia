@@ -21,6 +21,8 @@
 #import "SZGlobalInfo.h"
 #import "CategoryModel.h"
 #import "SZUserTracker.h"
+#import "MJVideoManager.h"
+#import "SZData.h"
 
 
 @interface SZ5GVC ()<SZColumnBarDelegate,UIScrollViewDelegate>
@@ -83,6 +85,10 @@
     [super viewDidDisappear:animated];
     
     [currentVC endAppearanceTransition];
+    
+    //强制停止播放
+    [MJVideoManager destroyVideoPlayer];
+    [[SZData sharedSZData]setCurrentContentId:@""];
 }
 
 -(void)installSubviews

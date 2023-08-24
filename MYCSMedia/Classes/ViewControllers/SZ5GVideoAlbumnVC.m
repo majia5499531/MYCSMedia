@@ -101,7 +101,9 @@
 -(void)dealloc
 {
     [self removeNotifications];
+    
     [MJVideoManager destroyVideoPlayer];
+    [[SZData sharedSZData]setCurrentContentId:@""];
 }
 
 
@@ -152,8 +154,6 @@
     videoAlbumnList = [NSMutableArray array];
     videoSpecialList = [NSMutableArray array];
     btnArr = [NSMutableArray array];
-    
-
 }
 
 #pragma mark - Subview
@@ -642,6 +642,9 @@
     [trackparam setValue:currentContent.createTime forKey:@"create_time"];
     [trackparam setValue:currentContent.issueTimeStamp forKey:@"publish_time"];
     [SZUserTracker trackingButtonEventName:@"5GChannel_Content_click" param:trackparam];
+    
+    [[SZData sharedSZData].contentDic setValue:currentContent forKey:currentContent.id];
+    [[SZData sharedSZData]setCurrentContentId:currentContent.id];
     
     [MJVideoManager playWindowVideoAtView:videoBG url:currentContent.playUrl contentModel:currentContent renderModel:MJRENDER_MODE_FILL_EDGE controlMode:MJCONTROL_STYLE_NORMAL];
     ;

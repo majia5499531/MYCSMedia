@@ -50,6 +50,12 @@
     [self requestAdvertiseInfo];
 }
 
+-(void)viewWillDisappear:(BOOL)animated
+{
+    [super viewWillDisappear:animated];
+    
+    [MJVideoManager pauseWindowVideo];
+}
 
 
 

@@ -85,10 +85,6 @@
     [super viewDidDisappear:animated];
     
     [currentVC endAppearanceTransition];
-    
-    //强制停止播放
-    [MJVideoManager destroyVideoPlayer];
-    [[SZData sharedSZData]setCurrentContentId:@""];
 }
 
 -(void)installSubviews

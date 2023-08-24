@@ -77,8 +77,6 @@
 -(void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-        
-    NSLog(@"childvc_视频_%s",__FUNCTION__);
 }
 
 -(void)viewDidAppear:(BOOL)animated
@@ -92,15 +90,11 @@
     
     //强制切换contentId
     [self checkCurrentContentId_force:YES];
-    
-    NSLog(@"childvc_视频_%s",__FUNCTION__);
 }
 
 -(void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
-    
-    NSLog(@"childvc_视频_%s",__FUNCTION__);
 }
 
 -(void)viewDidDisappear:(BOOL)animated
@@ -108,14 +102,10 @@
     [super viewDidDisappear:animated];
     
     self.isFocusedVC = NO;
-    
-    NSLog(@"childvc_视频_%s",__FUNCTION__);
 }
 
 -(void)dealloc
 {
-    NSLog(@"childvc_视频_%s",__FUNCTION__);
-    
     [[SZData sharedSZData]setCurrentContentId:@""];
     
     [MJVideoManager destroyVideoPlayer];

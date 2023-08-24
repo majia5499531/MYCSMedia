@@ -367,10 +367,10 @@
         return;
     }
     
-    UINavigationController * nav = [self getCurrentNavigationController];
-    SZVideoUploadVC * vc = [SZVideoUploadVC new];
-    vc.modalPresentationStyle = UIModalPresentationFullScreen;
-    [nav presentViewController:vc animated:YES completion:nil];
+    
+    NSString * h5url = APPEND_SUBURL(BASE_H5_URL, @"fuse/htgcV2/#/addDynamic");
+    [[SZManager sharedManager].delegate onOpenWebview:h5url param:nil];
+
 }
 
 

@@ -102,8 +102,6 @@
 {
     [self removeNotifications];
     
-    [MJVideoManager destroyVideoPlayer];
-    [[SZData sharedSZData]setCurrentContentId:@""];
 }
 
 

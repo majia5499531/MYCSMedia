@@ -43,16 +43,11 @@
 {
     [super viewWillAppear:animated];
     
-    NSLog(@"childvc_直播_%s",__FUNCTION__);
-    
 }
 
 -(void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
-    
-    NSLog(@"childvc_直播_%s",__FUNCTION__);
-    
     
     
     //强制停止播放
@@ -64,25 +59,13 @@
 {
     [super viewWillDisappear:animated];
     
-    NSLog(@"childvc_直播_%s",__FUNCTION__);
 }
 
 -(void)viewDidDisappear:(BOOL)animated
 {
     [super viewDidDisappear:animated];
     
-    NSLog(@"childvc_直播_%s",__FUNCTION__);
 }
-
--(void)dealloc
-{
-    NSLog(@"childvc_直播_%s",__FUNCTION__);
-    
-    [[SZData sharedSZData]setCurrentContentId:@""];
-    
-    [MJVideoManager destroyVideoPlayer];
-}
-
 
 #pragma mark - Subview
 -(void)initSubviews

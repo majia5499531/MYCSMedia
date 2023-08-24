@@ -64,10 +64,6 @@
     
     //更新statusbar
     [self setNeedsStatusBarAppearanceUpdate];
-    
-    //强制停止播放
-    [MJVideoManager destroyVideoPlayer];
-    [[SZData sharedSZData]setCurrentContentId:@""];
 }
 
 
@@ -162,7 +158,7 @@
     
     //scrollbg
     scrollbg = [[UIScrollView alloc]init];
-    scrollbg.backgroundColor=[UIColor greenColor];
+    scrollbg.backgroundColor=[UIColor whiteColor];
     [self.view addSubview:scrollbg];
     [scrollbg mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_equalTo(0);

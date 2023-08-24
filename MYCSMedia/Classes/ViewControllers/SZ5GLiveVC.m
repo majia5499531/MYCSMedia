@@ -59,10 +59,6 @@
 -(void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
-    
-    //强制停止播放
-    [MJVideoManager destroyVideoPlayer];
-    [[SZData sharedSZData]setCurrentContentId:@""];
 }
 
 -(void)viewWillDisappear:(BOOL)animated

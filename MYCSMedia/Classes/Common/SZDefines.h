@@ -41,6 +41,7 @@
 #define API_URL_VIDEO               @"api/cms/client/video/getVideoDetails"
 #define API_URL_VIDEOCOLLECT        @"api/cms/client/content/getSpecList"
 #define API_URL_VIDEO_COLLECTION    @"api/cms/client/video/getVideoCollect"
+#define API_URL_HUDONG_RELATE_VIDEO @"api/cms/client/content/topic/getDynamicVideoPage"
 #define API_URL_FAVOR               @"api/cms/client/favor/addOrCancelFavor"
 #define API_URL_ZAN                 @"api/cms/client/like/likeOrCancel"
 #define API_URL_VIEW_COUNT          @"api/cms/client/contentStats/view/count"

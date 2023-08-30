@@ -39,11 +39,11 @@
 
 @implementation SZVideoDetailVC
 {
-    //data
-    BOOL isRandomMode;
-    
     //UI
     UICollectionView * collectionView;
+    
+    //话题广场相关视频page
+    NSInteger pageNum;
 }
 
 
@@ -57,16 +57,7 @@
     
     [self addNotifications];
     
-    
-    //根据类型请求数据
-    if (self.detailType==0)
-    {
-        [self requestSingleVideo];
-    }
-    else if (self.detailType==1)
-    {
-        [self requestVideosInCollection];
-    }
+    [self fetchVideoData];
 }
 
 -(void)dealloc
@@ -116,6 +107,18 @@
     return idx;
 }
 
+-(void)fetchVideoData
+{
+    //根据类型请求数据
+    if (self.detailType==0)
+    {
+        [self requestSingleVideo];
+    }
+    else if (self.detailType==1)
+    {
+        [self requestVideosInCollection];
+    }
+}
 
 #pragma mark - Add Notoify
 -(void)addNotifications
@@ -194,7 +197,7 @@
         model.volcCategory = self.category_name;
         model.requestId = self.requestId;
         [list.dataArr addObject:model];
-        [weakSelf requestDone:list.dataArr];
+        [weakSelf requestSingleVideoDone:list.dataArr];
         
         } Error:^(id responseObject) {
             [weakSelf requestFailed];
@@ -210,13 +213,13 @@
     
     NSMutableDictionary * param=[NSMutableDictionary dictionary];
     [param setValue:self.albumId forKey:@"classId"];
-    [param setValue:@"9999" forKey:@"pageSize"];
+    [param setValue:@"3" forKey:@"pageSize"];
     [param setValue:@"1" forKey:@"pageIndex"];
     
     __weak typeof (self) weakSelf = self;
     VideoCollectModel * model = [VideoCollectModel model];
     [model GETRequestInView:self.view WithUrl:url Params:param Success:^(id responseObject) {
-        [weakSelf requestDone:model.dataArr];
+        [weakSelf requestCollectionVideosDone:model.dataArr];
         } Error:^(id responseObject) {
             [weakSelf requestFailed];
         } Fail:^(NSError *error) {
@@ -225,13 +228,102 @@
 }
 
 
+//从话题广场的视频进入
+-(void)requestRelateVideos
+{
+    pageNum = 1;
+    
+    if(self.dataArr.count==0)
+    {
+        return;
+    }
+    ContentModel * singleModel = self.dataArr.firstObject;
+    NSString * startTime = singleModel.startTime;
+    
+    NSString * url = APPEND_SUBURL(BASE_URL, API_URL_HUDONG_RELATE_VIDEO);
+    
+    NSMutableDictionary * param=[NSMutableDictionary dictionary];
+    [param setValue:self.locationType forKey:@"locationType"];
+    [param setValue:@"10" forKey:@"pageSize"];
+    [param setValue:[NSString stringWithFormat:@"%ld",(long)pageNum] forKey:@"pageIndex"];
+    [param setValue:self.topicId forKey:@"topicId"];
+    [param setValue:self.groupId forKey:@"troupId"];
+    [param setValue:self.userId forKey:@"userId"];
+    [param setValue:startTime forKey:@"contentStartTime"];
+    
+    __weak typeof (self) weakSelf = self;
+    VideoCollectModel * model = [VideoCollectModel model];
+    model.isJSON=YES;
+    [model PostRequestInView:self.view WithUrl:url Params:param Success:^(id responseObject) {
+        [weakSelf requestHUATIRelateVideosDone:model.dataArr];
+    } Error:^(id responseObject) {
+        [weakSelf requestFailed];
+    } Fail:^(NSError *error) {
+        [weakSelf requestFailed];
+    }];
+    
+}
 
-
-
+-(void)requestMoreRelateVideos
+{
+    if(self.dataArr.count==0)
+    {
+        return;
+    }
+    
+    pageNum = pageNum+1;
+    
+    ContentModel * singleModel = self.dataArr.firstObject;
+    NSString * startTime = singleModel.startTime;
+    
+    NSString * url = APPEND_SUBURL(BASE_URL, API_URL_HUDONG_RELATE_VIDEO);
+    
+    NSMutableDictionary * param=[NSMutableDictionary dictionary];
+    [param setValue:self.locationType forKey:@"locationType"];
+    [param setValue:@"10" forKey:@"pageSize"];
+    [param setValue:[NSString stringWithFormat:@"%ld",(long)pageNum] forKey:@"pageIndex"];
+    [param setValue:self.topicId forKey:@"topicId"];
+    [param setValue:self.groupId forKey:@"troupId"];
+    [param setValue:self.userId forKey:@"userId"];
+    [param setValue:startTime forKey:@"contentStartTime"];
+    
+    __weak typeof (self) weakSelf = self;
+    VideoCollectModel * model = [VideoCollectModel model];
+    model.isJSON=YES;
+    [model PostRequestInView:self.view WithUrl:url Params:param Success:^(id responseObject) {
+        [weakSelf requestMoreHuaTiRelateVideosDone:model.dataArr];
+    } Error:^(id responseObject) {
+        [weakSelf requestFailed];
+    } Fail:^(NSError *error) {
+        [weakSelf requestFailed];
+    }];
+}
 
 
 #pragma mark - Request Done
--(void)requestDone:(NSArray*)modelArr
+-(void)requestSingleVideoDone:(NSArray*)modelArr
+{
+    //结束刷新
+    [collectionView.mj_footer endRefreshing];
+    [collectionView.mj_header endRefreshing];
+    
+    //刷新列表，检查播放
+    [self.dataArr removeAllObjects];
+    [self.dataArr addObjectsFromArray:modelArr];
+    
+    [collectionView reloadData];
+    [collectionView layoutIfNeeded];
+    [self checkCurrentContentId_force:NO];
+    
+    //如果是从话题广场进入
+    if(self.locationType>0)
+    {
+        [self requestRelateVideos];
+    }
+    
+}
+
+-(void)requestCollectionVideosDone:(NSArray*)modelArr
 {
     [collectionView.mj_footer endRefreshing];
     [collectionView.mj_header endRefreshing];
@@ -244,12 +336,51 @@
     [collectionView layoutIfNeeded];
     [self checkCurrentContentId_force:NO];
     
-//    dispatch_async(dispatch_get_main_queue(),^{
-//        [self checkCurrentContentId_force:NO];
-//    });
-    
 }
 
+-(void)requestHUATIRelateVideosDone:(NSArray*)modelArr
+{
+    [self.dataArr addObjectsFromArray:modelArr];
+    
+    [collectionView reloadData];
+    [collectionView layoutIfNeeded];
+}
+
+
+-(void)requestMoreHuaTiRelateVideosDone:(NSArray*)modelArr
+{
+    [collectionView.mj_footer endRefreshing];
+    [collectionView.mj_header endRefreshing];
+    
+    if (modelArr.count==0)
+    {
+        [MJHUD_Notice showNoticeView:@"没有更多视频了" inView:self.view hideAfterDelay:2];
+        return;
+    }
+    
+    
+    NSInteger startIdx = self.dataArr.count;
+    
+    
+    NSMutableArray * idxArr = [NSMutableArray array];
+    for (int i = 0; i<modelArr.count; i++)
+    {
+        NSInteger idx = startIdx++;
+        NSIndexPath * idpath = [NSIndexPath indexPathForRow:idx inSection:0];
+        [idxArr addObject:idpath];
+    }
+    
+    
+    
+    [self.dataArr addObjectsFromArray:modelArr];
+    
+    //追加collectionview数量
+    [collectionView performBatchUpdates:^{
+            [collectionView insertItemsAtIndexPaths:idxArr];
+        } completion:^(BOOL finished) {
+            
+        }];
+}
 
 
 -(void)requestFailed
@@ -258,6 +389,20 @@
     [collectionView.mj_header endRefreshing];
 }
 
+#pragma mark - 下拉/上拉
+-(void)pulldownRefreshAction:(MJRefreshHeader*)refreshHeader
+{
+    [self fetchVideoData];
+}
+
+-(void)pullupLoadAction:(MJRefreshFooter*)footer
+{
+    if(self.locationType>0)
+    {
+        [self requestMoreRelateVideos];
+    }
+    
+}
 
 
 #pragma mark - Init
@@ -280,8 +425,8 @@
     collectionView.showsHorizontalScrollIndicator = NO;
     collectionView.backgroundColor=HW_BLACK;
     [collectionView registerClass:[SZVideoCell class] forCellWithReuseIdentifier:@"fullVideoCell"];
-//    collectionView.mj_header = [CustomAnimatedHeader headerWithRefreshingTarget:self refreshingAction:@selector(pulldownRefreshAction:)];
-//    collectionView.mj_footer = [CustomFooter footerWithRefreshingTarget:self refreshingAction:@selector(pullupLoadAction:)];
+    collectionView.mj_header = [CustomAnimatedHeader headerWithRefreshingTarget:self refreshingAction:@selector(pulldownRefreshAction:)];
+    collectionView.mj_footer = [CustomFooter footerWithRefreshingTarget:self refreshingAction:@selector(pullupLoadAction:)];
     collectionView.delegate = self;
     collectionView.dataSource = self;
     collectionView.pagingEnabled=YES;
@@ -313,24 +458,10 @@
     [[SZData sharedSZData]setCurrentContentId:@""];
     [MJVideoManager destroyVideoPlayer];
     
-//    if (self.pannelId.length==0)
-//    {
-        isRandomMode = YES;
-//    }
 }
 
 
-#pragma mark - 下拉/上拉
--(void)pulldownRefreshAction:(MJRefreshHeader*)refreshHeader
-{
-    isRandomMode = YES;
-    
-}
 
--(void)pullupLoadAction:(MJRefreshFooter*)footer
-{
-    
-}
 
 
 

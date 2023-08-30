@@ -1033,8 +1033,6 @@
             //行为埋点
             [SZUserTracker trackingButtonEventName:@"short_video_page_click" param:@{@"button_name":[NSString stringWithFormat:@"合集_%@",albumTitle]}];
             
-            
-            
             //视频合集
             UINavigationController * nav = [self getCurrentNavigationController];
             SZVideoDetailVC * vc = [[SZVideoDetailVC alloc]init];;

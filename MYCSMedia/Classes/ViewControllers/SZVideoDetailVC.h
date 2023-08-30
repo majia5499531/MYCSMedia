@@ -19,4 +19,14 @@
 @property(strong,nonatomic)NSString * requestId;
 @property(assign,nonatomic)BOOL isPreview;
 
+
+
+//话题广场 (1:首页  2:小组内  3:话题内 4:个人主页内)
+@property(strong,nonatomic)NSString * locationType;
+//参数
+@property(strong,nonatomic)NSString * groupId;      //小组ID
+@property(strong,nonatomic)NSString * topicId;      //话题ID
+@property(strong,nonatomic)NSString * userId;       //用户ID
+
+
 @end

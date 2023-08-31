@@ -247,7 +247,7 @@
     [param setValue:@"10" forKey:@"pageSize"];
     [param setValue:[NSString stringWithFormat:@"%ld",(long)pageNum] forKey:@"pageIndex"];
     [param setValue:self.topicId forKey:@"topicId"];
-    [param setValue:self.groupId forKey:@"troupId"];
+    [param setValue:self.groupId forKey:@"groupId"];
     [param setValue:self.userId forKey:@"userId"];
     [param setValue:startTime forKey:@"contentStartTime"];
     
@@ -261,8 +261,8 @@
     } Fail:^(NSError *error) {
         [weakSelf requestFailed];
     }];
-    
 }
+
 
 -(void)requestMoreRelateVideos
 {
@@ -401,7 +401,10 @@
     {
         [self requestMoreRelateVideos];
     }
-    
+    else
+    {
+        [collectionView.mj_footer endRefreshing];
+    }
 }
 
 

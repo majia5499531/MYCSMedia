@@ -273,6 +273,7 @@
     NSMutableDictionary * param=[NSMutableDictionary dictionary];
     [param setValue:text forKey:@"content"];
     [param setValue:ContentM.id forKey:@"contentId"];
+    [param setValue:ContentM.type forKey:@"type"];
     
     UIWindow * keywindow = MJ_KEY_WINDOW;
     

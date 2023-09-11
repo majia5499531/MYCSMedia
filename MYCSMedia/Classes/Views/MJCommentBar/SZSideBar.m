@@ -371,7 +371,7 @@
     }
     
     
-    NSString * h5url = APPEND_SUBURL(BASE_H5_URL, @"fuse/htgcV2/#/addDynamic");
+    NSString * h5url = APPEND_SUBURL(BASE_H5_URL, @"fuse/htgcV2/#/addDynamic?source=app");
     [[SZManager sharedManager].delegate onOpenWebview:h5url param:nil];
 
 }

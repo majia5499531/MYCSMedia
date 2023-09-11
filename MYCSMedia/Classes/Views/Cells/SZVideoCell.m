@@ -454,6 +454,11 @@
     
 }
 
+-(void)hidePublishBtn:(BOOL)hide
+{
+    [sideBar setHidePublishBtn:hide];
+}
+
 
 
 -(void)updateVideoBGLayout

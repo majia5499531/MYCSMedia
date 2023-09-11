@@ -536,6 +536,7 @@
 {
     SZVideoCell * cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"shortSZVideoCell" forIndexPath:indexPath];
     [cell setVideoCellData:_dataModel.dataArr[indexPath.row] albumnName:nil simpleMode:NO];
+    [cell hidePublishBtn:YES];
     return  cell;
 }
 - (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath

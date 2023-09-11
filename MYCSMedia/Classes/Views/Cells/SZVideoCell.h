@@ -12,5 +12,6 @@
 @interface SZVideoCell : UICollectionViewCell
 
 -(void)setVideoCellData:(id)objc albumnName:(NSString*)albumnName simpleMode:(BOOL)simple;
+-(void)hidePublishBtn:(BOOL)hide;
 
 @end

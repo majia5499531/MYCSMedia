@@ -69,6 +69,7 @@
 }
 
 
+
 #pragma mark - 数据绑定
 -(void)addObserver
 {
@@ -91,8 +92,11 @@
 }
 
 
-
-
+-(void)setHidePublishBtn:(BOOL)b
+{
+    shotBtn.hidden=b;
+    shotLabel.hidden=b;
+}
 
 
 

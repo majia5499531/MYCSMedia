@@ -549,7 +549,9 @@
     {
         [self backBtnClick:_backBtn];
     }
-    [[SZData sharedSZData]requestZan];
+    
+    
+    [[SZData sharedSZData]requestZan:self.contentId];
 }
 -(void)collectBtnAction
 {
@@ -557,7 +559,7 @@
     {
         [self backBtnClick:_backBtn];
     }
-    [[SZData sharedSZData]requestCollect];
+    [[SZData sharedSZData]requestCollect:self.contentId];
 }
 -(void)shareBtnAction
 {

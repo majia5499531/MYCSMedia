@@ -37,9 +37,9 @@
 
 
 -(void)requestShortViewZan;
--(void)requestZan;
+-(void)requestZan:(NSString*)contentId;
+-(void)requestCollect:(NSString*)contentId;
 -(void)requestCommentZan:(NSString*)commentId replyId:(NSString*)replyId;
--(void)requestCollect;
 -(void)requestFollowUser:(NSString*)userId;
 -(void)requestUnFollowUser:(NSString*)userId;
 -(void)requestCommentListData;

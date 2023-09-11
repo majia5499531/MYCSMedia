@@ -110,28 +110,7 @@
         }];
 }
 
-//评论列表
--(void)requestCommentListData
-{
-    CommentDataModel * model = [CommentDataModel model];
-    model.isJSON = YES;
-    model.hideLoading = YES;
-    model.hideErrorMsg = YES;
-    NSMutableDictionary * param=[NSMutableDictionary dictionary];
-    [param setValue:self.currentContentId forKey:@"contentId"];
-    [param setValue:@"9999" forKey:@"pageSize"];
-    [param setValue:@"1" forKey:@"pageNum"];
-    [param setValue:@"0" forKey:@"pcommentId"];
-    
-    __weak typeof (self) weakSelf = self;
-    [model PostRequestInView:nil WithUrl:APPEND_SUBURL(BASE_URL, API_URL_GET_COMMENT_LIST) Params:param Success:^(id responseObject) {
-        [weakSelf requestCommentListDone:model];
-        } Error:^(id responseObject) {
-            
-        } Fail:^(NSError *error) {
-            
-        }];
-}
+
 
 //请求接口浏览量
 -(void)requestForAddingViewCount
@@ -150,28 +129,62 @@
 }
 
 
+
+
+
+//请求内容相关的推荐
+-(void)requestContentRelatedContent
+{
+    VideoRelateModel * model = [VideoRelateModel model];
+    model.isJSON=YES;
+    model.hideLoading=YES;
+    NSMutableDictionary * param=[NSMutableDictionary dictionary];
+    [param setValue:self.currentContentId forKey:@"contentId"];
+    [param setValue:@"100" forKey:@"pageSize"];
+    [param setValue:@"1" forKey:@"pageIndex"];
+    [param setValue:@"1" forKey:@"current"];
+    
+    __weak typeof (self) weakSelf = self;
+    [model PostRequestInView:nil WithUrl:APPEND_SUBURL(BASE_URL, API_URL_RELATED_CONTENT) Params:param Success:^(id responseObject) {
+            [weakSelf requestVideoRelateContentDone:model];
+        } Error:^(id responseObject) {
+            
+        } Fail:^(NSError *error) {
+            
+        }];
+}
+
+
+
+
+
+#pragma mark - Requset Public
 //小视频手势点赞
 -(void)requestShortViewZan
 {
     //如果当前已经点赞则不请求
     ContentStateModel * stateM = [self.contentStateDic valueForKey:self.currentContentId];
+    
     if(stateM.whetherLike)
     {
         return;
     }
     
-    [self requestZan];
+    [self requestZan:self.currentContentId];
 }
 
+
 //给内容点赞
--(void)requestZan
+-(void)requestZan:(NSString*)targetId
 {
+    ContentModel * contentM = [[SZData sharedSZData].contentDic valueForKey:targetId];
+    
     StatusModel * model = [StatusModel model];
     model.hideLoading=YES;
     model.isJSON=YES;
     NSMutableDictionary * param=[NSMutableDictionary dictionary];
-    [param setValue:self.currentContentId forKey:@"targetId"];
-    [param setValue:@"content" forKey:@"type"];
+    [param setValue:targetId forKey:@"targetId"];
+    [param setValue:contentM.type forKey:@"type"];
     
     __weak typeof (self) weakSelf = self;
     [model PostRequestInView:nil WithUrl:APPEND_SUBURL(BASE_URL, API_URL_ZAN) Params:param Success:^(id responseObject) {
@@ -205,14 +218,16 @@
 }
 
 //添加收藏
--(void)requestCollect
+-(void)requestCollect:(NSString*)targetId
 {
+    ContentModel * contentM = [[SZData sharedSZData].contentDic valueForKey:targetId];
+    
     StatusModel * model = [StatusModel model];
     model.isJSON=YES;
     model.hideLoading=YES;
     NSMutableDictionary * param=[NSMutableDictionary dictionary];
-    [param setValue:self.currentContentId forKey:@"contentId"];
-    [param setValue:@"short_video" forKey:@"type"];
+    [param setValue:targetId forKey:@"contentId"];
+    [param setValue:contentM.type forKey:@"type"];
     
     __weak typeof (self) weakSelf = self;
     [model PostRequestInView:nil WithUrl:APPEND_SUBURL(BASE_URL, API_URL_FAVOR) Params:param Success:^(id responseObject) {
@@ -223,29 +238,6 @@
             
         }];
 }
-
-//请求内容相关的推荐
--(void)requestContentRelatedContent
-{
-    VideoRelateModel * model = [VideoRelateModel model];
-    model.isJSON=YES;
-    model.hideLoading=YES;
-    NSMutableDictionary * param=[NSMutableDictionary dictionary];
-    [param setValue:self.currentContentId forKey:@"contentId"];
-    [param setValue:@"100" forKey:@"pageSize"];
-    [param setValue:@"1" forKey:@"pageIndex"];
-    [param setValue:@"1" forKey:@"current"];
-    
-    __weak typeof (self) weakSelf = self;
-    [model PostRequestInView:nil WithUrl:APPEND_SUBURL(BASE_URL, API_URL_RELATED_CONTENT) Params:param Success:^(id responseObject) {
-            [weakSelf requestVideoRelateContentDone:model];
-        } Error:^(id responseObject) {
-            
-        } Fail:^(NSError *error) {
-            
-        }];
-}
-
 //请求关注用户
 -(void)requestFollowUser:(NSString*)userId
 {
@@ -284,7 +276,28 @@
         }];
 }
 
-
+//评论列表
+-(void)requestCommentListData
+{
+    CommentDataModel * model = [CommentDataModel model];
+    model.isJSON = YES;
+    model.hideLoading = YES;
+    model.hideErrorMsg = YES;
+    NSMutableDictionary * param=[NSMutableDictionary dictionary];
+    [param setValue:self.currentContentId forKey:@"contentId"];
+    [param setValue:@"9999" forKey:@"pageSize"];
+    [param setValue:@"1" forKey:@"pageNum"];
+    [param setValue:@"0" forKey:@"pcommentId"];
+    
+    __weak typeof (self) weakSelf = self;
+    [model PostRequestInView:nil WithUrl:APPEND_SUBURL(BASE_URL, API_URL_GET_COMMENT_LIST) Params:param Success:^(id responseObject) {
+        [weakSelf requestCommentListDone:model];
+        } Error:^(id responseObject) {
+            
+        } Fail:^(NSError *error) {
+            
+        }];
+}
 
 
 

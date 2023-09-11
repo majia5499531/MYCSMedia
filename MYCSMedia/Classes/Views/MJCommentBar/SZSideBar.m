@@ -323,7 +323,7 @@
         return;
     }
     
-    [[SZData sharedSZData]requestZan];
+    [[SZData sharedSZData]requestZan:self.contentId];
 }
 
 
@@ -336,8 +336,7 @@
         return;
     }
     
-    
-    [[SZData sharedSZData]requestCollect];
+    [[SZData sharedSZData]requestCollect:self.contentId];
 }
 
 

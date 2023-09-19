@@ -262,12 +262,15 @@
 
 
 
-
 #pragma mark - SetCellData
 -(void)setVideoCellData:(ContentModel*)objc albumnName:(NSString *)albumnName simpleMode:(BOOL)simple
 {
     //model
     dataModel = objc;
+    
+    //sidebar
+    sideBar.contentId = dataModel.id;
+    [sideBar clearAllData];
     
     //合集名（视频详情，且是合集类型时，用到该字段）
     cellAlbumnName = albumnName;

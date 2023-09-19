@@ -10,7 +10,9 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface SZSideBar : UIView
+@property(strong,nonatomic)NSString * contentId;
 -(void)setHidePublishBtn:(BOOL)b;
+-(void)clearAllData;
 @end
 
 NS_ASSUME_NONNULL_END

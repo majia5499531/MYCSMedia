@@ -33,7 +33,6 @@
 
 
 @interface SZSideBar ()
-@property(strong,nonatomic)NSString * contentId;
 @end
 
 @implementation SZSideBar
@@ -77,10 +76,7 @@
     [self bindModel:[SZData sharedSZData]];
     
     __weak typeof (self) weakSelf = self;
-    self.observe(@"currentContentId",^(id value){
-        weakSelf.contentId = value;
-        [weakSelf updateContentInfo];
-    }).observe(@"contentStateUpdateTime",^(id value){
+    self.observe(@"contentStateUpdateTime",^(id value){
         [weakSelf updateContentStateData];
     }).observe(@"contentZanTime",^(id value){
         [weakSelf updateContentStateData];
@@ -91,11 +87,21 @@
     });
 }
 
+-(void)clearAllData
+{
+    collectBtn.MJSelectState = NO;
+    zanBtn.MJSelectState = NO;
+    collectLabel.text = @"收藏";
+    zanLabel.text = @"点赞";
+    commentCount.text = @"评论";
+}
+
 
 -(void)setHidePublishBtn:(BOOL)b
 {
     shotBtn.hidden=b;
     shotLabel.hidden=b;
+    
 }
 
 
@@ -248,8 +254,16 @@
 }
 
 #pragma mark - 数据绑定回调
+//点赞收藏状态
 -(void)updateContentStateData
 {
+    NSString * currentVideoId = [SZData sharedSZData].currentContentId;
+    if(![self.contentId isEqualToString:currentVideoId])
+    {
+        return;
+    }
+    
+    
     //取数据
     ContentStateModel * stateM = [[SZData sharedSZData].contentStateDic valueForKey:self.contentId];
     
@@ -278,8 +292,15 @@
 }
 
 
+//评论数
 -(void)updateCommentData
 {
+    NSString * currentVideoId = [SZData sharedSZData].currentContentId;
+    if(![self.contentId isEqualToString:currentVideoId])
+    {
+        return;
+    }
+    
     CommentDataModel * commentM = [[SZData sharedSZData].contentCommentDic valueForKey:self.contentId];
     if (commentM.total==0)
     {
@@ -292,12 +313,6 @@
     
 }
 
-
--(void)updateContentInfo
-{
-    //判断是否禁止登录
-    
-}
 
 
 

@@ -99,8 +99,22 @@
 
 -(void)setHidePublishBtn:(BOOL)b
 {
+    if(b)
+    {
+        [zanBtn mas_updateConstraints:^(MASConstraintMaker *make) {
+            make.top.mas_equalTo(33+27);
+        }];
+        
+    }
+    else
+    {
+        [zanBtn mas_updateConstraints:^(MASConstraintMaker *make) {
+            make.top.mas_equalTo(0);
+        }];
+    }
+    
     shotBtn.hidden=b;
-    shotLabel.hidden=b;
+    shotBtn.hidden=b;
     
 }
 

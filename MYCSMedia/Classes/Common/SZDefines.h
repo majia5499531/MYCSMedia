@@ -76,7 +76,8 @@
 #define API_WANDA_GET_MORE_CONTENTS @"api/cms/client/content/getContentDate"
 #define API_WANDA_GET_TOP_VIDEO     @"api/cms/client/category/getCategoryCompositeData"
 #define API_WANDA_GET_TOP_NEWS      @"api/cms/client/category/getCategoryCompositeData"
-
+#define API_WANDA_GET_HAIKA_LIST    @"api/fuse-zone/haicard/v3/client/user/getCardUserInfo"
+#define API_WANDA_GET_HAIKA_CODE    @"api/fuse-zone/haicard/v3/client/UnionCard/GetUserCardQRCode"
 
 
 

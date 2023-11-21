@@ -57,4 +57,15 @@
 }
 
 
++(void)requestHaikaList:(NSDictionary*)param Success:(RMSuccessBlock)successblock Error:(RMErrorBlock)errorblock Fail:(RMFailBlock)failblock;
+{
+    [[SZData sharedSZData]requestHaikaList:param Success:successblock Error:errorblock Fail:failblock];
+}
+
++(void)requestHaikaCode:(NSDictionary*)param Success:(RMSuccessBlock)successblock Error:(RMErrorBlock)errorblock Fail:(RMFailBlock)failblock;
+{
+    [[SZData sharedSZData]requestHaikaCode:param Success:successblock Error:errorblock Fail:failblock];
+}
+
+
 @end

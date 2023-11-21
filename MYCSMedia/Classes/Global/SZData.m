@@ -301,6 +301,10 @@
 
 
 
+
+
+
+
 #pragma mark - Request Done
 -(void)requestContentBelongedAlbumsDone:(RelateAlbumsModel*)albums
 {
@@ -596,7 +600,33 @@
 }
 
 
+//获取嗨卡列表
+-(void)requestHaikaList:(NSDictionary*)param Success:(RMSuccessBlock)successblock Error:(RMErrorBlock)errorblock Fail:(RMFailBlock)failblock
+{
+    RawModel * model = [RawModel model];
+    model.needCache = YES;
+    [model GETRequestInView:nil WithUrl:APPEND_SUBURL(BASE_URL, API_WANDA_GET_HAIKA_LIST) Params:param Success:^(id responseObject) {
+        successblock(responseObject);
+        } Error:^(id responseObject) {
+            errorblock(responseObject);
+        } Fail:^(NSError *error) {
+            failblock(error);
+        }];
+}
 
+//获取嗨卡二维码
+-(void)requestHaikaCode:(NSDictionary*)param Success:(RMSuccessBlock)successblock Error:(RMErrorBlock)errorblock Fail:(RMFailBlock)failblock
+{
+    RawModel * model = [RawModel model];
+    model.needCache = YES;
+    [model GETRequestInView:nil WithUrl:APPEND_SUBURL(BASE_URL, API_WANDA_GET_HAIKA_CODE) Params:param Success:^(id responseObject) {
+        successblock(responseObject);
+        } Error:^(id responseObject) {
+            errorblock(responseObject);
+        } Fail:^(NSError *error) {
+            failblock(error);
+        }];
+}
 
 
 

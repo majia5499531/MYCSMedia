@@ -32,4 +32,7 @@
 //去掉NSNull
 -(instancetype)trimNSNullFromArray;
 
+//转JSON字符串
+-(NSString*)mj_convertToJsonString;
+
 @end

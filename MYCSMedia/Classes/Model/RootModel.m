@@ -9,12 +9,12 @@
 #import "RootModel.h"
 #import "SZGlobalInfo.h"
 #import <objc/message.h>
-#import "NSDictionary+MJCategory.h"
+#import "NSObject+MJCategory.h"
 
 @implementation RootModel
 
 #pragma mark - 请求
--(void)RequestWithUrl:(NSString *)url method:(NSString*)method isJSON:(BOOL)json params:(NSDictionary *)params success:(MJHTTPSuccessBlock)successblock fail:(MJHTTPFailBlock)failblock
+-(void)RequestWithUrl:(NSString *)url method:(NSString*)method isJSON:(BOOL)json params:(id)params success:(MJHTTPSuccessBlock)successblock fail:(MJHTTPFailBlock)failblock
 {
     static AFHTTPSessionManager * httpManager;
     if (httpManager==nil)
@@ -38,7 +38,7 @@
     //HTTP请求输出
     if (json)
     {
-        NSString * jsonstr = [params convertToJSON];
+        NSString * jsonstr = [params mj_convertToJsonString];
         NSLog(@"\n【HTTP请求】 \n Method = %@ \n URL = %@ \r param = \r%@ \n Header = \n%@",method,url,jsonstr,httpManager.requestSerializer.HTTPRequestHeaders);
     }
     else

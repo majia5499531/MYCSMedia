@@ -68,4 +68,10 @@
 }
 
 
++(void)requestUploadTrackingdata:(NSArray*)data Success:(RMSuccessBlock)successblock Error:(RMErrorBlock)errorblock Fail:(RMFailBlock)failblock
+{
+    [[SZData sharedSZData]requestUploadTrackingdata:data Success:successblock Error:errorblock Fail:failblock];
+}
+
+
 @end

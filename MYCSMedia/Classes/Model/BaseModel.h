@@ -20,10 +20,10 @@
 @property(assign,nonatomic)NSInteger pageIndex;
 @property(assign,nonatomic)NSInteger logLevel;
 
--(void)GETRequestInView:(UIView*)view WithUrl:(NSString *)url Params:(NSDictionary *)params Success:(SuccessBlock)successblock Error:(ErrorBlock)errorblock Fail:(FailBlock)failblock;
--(void)PostRequestInView:(UIView*)view WithUrl:(NSString *)url Params:(NSDictionary *)params Success:(SuccessBlock)successblock Error:(ErrorBlock)errorblock Fail:(FailBlock)failblock;
--(void)DeleteRequestInView:(UIView*)view WithUrl:(NSString *)url Params:(NSDictionary *)params Success:(SuccessBlock)successblock Error:(ErrorBlock)errorblock Fail:(FailBlock)failblock;
--(void)PutRequestInView:(UIView*)view WithUrl:(NSString *)url Params:(NSDictionary *)params Success:(SuccessBlock)successblock Error:(ErrorBlock)errorblock Fail:(FailBlock)failblock;
+-(void)GETRequestInView:(UIView*)view WithUrl:(NSString *)url Params:(id)params Success:(SuccessBlock)successblock Error:(ErrorBlock)errorblock Fail:(FailBlock)failblock;
+-(void)PostRequestInView:(UIView*)view WithUrl:(NSString *)url Params:(id)params Success:(SuccessBlock)successblock Error:(ErrorBlock)errorblock Fail:(FailBlock)failblock;
+-(void)DeleteRequestInView:(UIView*)view WithUrl:(NSString *)url Params:(id)params Success:(SuccessBlock)successblock Error:(ErrorBlock)errorblock Fail:(FailBlock)failblock;
+-(void)PutRequestInView:(UIView*)view WithUrl:(NSString *)url Params:(id)params Success:(SuccessBlock)successblock Error:(ErrorBlock)errorblock Fail:(FailBlock)failblock;
 
 -(void)requestMultipartVideoUpload:(NSString *)url model:(NSDictionary *)model fileDataArray:(NSArray*)array fileNameArray:(NSArray*)names success:(SuccessBlock)successblock error:(ErrorBlock)errorBLock fail:(FailBlock)failblock progress:(ProgressBlock)progressBlock;
 

@@ -628,7 +628,23 @@
         }];
 }
 
+//批量上报
+-(void)requestUploadTrackingdata:(NSArray*)data Success:(RMSuccessBlock)successblock Error:(RMErrorBlock)errorblock Fail:(RMFailBlock)failblock
+{
+    RawModel * model = [RawModel model];
+    model.needCache = YES;
+    model.isJSON=YES;
+    [model PostRequestInView:nil WithUrl:APPEND_SUBURL(BASE_URL, API_TRACKING_UPLOAD) Params:data Success:^(id responseObject) {
+        successblock(responseObject);
+        } Error:^(id responseObject) {
+            errorblock(responseObject);
+        } Fail:^(NSError *error) {
+            failblock(error);
+        }];
+    
+    
 
+}
 
 
 

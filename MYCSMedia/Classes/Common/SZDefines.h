@@ -79,7 +79,7 @@
 #define API_WANDA_GET_HAIKA_LIST    @"api/fuse-zone/haicard/v3/client/user/getCardUserInfo"
 #define API_WANDA_GET_HAIKA_CODE    @"api/fuse-zone/haicard/v3/client/UnionCard/GetUserCardQRCode"
 
-
+#define API_TRACKING_UPLOAD         @"api/cms/client/tracking/batchUpload"
 
 
 //业务

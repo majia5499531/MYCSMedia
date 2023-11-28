@@ -26,7 +26,7 @@ typedef void (^ProgressBlock)(NSProgress * progress);
 
 
 +(instancetype)model;
--(void)RequestWithUrl:(NSString *)url method:(NSString*)method isJSON:(BOOL)json params:(NSDictionary *)params success:(MJHTTPSuccessBlock)successblock fail:(MJHTTPFailBlock)failblock;
+-(void)RequestWithUrl:(NSString *)url method:(NSString*)method isJSON:(BOOL)json params:(id)params success:(MJHTTPSuccessBlock)successblock fail:(MJHTTPFailBlock)failblock;
 
 
 @end

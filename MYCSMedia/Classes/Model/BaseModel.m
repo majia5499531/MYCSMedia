@@ -30,32 +30,32 @@
 }
 
 //GET
--(void)GETRequestInView:(UIView*)view WithUrl:(NSString *)url Params:(NSDictionary *)params Success:(SuccessBlock)successblock Error:(ErrorBlock)errorblock Fail:(FailBlock)failblock
+-(void)GETRequestInView:(UIView*)view WithUrl:(NSString *)url Params:(id)params Success:(SuccessBlock)successblock Error:(ErrorBlock)errorblock Fail:(FailBlock)failblock
 {
     [self request:@"GET" view:view WithUrl:url Params:params Success:successblock Error:errorblock Fail:failblock];
 }
 
 //POST
--(void)PostRequestInView:(UIView*)view WithUrl:(NSString *)url Params:(NSDictionary *)params Success:(SuccessBlock)successblock Error:(ErrorBlock)errorblock Fail:(FailBlock)failblock
+-(void)PostRequestInView:(UIView*)view WithUrl:(NSString *)url Params:(id)params Success:(SuccessBlock)successblock Error:(ErrorBlock)errorblock Fail:(FailBlock)failblock
 {
     [self request:@"POST" view:view WithUrl:url Params:params Success:successblock Error:errorblock Fail:failblock];
     
 }
 
 //DELETE
--(void)DeleteRequestInView:(UIView*)view WithUrl:(NSString *)url Params:(NSDictionary *)params Success:(SuccessBlock)successblock Error:(ErrorBlock)errorblock Fail:(FailBlock)failblock
+-(void)DeleteRequestInView:(UIView*)view WithUrl:(NSString *)url Params:(id)params Success:(SuccessBlock)successblock Error:(ErrorBlock)errorblock Fail:(FailBlock)failblock
 {
     [self request:@"DELETE" view:view WithUrl:url Params:params Success:successblock Error:errorblock Fail:failblock];
 }
 
 //PUT
--(void)PutRequestInView:(UIView*)view WithUrl:(NSString *)url Params:(NSDictionary *)params Success:(SuccessBlock)successblock Error:(ErrorBlock)errorblock Fail:(FailBlock)failblock
+-(void)PutRequestInView:(UIView*)view WithUrl:(NSString *)url Params:(id)params Success:(SuccessBlock)successblock Error:(ErrorBlock)errorblock Fail:(FailBlock)failblock
 {
     [self request:@"PUT" view:view WithUrl:url Params:params Success:successblock Error:errorblock Fail:failblock];
 }
 
 #pragma mark - 普通请求
--(void)request:(NSString*)method view:(UIView*)view WithUrl:(NSString *)url Params:(NSDictionary *)params Success:(SuccessBlock)successblock Error:(ErrorBlock)errorblock Fail:(FailBlock)failblock
+-(void)request:(NSString*)method view:(UIView*)view WithUrl:(NSString *)url Params:(id)params Success:(SuccessBlock)successblock Error:(ErrorBlock)errorblock Fail:(FailBlock)failblock
 {
     if (!self.hideLoading || !view)
     {

@@ -329,10 +329,11 @@
 //弹出登录提示
 +(void)mjshowLoginAlert
 {
-    [MJHUD_Alert showLoginAlert:^(id objc) {
-        [MJHUD_Alert hideAlertView];
-        [SZGlobalInfo mjgoToLoginPage];
-    }];
+    [SZGlobalInfo mjgoToLoginPage];
+//    [MJHUD_Alert showLoginAlert:^(id objc) {
+//        [MJHUD_Alert hideAlertView];
+//        [SZGlobalInfo mjgoToLoginPage];
+//    }];
 }
 
 

@@ -135,7 +135,7 @@
             make.width.mas_equalTo(SCREEN_WIDTH-100);
             make.bottom.mas_equalTo(SafeAreaOffset-48);
         }];
-
+        
         
         //作者bg
         authorBG = [[UIView alloc]init];
@@ -143,7 +143,7 @@
         authorBG.layer.cornerRadius=14;
         [authorBG MJSetIndividualAlpha:0.3];
         [self addSubview:authorBG];
-
+        
         
         //作者头像
         avatar = [[UIImageView alloc]init];

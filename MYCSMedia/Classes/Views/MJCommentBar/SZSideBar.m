@@ -114,7 +114,7 @@
     }
     
     shotBtn.hidden=b;
-    shotBtn.hidden=b;
+    shotLabel.hidden=b;
     
 }
 
